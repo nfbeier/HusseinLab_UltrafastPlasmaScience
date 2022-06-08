@@ -36,7 +36,7 @@ logging.basicConfig(format='%(asctime)s %(message)s')
 
 
 #GUI Design file importing here (qt design file)
-qtcreator_file  = "LIBS_GUI_v5.ui" # Enter file here.
+qtcreator_file  = "LIBS_GUI.ui" # Enter file here.
 Ui_MainWindow, QtBaseClass = uic.loadUiType(qtcreator_file)
 
 #Connecting all hardwares
