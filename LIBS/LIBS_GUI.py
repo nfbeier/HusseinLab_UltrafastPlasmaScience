@@ -40,7 +40,7 @@ qtcreator_file  = "LIBS_GUI.ui" # Enter file here.
 Ui_MainWindow, QtBaseClass = uic.loadUiType(qtcreator_file)
 
 #Connecting all hardwares
-ins = ik.srs.SRSDG645.open_serial('COM3', 9600) # dg645
+ins = ik.srs.SRSDG645.open_serial('COM9', 9600) # dg645
 paramsets = list_instruments()
 spec = instrument(paramsets[0],reopen_policy = "new")# thorlabs ccs200
 spectrometer, wav = sn.array_get_spec(0) # stellerNet
@@ -179,15 +179,15 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self._submit_counter += 1
     
     def MetaData(self):
-        self.LaserEnergy = float(self.LaserEnergy.toPlainText())
-        self.LaserWavelength = float(self.LaserWavelength.toPlainText())
-        self.LaserPulseDuration = float(self.LaserPulseDuration.toPlainText())
-        self.SampleType = self.SampleType.toPlainText()
-        self.FocalLength = float(self.FocalLength.toPlainText())
-        self.IntegrationTime = float(self.IntegrationTime.toPlainText())
-        self.FiberAngle = float(self.FiberAngle.toPlainText())
-        self.BackgroundSpectrum = self.BackgroundSpectrum.toPlainText()
-        self.OtherNotes = self.OtherNotes.toPlainText()
+        self.Laser_Energy = float(self.LaserEnergy.toPlainText())
+        self.Laser_Wavelength = float(self.LaserWavelength.toPlainText())
+        self.Laser_PulseDuration = float(self.LaserPulseDuration.toPlainText())
+        self.Sample_Type = self.SampleType.toPlainText()
+        self.Focal_Length = float(self.FocalLength.toPlainText())
+        self.Integration_Time = float(self.IntegrationTime.toPlainText())
+        self.Fiber_Angle = float(self.FiberAngle.toPlainText())
+        self.Background_Spectrum = self.BackgroundSpectrum.toPlainText()
+        self.Other_Notes = self.OtherNotes.toPlainText()
 
         
     def DGParamA(self):
@@ -314,24 +314,24 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
         hdf = h5py.File (path_SaveData + '/'  + time.strftime("%Y%m%d")+'_LIBS_Spectrum_{}.h5'.format(txtnum), 'w')
         ThorlabsSpectrum = hdf.create_dataset('ThorlabsSpectrum', data=data_thor_zip)
         StellarNetSpectrum = hdf.create_dataset('StellarNetSpectrum', data=data_stellar)
-        ThorlabsSpectrum.attrs['LaserEnergy'] = self.LaserEnergy
-        ThorlabsSpectrum.attrs['LaserWavelength'] = self.LaserWavelength
-        ThorlabsSpectrum.attrs['LaserPulseDuration'] = self.LaserPulseDuration
-        ThorlabsSpectrum.attrs['SampleType'] = self.SampleType
-        ThorlabsSpectrum.attrs['FocalLength'] = self.FocalLength
-        ThorlabsSpectrum.attrs['IntegrationTime'] = self.IntegrationTime
-        ThorlabsSpectrum.attrs['FiberAngle'] = self.FiberAngle
-        ThorlabsSpectrum.attrs['BackgroundSpectrum'] = self.BackgroundSpectrum
-        ThorlabsSpectrum.attrs['OtherNotes'] = self.OtherNotes
-        StellarNetSpectrum.attrs['LaserEnergy'] = self.LaserEnergy
-        StellarNetSpectrum.attrs['LaserWavelength'] = self.LaserWavelength
-        StellarNetSpectrum.attrs['LaserPulseDuration'] = self.LaserPulseDuration
-        StellarNetSpectrum.attrs['SampleType'] = self.SampleType
-        StellarNetSpectrum.attrs['FocalLength'] = self.FocalLength
-        StellarNetSpectrum.attrs['IntegrationTime'] = self.IntegrationTime
-        StellarNetSpectrum.attrs['FiberAngle'] = self.FiberAngle
-        StellarNetSpectrum.attrs['BackgroundSpectrum'] = self.BackgroundSpectrum
-        StellarNetSpectrum.attrs['OtherNotes'] = self.OtherNotes
+        ThorlabsSpectrum.attrs['LaserEnergy'] = self.Laser_Energy
+        ThorlabsSpectrum.attrs['LaserWavelength'] = self.Laser_Wavelength
+        ThorlabsSpectrum.attrs['LaserPulseDuration'] = self.Laser_PulseDuration
+        ThorlabsSpectrum.attrs['SampleType'] = self.Sample_Type
+        ThorlabsSpectrum.attrs['FocalLength'] = self.Focal_Length
+        ThorlabsSpectrum.attrs['IntegrationTime'] = self.Integration_Time
+        ThorlabsSpectrum.attrs['FiberAngle'] = self.Fiber_Angle
+        ThorlabsSpectrum.attrs['BackgroundSpectrum'] = self.Background_Spectrum
+        ThorlabsSpectrum.attrs['OtherNotes'] = self.Other_Notes
+        StellarNetSpectrum.attrs['LaserEnergy'] = self.Laser_Energy
+        StellarNetSpectrum.attrs['LaserWavelength'] = self.Laser_Wavelength
+        StellarNetSpectrum.attrs['LaserPulseDuration'] = self.Laser_PulseDuration
+        StellarNetSpectrum.attrs['SampleType'] = self.Sample_Type
+        StellarNetSpectrum.attrs['FocalLength'] = self.Focal_Length
+        StellarNetSpectrum.attrs['IntegrationTime'] = self.Integration_Time
+        StellarNetSpectrum.attrs['FiberAngle'] = self.Fiber_Angle
+        StellarNetSpectrum.attrs['BackgroundSpectrum'] = self.Background_Spectrum
+        StellarNetSpectrum.attrs['OtherNotes'] = self.Other_Notes
         hdf.close()
 
         time.sleep(1)
