@@ -10,7 +10,7 @@ In this version of LIBS GUI, three hardware will be parallelly operated which ar
     o	conda install -c conda forge pyvisa
     o	pip install instrumental -lib
     o	pip install nicelib
-    o	pip install -r requirement. txt 
+    o	pip install -r requirement.txt 
     
 ## Note
 
