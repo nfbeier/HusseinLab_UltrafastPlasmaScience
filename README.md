@@ -1,21 +1,61 @@
-# Welcome!
+---
+description: 'Last Edited: August 15, 2022'
+---
 
-## Welcome to MyAPI
+# What is LIBS GUI?
 
-Welcome to MyAPI! Here you'll find all the documentation you need to get up and running with the MyAPI API.
+LIBS GUI combines hardware and software interfacing to automate data collection in Laser Induced-Breakdown Spectroscopy (LIBS) experiments.&#x20;
 
-## Want to jump right in?
-
-Feeling like an eager beaver? Jump in to the quick start docs and get making your first request:
-
-{% content-ref url="quick-start.md" %}
-[quick-start.md](quick-start.md)
+{% tabs %}
+{% tab title="Getting Set Up" %}
+{% content-ref url="getting-set-up/installation-configuration.md" %}
+[installation-configuration.md](getting-set-up/installation-configuration.md)
 {% endcontent-ref %}
 
-## Want to deep dive?
-
-Dive a little deeper and start exploring our API reference to get an idea of everything that's possible with the API:
-
-{% content-ref url="reference/api-reference/" %}
-[api-reference](reference/api-reference/)
+{% content-ref url="getting-set-up/configuring-your-raspberry-pi.md" %}
+[configuring-your-raspberry-pi.md](getting-set-up/configuring-your-raspberry-pi.md)
 {% endcontent-ref %}
+
+{% content-ref url="getting-set-up/running-the-gui.md" %}
+[running-the-gui.md](getting-set-up/running-the-gui.md)
+{% endcontent-ref %}
+{% endtab %}
+
+{% tab title="GUI Usage" %}
+{% content-ref url="gui-usage/delay-generator.md" %}
+[delay-generator.md](gui-usage/delay-generator.md)
+{% endcontent-ref %}
+
+{% content-ref url="gui-usage/spectrometers.md" %}
+[spectrometers.md](gui-usage/spectrometers.md)
+{% endcontent-ref %}
+
+{% content-ref url="gui-usage/translation-stage.md" %}
+[translation-stage.md](gui-usage/translation-stage.md)
+{% endcontent-ref %}
+
+{% content-ref url="gui-usage/rastering-single-shot.md" %}
+[rastering-single-shot.md](gui-usage/rastering-single-shot.md)
+{% endcontent-ref %}
+
+{% content-ref url="gui-usage/summary.md" %}
+[summary.md](gui-usage/summary.md)
+{% endcontent-ref %}
+{% endtab %}
+
+{% tab title="Code Overview" %}
+{% content-ref url="broken-reference" %}
+[Broken link](broken-reference)
+{% endcontent-ref %}
+{% endtab %}
+
+{% tab title="Help" %}
+{% content-ref url="help/faq.md" %}
+[faq.md](help/faq.md)
+{% endcontent-ref %}
+
+{% content-ref url="help/still-have-questions.md" %}
+[still-have-questions.md](help/still-have-questions.md)
+{% endcontent-ref %}
+{% endtab %}
+{% endtabs %}
