@@ -6,33 +6,16 @@ description: >-
 
 # uart\_receiver.py
 
-Sets up GPIO pins. Refer to your stepper driver hat or wiring in accordance with the below.\
-_Note: mode pins are used for controlling micro-stepping_
+Required imports:
 
-{% code overflow="wrap" %}
 ```python
 import RPi.GPIO as GPIO
-GPIO.setmode(GPIO.BCM)
-GPIO.setwarnings(False)
-
-# x-axis
-dir_x = GPIO.setup(13, GPIO.OUT)
-step_x = GPIO.setup(19, GPIO.OUT)
-mode_x = GPIO.setup((16, 17, 20), GPIO.OUT) 
-GPIO.output(mode_x, (0, 0, 1))  # 1/16 microstepping
-
-# y-axis
-dir_y = GPIO.setup(24, GPIO.OUT)
-step_y = GPIO.setup(18, GPIO.OUT)
-mode_y = GPIO.setup((21, 22, 27), GPIO.OUT)
-GPIO.output(mode_y, (0, 0, 1))
+import serial, time
 ```
-{% endcode %}
 
 Sets up serial communication. Port should stay the same for all newer Raspberry Pis.
 
 ```python
-import serial, time
 ser = serial.Serial(
         port = '/dev/serial0', 
         baudrate = 115200, 

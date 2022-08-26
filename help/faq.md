@@ -42,3 +42,13 @@ Unplug the entire system and then ensure the motors are securely plugged into th
 Try unplugging and plugging back in the USB. For whatever reason, this error randomly pops up at times.
 
 </details>
+
+## Other
+
+<details>
+
+<summary>Why does an error message repeatedly print during single shot?</summary>
+
+Something is disconnected. Check that the spectrometers are connected and the delay generator is on.
+
+</details>

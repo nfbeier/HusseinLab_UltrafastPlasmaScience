@@ -34,8 +34,8 @@ LIBS GUI combines hardware and software interfacing to automate data collection 
 [translation-stage.md](gui-usage/translation-stage.md)
 {% endcontent-ref %}
 
-{% content-ref url="gui-usage/rastering-single-shot.md" %}
-[rastering-single-shot.md](gui-usage/rastering-single-shot.md)
+{% content-ref url="gui-usage/single-shot.md" %}
+[single-shot.md](gui-usage/single-shot.md)
 {% endcontent-ref %}
 
 {% content-ref url="gui-usage/summary.md" %}

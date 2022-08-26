@@ -1,2 +1,0 @@
-# Rastering/"Single Shot"
-
