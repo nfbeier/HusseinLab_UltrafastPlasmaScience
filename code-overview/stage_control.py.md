@@ -1,10 +1,12 @@
 ---
-description: >-
-  Program for sending UART serial messages to the Raspberry Pi in order to
-  control the two stepper motors.
+description: 'Authors: Ying Wan, Shubho Mojahan, Dr. Nick Beier, Dr. Amina Hussein'
 ---
 
 # stage\_control.py
+
+{% hint style="info" %}
+Program for sending UART serial messages to the Raspberry Pi in order to control the two stepper motors.
+{% endhint %}
 
 The following sets up serial communication. The line with "port" should be changed if the USB is ever moved.
 

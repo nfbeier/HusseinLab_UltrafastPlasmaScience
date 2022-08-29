@@ -1,10 +1,12 @@
 ---
-description: >-
-  Code for receiving serially communicated messages and passing commands to the
-  stepper driver. Program automatically runs on the Lab's Pi startup.
+description: 'Authors: Ying Wan, Shubho Mojahan, Dr. Nick Beier, Dr. Amina Hussein'
 ---
 
 # uart\_receiver.py
+
+{% hint style="info" %}
+Code for receiving serially communicated messages and passing commands to the stepper driver. Program automatically runs on the Lab's Pi startup.
+{% endhint %}
 
 The following sets up serial communication. Port should stay the same for all newer Raspberry Pis.
 

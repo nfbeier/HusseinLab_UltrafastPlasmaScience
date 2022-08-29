@@ -33,5 +33,5 @@
 
 ## Other
 
-* [🤔 Need Help?](other/need-help.md)
+* [🤔 Need Help?](help/faq.md)
 * [Endnotes](other/endnotes.md)

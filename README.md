@@ -48,8 +48,8 @@ LIBS GUI combines hardware and software interfacing to automate data collection 
 {% endtab %}
 
 {% tab title="Help" %}
-{% content-ref url="other/need-help.md" %}
-[need-help.md](other/need-help.md)
+{% content-ref url="help/faq.md" %}
+[faq.md](help/faq.md)
 {% endcontent-ref %}
 
 {% content-ref url="broken-reference" %}

@@ -4,17 +4,19 @@ description: 'Authors: Shubho Mohajan, Ying Wan, Dr. Nick Beier, Dr. Amina Husse
 
 # LIBS\_GUI.py
 
+{% hint style="info" %}
 Main code of the GUI that houses all methods of interfacing to hardware. A modularized version 2 of this code has been created and is in beta (see [libs\_gui-v2.md](../future-work/libs\_gui-v2.md "mention")).
+{% endhint %}
 
 <details>
 
 <summary>class TholabTriggerThread: <br>Thread that triggers the Torlabs Spectrometer to watch for spectra.</summary>
 
-**Global**\
+**Global:**\
 ****   • wave\
 &#x20;  • data_\__thor
 
-**Parameters**\
+**Parameters:**\
 &#x20;   **•** intigration\_time\_thor&#x20;
 
 **Attributes:**\
@@ -26,131 +28,67 @@ Main code of the GUI that houses all methods of interfacing to hardware. A modul
 
 <summary>class StellerNetTriggerThread:<br>Thread that triggers the StellerNet Spectrometer to watch for spectra.</summary>
 
-Attributes:\
-&#x20;   • inttime\
-&#x20;   •
+**Global:**\
+&#x20;   •  data\_stellar
+
+**Parameters:**\
+&#x20;   • inttime
+
+**Attributes:**\
+&#x20;   • inttime
+
+**getSpectrum**\
+Parameters:\
+&#x20;   • spectrometer\
+&#x20;   • wav\
+&#x20;   • inttime\
+&#x20;   • scansavg\
+&#x20;   • smooth\
+Returns\
+&#x20;   • spectrum
+
+**external\_trigger**\
+Parameters:\
+&#x20;   • spectrometer\
+&#x20;   • trigger
 
 </details>
 
 <details>
 
-<summary></summary>
+<summary>class FireThread:<br>Thread that triggers the DG645 to fire the laser.</summary>
 
+**Parameters:**\
+&#x20;   • clicked
+
+**Attributes:**\
+&#x20;   • clicked
+
+</details>
+
+<details>
+
+<summary>class MyApp:<br>Contains GUI interfacing methods to control hardware.</summary>
+
+**Attributes:**\
+&#x20;   • set\_param\_dg\_A, set\_param\_dg\_B, ... , set\_param\_dg\_H (PyQt Button) : Assigns the\
+&#x20;      inputs in channel delay on the Delay Generator tab to variables.\
+&#x20;   • set\_param\_dg\_AB, set\_param\_dg\_CD, ... , set\_param\_dg\_GH (PyQt Button) : Assigns \
+&#x20;      the inputs in voltage delay on the Delay Generator tab to variables.\
+&#x20;   • set\_exp\_param (PyQt Button) : Assigns inputs in Spectrometers tab to variables.\
+&#x20;   • T0\_disp, T1\_disp, A\_disp, B\_disp, ... , H\_disp (PyQt Button) : Change the display of the\
+&#x20;      DG645.\
+&#x20;   • file\_browse\_btn (PyQt Button) : Browses files in the same directory as LIBS\_GUI.py.\
+&#x20;   • Start (PyQt Button) : Starts single-shot firing.\
+&#x20;   • disconnect\_all (PyQt Button) : Disconnects the spectrometers.\
+&#x20;   • plot\_graph, plot\_graph\_2, ... , plot\_graph\_6 (PyQt Graph) : Graphs spectrometer\
+&#x20;      readings.\
+&#x20;      \
 
 
 </details>
 
 ```python
-
-
-class StellerNetTriggerThread(threading.Thread):
-    def __init__(self, inttime):
-        super(StellerNetTriggerThread,self).__init__()
-        self.inttime = inttime
-        global data_stellar
-        logging.warning('displaying spectrum')
-        self.external_trigger(spectrometer,True)
-        data_stellar = self.getSpectrum(spectrometer, wav, inttime, scansavg, smooth)
-
-    #function for getting spectrum from stellArNet
-    def getSpectrum(self, spectrometer, wav, inttime, scansavg, smooth):
-        logging.warning('requesting spectrum')
-        spectrometer['device'].set_config(int_time=inttime, scans_to_avg=scansavg, x_smooth=smooth)
-        spectrum = sn.array_spectrum(spectrometer, wav)
-        logging.warning('recieved spectrum')
-        return spectrum 
-
-    # function external triger of stellarNet    
-    def external_trigger(self,spectrometer,trigger):
-        sn.ext_trig(spectrometer,trigger)
-
-
-class FireThread(threading.Thread):
-    def __init__(self, clicked):
-        super(FireThread, self).__init__()
-        self.clicked = clicked
-        ins.sendcmd('TSRC 5') 
-        ins.sendcmd('*TRG')
-
-
-# Main class for GUI
-class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
-    def __init__(self):
-        QtWidgets.QMainWindow.__init__(self)
-        Ui_MainWindow.__init__(self)
-        self.setupUi(self)
-        manipulate_json.read_json(self)
-        self.MetaData()
-
-        self.set_param_dg_A.clicked.connect(self.DGParamA)
-        self.set_param_dg_B.clicked.connect(self.DGParamB)
-        self.set_param_dg_C.clicked.connect(self.DGParamC)
-        self.set_param_dg_D.clicked.connect(self.DGParamD)
-        self.set_param_dg_E.clicked.connect(self.DGParamE)
-        self.set_param_dg_F.clicked.connect(self.DGParamF)
-        self.set_param_dg_G.clicked.connect(self.DGParamG)
-        self.set_param_dg_H.clicked.connect(self.DGParamH)
-        self.set_param_dg_AB.clicked.connect(self.DGParamAB)
-        self.set_param_dg_CD.clicked.connect(self.DGParamCD)
-        self.set_param_dg_EF.clicked.connect(self.DGParamEF)
-        self.set_param_dg_GH.clicked.connect(self.DGParamGH)
-        self.set_exp_param.clicked.connect(self.MetaData)
-        self.T0_disp.clicked.connect(self.T0_click)
-        self.T1_disp.clicked.connect(self.T1_click)
-        self.A_disp.clicked.connect(self.A_click)
-        self.B_disp.clicked.connect(self.B_click)
-        self.C_disp.clicked.connect(self.C_click)
-        self.D_disp.clicked.connect(self.D_click)
-        self.E_disp.clicked.connect(self.E_click)
-        self.F_disp.clicked.connect(self.F_click)
-        self.G_disp.clicked.connect(self.G_click)
-        self.H_disp.clicked.connect(self.H_click)
-        
-        self.file_browse_btn.clicked.connect(self.browse_file)
-        self.Start.clicked.connect(self.start_raster)
-        self.disconnect_all.clicked.connect(self.DisconnectAll)
-
-        self.plot_graph.setLabel(axis='left', text='Intensity (a.u)')
-        self.plot_graph.setLabel(axis='bottom', text='Wavelength (nm)')
-        self.plot_graph.showAxis('right')
-        self.plot_graph.showAxis('top')
-        self.plot_graph.getAxis('top').setStyle(showValues=False)
-        self.plot_graph.getAxis('right').setStyle(showValues=False)
-        
-        self.plot_graph_2.setLabel(axis='left', text='Intensity (a.u)')
-        self.plot_graph_2.setLabel(axis='bottom', text='Wavelength (nm)')
-        self.plot_graph_2.showAxis('right')
-        self.plot_graph_2.showAxis('top')
-        self.plot_graph_2.getAxis('top').setStyle(showValues=False)
-        self.plot_graph_2.getAxis('right').setStyle(showValues=False)
-        
-        self.plot_graph_3.setLabel(axis='left', text='Intensity (a.u)')
-        self.plot_graph_3.setLabel(axis='bottom', text='Wavelength (nm)')
-        self.plot_graph_3.showAxis('right')
-        self.plot_graph_3.showAxis('top')
-        self.plot_graph_3.getAxis('top').setStyle(showValues=False)
-        self.plot_graph_3.getAxis('right').setStyle(showValues=False)
-        
-        self.plot_graph_4.setLabel(axis='left', text='Intensity (a.u)')
-        self.plot_graph_4.setLabel(axis='bottom', text='Wavelength (nm)')
-        self.plot_graph_4.showAxis('right')
-        self.plot_graph_4.showAxis('top')
-        self.plot_graph_4.getAxis('top').setStyle(showValues=False)
-        self.plot_graph_4.getAxis('right').setStyle(showValues=False)
-        
-        self.plot_graph_5.setLabel(axis='left', text='Intensity (a.u)')
-        self.plot_graph_5.setLabel(axis='bottom', text='Wavelength (nm)')
-        self.plot_graph_5.showAxis('right')
-        self.plot_graph_5.showAxis('top')
-        self.plot_graph_5.getAxis('top').setStyle(showValues=False)
-        self.plot_graph_5.getAxis('right').setStyle(showValues=False)
-        
-        self.plot_graph_6.setLabel(axis='left', text='Intensity (a.u)')
-        self.plot_graph_6.setLabel(axis='bottom', text='Wavelength (nm)')
-        self.plot_graph_6.showAxis('right')
-        self.plot_graph_6.showAxis('top')
-        self.plot_graph_6.getAxis('top').setStyle(showValues=False)
-        self.plot_graph_6.getAxis('right').setStyle(showValues=False)
 
         # STAGE CONTROL ----------------------------------------------------------------------
 
