@@ -1,6 +1,6 @@
 # stage\_control.py
 
-Sets up serial communication. The line with "port" should be changed if the USB is ever moved ports.
+The following sets up serial communication. The line with "port" should be changed if the USB is ever moved.
 
 ```python
 import time, serial

@@ -20,7 +20,7 @@ Unplug the entire system and then ensure the motors are securely plugged into th
 
 1. Make sure the system is plugged in.
 2. The Pi takes a few minutes to boot up, try again in a few minutes.
-3. Check that messages are being serially communicated. You can do this by VNCing or SSHing onto the Pi (see [configuring-your-raspberry-pi.md](../getting-set-up/configuring-your-raspberry-pi.md "mention"))
+3. Check that messages are being serially communicated. You can do this by VNCing or SSHing onto the Pi (see [configuring-your-raspberry-pi.md](../getting-set-up/configuring-your-raspberry-pi.md "mention")).
 
 </details>
 
@@ -28,7 +28,7 @@ Unplug the entire system and then ensure the motors are securely plugged into th
 
 <summary>Why does only one motor rotate and the other doesn't?</summary>
 
-1. Check that both motors are plugged in
+1. Check that both motors are plugged in.
 2. Unplug the whole system and then unplug and replug the motors.
 
 </details>
@@ -50,5 +50,13 @@ Try unplugging and plugging back in the USB. For whatever reason, this error ran
 <summary>Why does an error message repeatedly print during single shot?</summary>
 
 Something is disconnected. Check that the spectrometers are connected and the delay generator is on.
+
+</details>
+
+<details>
+
+<summary>Why won't it allow me to click the "Single Shot" button?</summary>
+
+Ensure the stage is at home.
 
 </details>

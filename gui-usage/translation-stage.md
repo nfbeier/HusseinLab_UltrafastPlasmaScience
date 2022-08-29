@@ -24,5 +24,6 @@ description: Controls the manual and automatic translations of the stage.
      * To set one bound: move to another corner (right or bottom left) using manual translations and hit the corresponding button
 3. Input "Step Length" (mm).
 4. Number of "Max Shots" takable will be printed. Input your desired "Number of Shots".
-5. **OPTION 1**: "Test Raster Path" will only go through the stage movements. The delay generator and spectrometers are not involved. Used for testing.\
-   **OPTION 2**: "Single Shot" combines the delay generator, spectrometers, and stage to automate data collection. See [single-shot.md](single-shot.md "mention").
+5. Hit "Return Home" and wait for the stage to complete moving back.
+6. **OPTION 1**: "Test Raster Path" will only go through the stage movements. The delay generator and spectrometers are not involved. Used for testing.\
+   **OPTION 2**: "Single Shot" combines the delay generator, spectrometers, and stage to automate data collection. See [rastering-single-shot.md](rastering-single-shot.md "mention").

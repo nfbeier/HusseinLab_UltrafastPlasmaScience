@@ -52,7 +52,7 @@ After connecting the Pi to the computer, go into stage\_control.py and edit line
 
 ![GPIO connections for the stepper driver I used. Note: there is a typo, "A3A4B3B4 Dir" is actually "A3A4B3B4 enable".](<../.gitbook/assets/Stepper Driver to GPIO pins>)
 
-The above are the GPIO pins that correspond to the stepper driver pins I used. If yours are different, see [uart\_receiver.py.md](../code-overview/uart\_receiver.py.md "mention") for where to edit the code.
+The above are the GPIO pins that correspond to the stepper driver pins I used. If yours are different, see [uart\_receiver.py.md](../software-overview/uart\_receiver.py.md "mention") for where to edit the code.
 
 ## Running uart\_receiver.py
 
