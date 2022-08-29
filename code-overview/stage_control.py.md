@@ -1,9 +1,14 @@
+---
+description: >-
+  Program for sending UART serial messages to the Raspberry Pi in order to
+  control the two stepper motors.
+---
+
 # stage\_control.py
 
 The following sets up serial communication. The line with "port" should be changed if the USB is ever moved.
 
 ```python
-import time, serial
 ser = serial.Serial(
         port = 'COM11', 
         baudrate = 115200, 

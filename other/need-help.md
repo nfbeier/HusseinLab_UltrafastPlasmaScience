@@ -2,7 +2,7 @@
 description: Issues that gave me a headache
 ---
 
-# 🤔 FAQ
+# 🤔 Need Help?
 
 ## Motor Issues
 
@@ -60,3 +60,11 @@ Something is disconnected. Check that the spectrometers are connected and the de
 Ensure the stage is at home.
 
 </details>
+
+## Contact
+
+Shubho should understand the system fairly well (he coded the spectrometers and delay generator tabs), but if he's not sure and you have questions regarding the code (especially stage control) you can reach out to me.
+
+**Ying Wan**\
+Slack: Ying Wan\
+Email: ywan4@ualberta.ca

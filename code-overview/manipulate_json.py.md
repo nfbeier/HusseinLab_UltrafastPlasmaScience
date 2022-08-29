@@ -1,3 +1,9 @@
+---
+description: >-
+  Code to read from and write to a .json file. The program auto-fills the GUI
+  inputs from last use and will save the inputs for next time.
+---
+
 # manipulate\_json.py
 
 **read\_json**\

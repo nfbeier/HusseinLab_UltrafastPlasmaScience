@@ -48,40 +48,11 @@ while True:
         GPIO.setup(4, GPIO.OUT)  # enable
 ```
 
-Because I was unable to generalize the code into variables
+The rest of the code reads in messages and decodes them to command the motor.&#x20;
 
-```python
-
-        gpio = ser.read(2).decode("ascii")
-        para = ser.read(4).decode("ascii")
-        
-        if gpio == '13':  # Direction
-            GPIO.output(12, 1)
-            if para == '0001':
-            	GPIO.output(13, 1)
-            elif para == '0000':
-                GPIO.output(13, 0)
-        elif gpio == '24':
-            GPIO.output(4, 1)
-            if para == '0001':
-            	GPIO.output(24, 1)
-            elif para == '0000':
-                GPIO.output(24, 0)
-
-        elif gpio == '19':  # Step
-            for i in range(int(float(para) * 200)):
-                GPIO.output(19, 0)
-                time.sleep(pulse_delay)
-                GPIO.output(19, 1)
-                time.sleep(pulse_delay)
-            GPIO.output(12, 0)
-            GPIO.cleanup()
-        elif gpio == '18':
-            for i in range(int(float(para) * 200)):
-                GPIO.output(18, 0) #18
-                time.sleep(pulse_delay)
-                GPIO.output(18, 1)
-                time.sleep(pulse_delay)
-            GPIO.output(4, 0)
-            GPIO.cleanup()
-```
+* All messages are composed of a string of 6 numbers. The first two numbers denote the gpio pin to command and the next four numbers denote the parameter.
+* If the gpio is a direction pin (ie. 13 or 24), then a parameter of 0001 refers to forward motion and 0000 refers to reverse motion.
+  * ex. 130001 means to command the x-axis motor to move in the forward direction.
+* If the gpio is a step pin (ie. 19 or 18), then the parameter is the length (mm) of the step to take.
+  * ex. 180010 means to move the y-axis motor by 10 mm.
+* At the start of every message sent and when the commands are done executing, the motor will enable/disable itself so to keep the motors from overheating.

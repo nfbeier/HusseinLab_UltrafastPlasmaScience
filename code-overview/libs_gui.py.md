@@ -1,71 +1,46 @@
+---
+description: 'Authors: Shubho Mohajan, Ying Wan, Dr. Nick Beier, Dr. Amina Hussein'
+---
+
 # LIBS\_GUI.py
 
+Main code of the GUI that houses all methods of interfacing to hardware. A modularized version 2 of this code has been created and is in beta (see [libs\_gui-v2.md](../future-work/libs\_gui-v2.md "mention")).
+
+<details>
+
+<summary>class TholabTriggerThread: <br>Thread that triggers the Torlabs Spectrometer to watch for spectra.</summary>
+
+**Global**\
+****   • wave\
+&#x20;  • data_\__thor
+
+**Parameters**\
+&#x20;   **•** intigration\_time\_thor&#x20;
+
+**Attributes:**\
+&#x20;   • intigration\_time\_thor
+
+</details>
+
+<details>
+
+<summary>class StellerNetTriggerThread:<br>Thread that triggers the StellerNet Spectrometer to watch for spectra.</summary>
+
+Attributes:\
+&#x20;   • inttime\
+&#x20;   •
+
+</details>
+
+<details>
+
+<summary></summary>
+
+
+
+</details>
+
 ```python
-from PyQt5 import QtWidgets, uic, QtGui, QtCore
-import sys, threading, h5py
-from fractions import Fraction
-
-from pyqtgraph import PlotWidget
-import pyqtgraph as pg
-pg.setConfigOption('background', 'w')
-pg.setConfigOption('foreground', 'k') 
-
-from stage_control import Motor, Control
-from math import floor
-import manipulate_json
-
-#importing resources for DG645
-import instruments as ik
-import quantities as pq
-
-#importing resources for thorlabs
-import pyvisa
-from instrumental import instrument, list_instruments
-from instrumental.drivers.spectrometers import thorlabs_ccs
-import matplotlib.pyplot as plt
-rm = pyvisa.ResourceManager()
-res = rm.list_resources('?*::?*')
-
-#importing resources for stellerNet
-import time, logging
-import numpy as np
-# import the usb driver
-import stellarnet_driver3 as sn
-import matplotlib.pyplot as plt
-logging.basicConfig(format='%(asctime)s %(message)s')
-
-
-#GUI Design file importing here (qt design file)
-qtcreator_file  = "LIBS_GUI.ui" # Enter file here.
-Ui_MainWindow, QtBaseClass = uic.loadUiType(qtcreator_file)
-
-#Connecting all hardwares
-ins = ik.srs.SRSDG645.open_serial('COM9', 9600) # dg645
-paramsets = list_instruments()
-spec = instrument(paramsets[0],reopen_policy = "new")# thorlabs ccs200
-spectrometer, wav = sn.array_get_spec(0) # stellerNet
-scansavg = 1
-smooth = 1
-
-#Global variables for data saving and plotting
-wave = None # wavelength for thorlab
-data_thor = None # intensity for thorlab
-data_stellar = None # wavelength and intensity for stellerNet
-wave_thor_all = np.zeros((3648, 2)) # for storing previous shot thorlab wavelength 
-intensity_thor_all = np.zeros((3648, 2))  # for storing previous shot thorlab intensity
-# wave_steller_all = np.zeros((2048, 2))
-intensity_steller_all = np.zeros((2048, 2)) # for storing previous shot stellernet intenssity
-
-# Thread class for each hardware 
-class ThorlabsTriggerThread(threading.Thread):
-    def __init__(self, intigration_time_thor):
-        super(ThorlabsTriggerThread,self).__init__()
-        self.intigration_time_thor  = intigration_time_thor
-        global wave, data_thor
-        spec.set_integration_time(str(intigration_time_thor)+' ms')
-        spec.start_scan_trg()
-        wave = spec._wavelength_array
-        data_thor = spec.get_scan_data()
 
 
 class StellerNetTriggerThread(threading.Thread):

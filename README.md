@@ -1,5 +1,5 @@
 ---
-description: 'Last Edited: August 15, 2022'
+description: 'Last Edited: August 29, 2022'
 ---
 
 # What is LIBS GUI?
@@ -16,8 +16,8 @@ LIBS GUI combines hardware and software interfacing to automate data collection 
 [configuring-your-raspberry-pi.md](getting-set-up/configuring-your-raspberry-pi.md)
 {% endcontent-ref %}
 
-{% content-ref url="getting-set-up/running-closing-the-gui.md" %}
-[running-closing-the-gui.md](getting-set-up/running-closing-the-gui.md)
+{% content-ref url="getting-set-up/running-the-gui.md" %}
+[running-the-gui.md](getting-set-up/running-the-gui.md)
 {% endcontent-ref %}
 {% endtab %}
 
@@ -48,12 +48,12 @@ LIBS GUI combines hardware and software interfacing to automate data collection 
 {% endtab %}
 
 {% tab title="Help" %}
-{% content-ref url="help/faq.md" %}
-[faq.md](help/faq.md)
+{% content-ref url="other/need-help.md" %}
+[need-help.md](other/need-help.md)
 {% endcontent-ref %}
 
-{% content-ref url="help/still-have-questions.md" %}
-[still-have-questions.md](help/still-have-questions.md)
+{% content-ref url="broken-reference" %}
+[Broken link](broken-reference)
 {% endcontent-ref %}
 {% endtab %}
 {% endtabs %}

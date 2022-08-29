@@ -6,7 +6,7 @@
 
 * [Installation/Configuration](getting-set-up/installation-configuration.md)
 * [Configuring Your Raspberry Pi](getting-set-up/configuring-your-raspberry-pi.md)
-* [Running/Closing the GUI](getting-set-up/running-closing-the-gui.md)
+* [Running/Closing the GUI](getting-set-up/running-the-gui.md)
 
 ## GUI Usage
 
@@ -17,16 +17,21 @@
 
 ## Software Overview
 
-* [LIBS\_GUI.py](software-overview/libs\_gui.py.md)
-* [manipulate\_json.py](software-overview/manipulate\_json.py.md)
-* [stage\_control.py](software-overview/stage\_control.py.md)
-* [uart\_receiver.py](software-overview/uart\_receiver.py.md)
+* [LIBS\_GUI.py](code-overview/libs\_gui.py.md)
+* [manipulate\_json.py](code-overview/manipulate\_json.py.md)
+* [stage\_control.py](code-overview/stage\_control.py.md)
+* [uart\_receiver.py](code-overview/uart\_receiver.py.md)
 
 ## Hardware Overview
 
 * [Stage](hardware-overview/stage.md)
 
-## Help
+## Future Work
 
-* [🤔 FAQ](help/faq.md)
-* [Still Have Questions?](help/still-have-questions.md)
+* [LIBS\_GUI V2](future-work/libs\_gui-v2.md)
+* [XPS](future-work/xps.md)
+
+## Other
+
+* [🤔 Need Help?](other/need-help.md)
+* [Endnotes](other/endnotes.md)
