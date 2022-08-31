@@ -1,4 +1,6 @@
 # LIBS_GUI with 2-Axes Stage Control
+Documentation: https://ying-wan.gitbook.io/libs-gui/
+
 In this version of LIBS GUI, three hardwares are parallelly operated (Thorlabs ccs200, StellerNet UV spectrometer, and DG 645 delay generator). Additionally, a 2-axes Raspberry Pi controlled stage is opereated serially. Requirements for running the code:
 
 •	Python 3.8 is needed.
