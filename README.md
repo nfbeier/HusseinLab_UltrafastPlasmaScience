@@ -1,59 +1,19 @@
 ---
-description: 'Last Edited: August 29, 2022'
+description: 'Last Edited: October 11, 2022'
 ---
 
-# What is LIBS GUI?
+Github repository for hardware and software interfacing used in the Hussein Ultrafast Plasma Science group at the University of Alberta.
 
-LIBS GUI combines hardware and software interfacing to automate data collection in Laser Induced-Breakdown Spectroscopy (LIBS) experiments.&#x20;
+Currently two projects are in active development
 
-{% tabs %}
-{% tab title="Set Up" %}
-{% content-ref url="getting-set-up/installation-configuration.md" %}
-[installation-configuration.md](getting-set-up/installation-configuration.md)
-{% endcontent-ref %}
+# LIBS
 
-{% content-ref url="getting-set-up/configuring-your-raspberry-pi.md" %}
-[configuring-your-raspberry-pi.md](getting-set-up/configuring-your-raspberry-pi.md)
-{% endcontent-ref %}
+Controls for automated laser-induced breakdown spectroscopy (LIBS) experiments. Communication between Stanford trigger box, Stellarnet and Thorlabs spectrometers, and linear translation stages.
 
-{% content-ref url="getting-set-up/running-the-gui.md" %}
-[running-the-gui.md](getting-set-up/running-the-gui.md)
-{% endcontent-ref %}
-{% endtab %}
+-- Developed by Shubho Mohajan and Ying Wan
 
-{% tab title="Usage" %}
-{% content-ref url="gui-usage/delay-generator.md" %}
-[delay-generator.md](gui-usage/delay-generator.md)
-{% endcontent-ref %}
+# Newport XPS
 
-{% content-ref url="gui-usage/spectrometers.md" %}
-[spectrometers.md](gui-usage/spectrometers.md)
-{% endcontent-ref %}
+Development of linear translation stations controlled by the Newport XPS D4 system.
 
-{% content-ref url="gui-usage/translation-stage.md" %}
-[translation-stage.md](gui-usage/translation-stage.md)
-{% endcontent-ref %}
-
-{% content-ref url="gui-usage/rastering-single-shot.md" %}
-[rastering-single-shot.md](gui-usage/rastering-single-shot.md)
-{% endcontent-ref %}
-{% endtab %}
-
-{% tab title="Software" %}
-
-{% endtab %}
-
-{% tab title="Hardware" %}
-
-{% endtab %}
-
-{% tab title="Help" %}
-{% content-ref url="help/faq.md" %}
-[faq.md](help/faq.md)
-{% endcontent-ref %}
-
-{% content-ref url="broken-reference" %}
-[Broken link](broken-reference)
-{% endcontent-ref %}
-{% endtab %}
-{% endtabs %}
+-- Developed by Shubho Mohajan and Ying Wan
