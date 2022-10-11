@@ -6,7 +6,7 @@ The framework for this class is built upon the SDK interface is developed in the
 
 As an example, connecting to and reading the status of an XPS Actuator may look like:
 ```python
-from XPSClass import XPS
+from XPS import XPS
 
 xps = XPS()
 ```
