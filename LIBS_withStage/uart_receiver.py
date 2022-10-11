@@ -1,4 +1,4 @@
-# Code for receiving serially communcated messages. Program automatically runs on the Lab's Pi startup.
+for receiving serially communcated messages. Program automatically runs on the Lab's Pi startup.
 
 import RPi.GPIO as GPIO
 
