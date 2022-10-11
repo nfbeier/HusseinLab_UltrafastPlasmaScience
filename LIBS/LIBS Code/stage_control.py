@@ -1,3 +1,7 @@
+# stage control v1, 2022-07-01
+# Ying Wan, Shubho Mohajan, Dr. Nicholas Beier, Dr. Amina Hussein
+# University of Alberta, ECE Department
+
 import time, serial
 ser = serial.Serial(
         port = 'COM11', 

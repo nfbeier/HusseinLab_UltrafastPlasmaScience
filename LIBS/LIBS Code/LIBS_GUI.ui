@@ -32,7 +32,7 @@
      </font>
     </property>
     <property name="currentIndex">
-     <number>2</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="dg">
      <attribute name="title">
@@ -41,8 +41,8 @@
      <widget class="QLabel" name="label">
       <property name="geometry">
        <rect>
-        <x>10</x>
-        <y>60</y>
+        <x>210</x>
+        <y>70</y>
         <width>121</width>
         <height>31</height>
        </rect>
@@ -62,9 +62,9 @@
      <widget class="QLabel" name="label_2">
       <property name="geometry">
        <rect>
-        <x>10</x>
+        <x>260</x>
         <y>130</y>
-        <width>31</width>
+        <width>16</width>
         <height>31</height>
        </rect>
       </property>
@@ -77,548 +77,14 @@
        </font>
       </property>
       <property name="text">
-       <string>A =</string>
-      </property>
-     </widget>
-     <widget class="QTextEdit" name="A_ch">
-      <property name="geometry">
-       <rect>
-        <x>40</x>
-        <y>130</y>
-        <width>104</width>
-        <height>31</height>
-       </rect>
+       <string>=</string>
       </property>
      </widget>
      <widget class="QLabel" name="label_3">
       <property name="geometry">
        <rect>
-        <x>150</x>
+        <x>410</x>
         <y>130</y>
-        <width>31</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Times New Roman</family>
-        <pointsize>12</pointsize>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>+</string>
-      </property>
-     </widget>
-     <widget class="QTextEdit" name="A_delay">
-      <property name="geometry">
-       <rect>
-        <x>170</x>
-        <y>130</y>
-        <width>104</width>
-        <height>31</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QTextEdit" name="A_delay_unit">
-      <property name="geometry">
-       <rect>
-        <x>280</x>
-        <y>130</y>
-        <width>31</width>
-        <height>31</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QTextEdit" name="B_delay_unit">
-      <property name="geometry">
-       <rect>
-        <x>280</x>
-        <y>160</y>
-        <width>31</width>
-        <height>31</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QTextEdit" name="B_ch">
-      <property name="geometry">
-       <rect>
-        <x>40</x>
-        <y>160</y>
-        <width>104</width>
-        <height>31</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_4">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>160</y>
-        <width>31</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Times New Roman</family>
-        <pointsize>12</pointsize>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>B =</string>
-      </property>
-     </widget>
-     <widget class="QTextEdit" name="B_delay">
-      <property name="geometry">
-       <rect>
-        <x>170</x>
-        <y>160</y>
-        <width>104</width>
-        <height>31</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_5">
-      <property name="geometry">
-       <rect>
-        <x>150</x>
-        <y>160</y>
-        <width>31</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Times New Roman</family>
-        <pointsize>12</pointsize>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>+</string>
-      </property>
-     </widget>
-     <widget class="QTextEdit" name="C_delay_unit">
-      <property name="geometry">
-       <rect>
-        <x>280</x>
-        <y>190</y>
-        <width>31</width>
-        <height>31</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QTextEdit" name="C_ch">
-      <property name="geometry">
-       <rect>
-        <x>40</x>
-        <y>190</y>
-        <width>104</width>
-        <height>31</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_6">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>190</y>
-        <width>31</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Times New Roman</family>
-        <pointsize>12</pointsize>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>C =</string>
-      </property>
-     </widget>
-     <widget class="QTextEdit" name="C_delay">
-      <property name="geometry">
-       <rect>
-        <x>170</x>
-        <y>190</y>
-        <width>104</width>
-        <height>31</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_7">
-      <property name="geometry">
-       <rect>
-        <x>150</x>
-        <y>190</y>
-        <width>31</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Times New Roman</family>
-        <pointsize>12</pointsize>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>+</string>
-      </property>
-     </widget>
-     <widget class="QTextEdit" name="D_delay_unit">
-      <property name="geometry">
-       <rect>
-        <x>280</x>
-        <y>220</y>
-        <width>31</width>
-        <height>31</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QTextEdit" name="D_ch">
-      <property name="geometry">
-       <rect>
-        <x>40</x>
-        <y>220</y>
-        <width>104</width>
-        <height>31</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_8">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>220</y>
-        <width>31</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Times New Roman</family>
-        <pointsize>12</pointsize>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>D =</string>
-      </property>
-     </widget>
-     <widget class="QTextEdit" name="D_delay">
-      <property name="geometry">
-       <rect>
-        <x>170</x>
-        <y>220</y>
-        <width>104</width>
-        <height>31</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_9">
-      <property name="geometry">
-       <rect>
-        <x>150</x>
-        <y>220</y>
-        <width>31</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Times New Roman</family>
-        <pointsize>12</pointsize>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>+</string>
-      </property>
-     </widget>
-     <widget class="QTextEdit" name="E_delay_unit">
-      <property name="geometry">
-       <rect>
-        <x>280</x>
-        <y>250</y>
-        <width>31</width>
-        <height>31</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QTextEdit" name="E_ch">
-      <property name="geometry">
-       <rect>
-        <x>40</x>
-        <y>250</y>
-        <width>104</width>
-        <height>31</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_10">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>250</y>
-        <width>31</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Times New Roman</family>
-        <pointsize>12</pointsize>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>E =</string>
-      </property>
-     </widget>
-     <widget class="QTextEdit" name="E_delay">
-      <property name="geometry">
-       <rect>
-        <x>170</x>
-        <y>250</y>
-        <width>104</width>
-        <height>31</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_11">
-      <property name="geometry">
-       <rect>
-        <x>150</x>
-        <y>250</y>
-        <width>31</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Times New Roman</family>
-        <pointsize>12</pointsize>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>+</string>
-      </property>
-     </widget>
-     <widget class="QTextEdit" name="F_delay_unit">
-      <property name="geometry">
-       <rect>
-        <x>280</x>
-        <y>280</y>
-        <width>31</width>
-        <height>31</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QTextEdit" name="F_ch">
-      <property name="geometry">
-       <rect>
-        <x>40</x>
-        <y>280</y>
-        <width>104</width>
-        <height>31</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_12">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>280</y>
-        <width>31</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Times New Roman</family>
-        <pointsize>12</pointsize>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>F =</string>
-      </property>
-     </widget>
-     <widget class="QTextEdit" name="F_delay">
-      <property name="geometry">
-       <rect>
-        <x>170</x>
-        <y>280</y>
-        <width>104</width>
-        <height>31</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_13">
-      <property name="geometry">
-       <rect>
-        <x>150</x>
-        <y>280</y>
-        <width>31</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Times New Roman</family>
-        <pointsize>12</pointsize>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>+</string>
-      </property>
-     </widget>
-     <widget class="QTextEdit" name="G_delay_unit">
-      <property name="geometry">
-       <rect>
-        <x>280</x>
-        <y>310</y>
-        <width>31</width>
-        <height>31</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QTextEdit" name="G_ch">
-      <property name="geometry">
-       <rect>
-        <x>40</x>
-        <y>310</y>
-        <width>104</width>
-        <height>31</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_14">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>310</y>
-        <width>31</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Times New Roman</family>
-        <pointsize>12</pointsize>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>G =</string>
-      </property>
-     </widget>
-     <widget class="QTextEdit" name="G_delay">
-      <property name="geometry">
-       <rect>
-        <x>170</x>
-        <y>310</y>
-        <width>104</width>
-        <height>31</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_15">
-      <property name="geometry">
-       <rect>
-        <x>150</x>
-        <y>310</y>
-        <width>31</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Times New Roman</family>
-        <pointsize>12</pointsize>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>+</string>
-      </property>
-     </widget>
-     <widget class="QTextEdit" name="H_delay_unit">
-      <property name="geometry">
-       <rect>
-        <x>280</x>
-        <y>340</y>
-        <width>31</width>
-        <height>31</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QTextEdit" name="H_ch">
-      <property name="geometry">
-       <rect>
-        <x>40</x>
-        <y>340</y>
-        <width>104</width>
-        <height>31</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_16">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>340</y>
-        <width>31</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Times New Roman</family>
-        <pointsize>12</pointsize>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>H =</string>
-      </property>
-     </widget>
-     <widget class="QTextEdit" name="H_delay">
-      <property name="geometry">
-       <rect>
-        <x>170</x>
-        <y>340</y>
-        <width>104</width>
-        <height>31</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_17">
-      <property name="geometry">
-       <rect>
-        <x>150</x>
-        <y>340</y>
         <width>31</width>
         <height>31</height>
        </rect>
@@ -638,8 +104,8 @@
      <widget class="QLabel" name="label_18">
       <property name="geometry">
        <rect>
-        <x>410</x>
-        <y>60</y>
+        <x>210</x>
+        <y>190</y>
         <width>121</width>
         <height>31</height>
        </rect>
@@ -659,8 +125,8 @@
      <widget class="QLabel" name="label_19">
       <property name="geometry">
        <rect>
-        <x>490</x>
-        <y>90</y>
+        <x>320</x>
+        <y>220</y>
         <width>61</width>
         <height>31</height>
        </rect>
@@ -680,8 +146,8 @@
      <widget class="QLabel" name="label_20">
       <property name="geometry">
        <rect>
-        <x>610</x>
-        <y>90</y>
+        <x>460</x>
+        <y>220</y>
         <width>81</width>
         <height>31</height>
        </rect>
@@ -701,9 +167,9 @@
      <widget class="QLabel" name="label_21">
       <property name="geometry">
        <rect>
-        <x>410</x>
-        <y>120</y>
-        <width>31</width>
+        <x>270</x>
+        <y>250</y>
+        <width>16</width>
         <height>31</height>
        </rect>
       </property>
@@ -716,35 +182,15 @@
        </font>
       </property>
       <property name="text">
-       <string>AB =</string>
-      </property>
-     </widget>
-     <widget class="QTextEdit" name="AB_offset">
-      <property name="geometry">
-       <rect>
-        <x>470</x>
-        <y>120</y>
-        <width>104</width>
-        <height>31</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QTextEdit" name="AB_Amp">
-      <property name="geometry">
-       <rect>
-        <x>600</x>
-        <y>120</y>
-        <width>104</width>
-        <height>31</height>
-       </rect>
+       <string>=</string>
       </property>
      </widget>
      <widget class="QLabel" name="label_22">
       <property name="geometry">
        <rect>
-        <x>60</x>
+        <x>310</x>
         <y>100</y>
-        <width>61</width>
+        <width>51</width>
         <height>31</height>
        </rect>
       </property>
@@ -763,7 +209,7 @@
      <widget class="QLabel" name="label_23">
       <property name="geometry">
        <rect>
-        <x>190</x>
+        <x>480</x>
         <y>100</y>
         <width>61</width>
         <height>31</height>
@@ -784,9 +230,9 @@
      <widget class="QLabel" name="label_24">
       <property name="geometry">
        <rect>
-        <x>280</x>
+        <x>560</x>
         <y>100</y>
-        <width>61</width>
+        <width>31</width>
         <height>31</height>
        </rect>
       </property>
@@ -802,155 +248,11 @@
        <string>Unit</string>
       </property>
      </widget>
-     <widget class="QLabel" name="label_25">
-      <property name="geometry">
-       <rect>
-        <x>410</x>
-        <y>150</y>
-        <width>31</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Times New Roman</family>
-        <pointsize>12</pointsize>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>CD =</string>
-      </property>
-     </widget>
-     <widget class="QTextEdit" name="CD_offset">
-      <property name="geometry">
-       <rect>
-        <x>470</x>
-        <y>150</y>
-        <width>104</width>
-        <height>31</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QTextEdit" name="CD_Amp">
-      <property name="geometry">
-       <rect>
-        <x>600</x>
-        <y>150</y>
-        <width>104</width>
-        <height>31</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_26">
-      <property name="geometry">
-       <rect>
-        <x>410</x>
-        <y>180</y>
-        <width>31</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Times New Roman</family>
-        <pointsize>12</pointsize>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>EF =</string>
-      </property>
-     </widget>
-     <widget class="QTextEdit" name="EF_offset">
-      <property name="geometry">
-       <rect>
-        <x>470</x>
-        <y>180</y>
-        <width>104</width>
-        <height>31</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QTextEdit" name="EF_Amp">
-      <property name="geometry">
-       <rect>
-        <x>600</x>
-        <y>180</y>
-        <width>104</width>
-        <height>31</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_27">
-      <property name="geometry">
-       <rect>
-        <x>410</x>
-        <y>210</y>
-        <width>31</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Times New Roman</family>
-        <pointsize>12</pointsize>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>GH =</string>
-      </property>
-     </widget>
-     <widget class="QTextEdit" name="GH_offset">
-      <property name="geometry">
-       <rect>
-        <x>470</x>
-        <y>210</y>
-        <width>104</width>
-        <height>31</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QTextEdit" name="GH_Amp">
-      <property name="geometry">
-       <rect>
-        <x>600</x>
-        <y>210</y>
-        <width>104</width>
-        <height>31</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="set_param_dg_A">
-      <property name="geometry">
-       <rect>
-        <x>310</x>
-        <y>130</y>
-        <width>75</width>
-        <height>21</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Times New Roman</family>
-        <pointsize>12</pointsize>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>Set</string>
-      </property>
-     </widget>
      <widget class="QLabel" name="label_28">
       <property name="geometry">
        <rect>
-        <x>410</x>
-        <y>250</y>
+        <x>210</x>
+        <y>310</y>
         <width>121</width>
         <height>31</height>
        </rect>
@@ -970,8 +272,8 @@
      <widget class="QPushButton" name="T0_disp">
       <property name="geometry">
        <rect>
-        <x>470</x>
-        <y>280</y>
+        <x>210</x>
+        <y>340</y>
         <width>41</width>
         <height>41</height>
        </rect>
@@ -991,8 +293,8 @@
      <widget class="QPushButton" name="T1_disp">
       <property name="geometry">
        <rect>
-        <x>510</x>
-        <y>280</y>
+        <x>250</x>
+        <y>340</y>
         <width>41</width>
         <height>41</height>
        </rect>
@@ -1012,8 +314,8 @@
      <widget class="QPushButton" name="A_disp">
       <property name="geometry">
        <rect>
-        <x>550</x>
-        <y>280</y>
+        <x>290</x>
+        <y>340</y>
         <width>41</width>
         <height>41</height>
        </rect>
@@ -1033,8 +335,8 @@
      <widget class="QPushButton" name="B_disp">
       <property name="geometry">
        <rect>
-        <x>590</x>
-        <y>280</y>
+        <x>330</x>
+        <y>340</y>
         <width>41</width>
         <height>41</height>
        </rect>
@@ -1054,8 +356,8 @@
      <widget class="QPushButton" name="C_disp">
       <property name="geometry">
        <rect>
-        <x>630</x>
-        <y>280</y>
+        <x>370</x>
+        <y>340</y>
         <width>41</width>
         <height>41</height>
        </rect>
@@ -1075,8 +377,8 @@
      <widget class="QPushButton" name="D_disp">
       <property name="geometry">
        <rect>
-        <x>470</x>
-        <y>330</y>
+        <x>210</x>
+        <y>390</y>
         <width>41</width>
         <height>41</height>
        </rect>
@@ -1096,8 +398,8 @@
      <widget class="QPushButton" name="G_disp">
       <property name="geometry">
        <rect>
-        <x>590</x>
-        <y>330</y>
+        <x>330</x>
+        <y>390</y>
         <width>41</width>
         <height>41</height>
        </rect>
@@ -1117,8 +419,8 @@
      <widget class="QPushButton" name="H_disp">
       <property name="geometry">
        <rect>
-        <x>630</x>
-        <y>330</y>
+        <x>370</x>
+        <y>390</y>
         <width>41</width>
         <height>41</height>
        </rect>
@@ -1138,8 +440,8 @@
      <widget class="QPushButton" name="F_disp">
       <property name="geometry">
        <rect>
-        <x>550</x>
-        <y>330</y>
+        <x>290</x>
+        <y>390</y>
         <width>41</width>
         <height>41</height>
        </rect>
@@ -1159,8 +461,8 @@
      <widget class="QPushButton" name="E_disp">
       <property name="geometry">
        <rect>
-        <x>510</x>
-        <y>330</y>
+        <x>250</x>
+        <y>390</y>
         <width>41</width>
         <height>41</height>
        </rect>
@@ -1177,118 +479,143 @@
        <string>E</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="set_param_dg_B">
+     <widget class="QComboBox" name="delay_combo">
       <property name="geometry">
        <rect>
-        <x>310</x>
-        <y>160</y>
-        <width>75</width>
-        <height>21</height>
+        <x>210</x>
+        <y>131</y>
+        <width>41</width>
+        <height>31</height>
        </rect>
       </property>
-      <property name="font">
-       <font>
-        <family>Times New Roman</family>
-        <pointsize>12</pointsize>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>Set</string>
-      </property>
+      <item>
+       <property name="text">
+        <string>A</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>B</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>C</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>D</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>E</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>F</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>G</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>H</string>
+       </property>
+      </item>
      </widget>
-     <widget class="QPushButton" name="set_param_dg_C">
+     <widget class="QComboBox" name="voltage_combo">
       <property name="geometry">
        <rect>
-        <x>310</x>
-        <y>190</y>
-        <width>75</width>
-        <height>21</height>
+        <x>210</x>
+        <y>251</y>
+        <width>51</width>
+        <height>31</height>
        </rect>
       </property>
-      <property name="font">
-       <font>
-        <family>Times New Roman</family>
-        <pointsize>12</pointsize>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>Set</string>
-      </property>
+      <item>
+       <property name="text">
+        <string>AB</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>CD</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>EF</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>GH</string>
+       </property>
+      </item>
      </widget>
-     <widget class="QPushButton" name="set_param_dg_D">
+     <widget class="QLineEdit" name="channel_line">
       <property name="geometry">
        <rect>
-        <x>310</x>
-        <y>220</y>
-        <width>75</width>
-        <height>21</height>
+        <x>280</x>
+        <y>130</y>
+        <width>121</width>
+        <height>31</height>
        </rect>
       </property>
-      <property name="font">
-       <font>
-        <family>Times New Roman</family>
-        <pointsize>12</pointsize>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>Set</string>
-      </property>
      </widget>
-     <widget class="QPushButton" name="set_param_dg_E">
+     <widget class="QLineEdit" name="delay_line">
       <property name="geometry">
        <rect>
-        <x>310</x>
+        <x>430</x>
+        <y>130</y>
+        <width>121</width>
+        <height>31</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="unit_line">
+      <property name="geometry">
+       <rect>
+        <x>550</x>
+        <y>130</y>
+        <width>41</width>
+        <height>31</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="offset_line">
+      <property name="geometry">
+       <rect>
+        <x>290</x>
         <y>250</y>
-        <width>75</width>
-        <height>21</height>
+        <width>121</width>
+        <height>31</height>
        </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Times New Roman</family>
-        <pointsize>12</pointsize>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>Set</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="set_param_dg_F">
+     <widget class="QLineEdit" name="amplitude_line">
       <property name="geometry">
        <rect>
-        <x>310</x>
-        <y>280</y>
-        <width>75</width>
-        <height>21</height>
+        <x>440</x>
+        <y>250</y>
+        <width>121</width>
+        <height>31</height>
        </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Times New Roman</family>
-        <pointsize>12</pointsize>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>Set</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="set_param_dg_G">
+     <widget class="QLabel" name="label_4">
       <property name="geometry">
        <rect>
-        <x>310</x>
-        <y>310</y>
-        <width>75</width>
-        <height>21</height>
+        <x>420</x>
+        <y>250</y>
+        <width>31</width>
+        <height>31</height>
        </rect>
       </property>
       <property name="font">
@@ -1300,112 +627,7 @@
        </font>
       </property>
       <property name="text">
-       <string>Set</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="set_param_dg_H">
-      <property name="geometry">
-       <rect>
-        <x>310</x>
-        <y>340</y>
-        <width>75</width>
-        <height>21</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Times New Roman</family>
-        <pointsize>12</pointsize>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>Set</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="set_param_dg_AB">
-      <property name="geometry">
-       <rect>
-        <x>710</x>
-        <y>120</y>
-        <width>75</width>
-        <height>21</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Times New Roman</family>
-        <pointsize>12</pointsize>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>Set</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="set_param_dg_CD">
-      <property name="geometry">
-       <rect>
-        <x>710</x>
-        <y>150</y>
-        <width>75</width>
-        <height>21</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Times New Roman</family>
-        <pointsize>12</pointsize>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>Set</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="set_param_dg_EF">
-      <property name="geometry">
-       <rect>
-        <x>710</x>
-        <y>180</y>
-        <width>75</width>
-        <height>21</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Times New Roman</family>
-        <pointsize>12</pointsize>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>Set</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="set_param_dg_GH">
-      <property name="geometry">
-       <rect>
-        <x>710</x>
-        <y>210</y>
-        <width>75</width>
-        <height>21</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Times New Roman</family>
-        <pointsize>12</pointsize>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>Set</string>
+       <string>+</string>
       </property>
      </widget>
     </widget>
@@ -2186,9 +1408,9 @@
      <widget class="QLineEdit" name="sample_height_txt">
       <property name="geometry">
        <rect>
-        <x>470</x>
+        <x>500</x>
         <y>140</y>
-        <width>281</width>
+        <width>251</width>
         <height>20</height>
        </rect>
       </property>
@@ -2198,7 +1420,7 @@
        <rect>
         <x>350</x>
         <y>140</y>
-        <width>111</width>
+        <width>151</width>
         <height>16</height>
        </rect>
       </property>
@@ -2211,7 +1433,7 @@
        </font>
       </property>
       <property name="text">
-       <string>Sample Height:</string>
+       <string>Sample Height (mm):</string>
       </property>
      </widget>
      <widget class="QLabel" name="label_91">
@@ -2219,7 +1441,7 @@
        <rect>
         <x>350</x>
         <y>200</y>
-        <width>111</width>
+        <width>141</width>
         <height>16</height>
        </rect>
       </property>
@@ -2232,15 +1454,15 @@
        </font>
       </property>
       <property name="text">
-       <string>Sample Width:</string>
+       <string>Sample Width (mm):</string>
       </property>
      </widget>
      <widget class="QLineEdit" name="sample_width_txt">
       <property name="geometry">
        <rect>
-        <x>470</x>
+        <x>500</x>
         <y>200</y>
-        <width>281</width>
+        <width>251</width>
         <height>20</height>
        </rect>
       </property>
@@ -2250,7 +1472,7 @@
        <rect>
         <x>350</x>
         <y>260</y>
-        <width>111</width>
+        <width>131</width>
         <height>16</height>
        </rect>
       </property>
@@ -2263,15 +1485,15 @@
        </font>
       </property>
       <property name="text">
-       <string>Step Length:</string>
+       <string>Step Length (mm):</string>
       </property>
      </widget>
      <widget class="QLineEdit" name="step_length_txt">
       <property name="geometry">
        <rect>
-        <x>470</x>
+        <x>500</x>
         <y>260</y>
-        <width>281</width>
+        <width>251</width>
         <height>20</height>
        </rect>
       </property>
@@ -2281,7 +1503,7 @@
        <rect>
         <x>350</x>
         <y>290</y>
-        <width>111</width>
+        <width>151</width>
         <height>16</height>
        </rect>
       </property>
@@ -2294,15 +1516,15 @@
        </font>
       </property>
       <property name="text">
-       <string>Max Shots:</string>
+       <string>Max Shot Number:</string>
       </property>
      </widget>
      <widget class="QLabel" name="max_lbl">
       <property name="geometry">
        <rect>
-        <x>470</x>
+        <x>500</x>
         <y>290</y>
-        <width>281</width>
+        <width>251</width>
         <height>20</height>
        </rect>
       </property>
@@ -2323,7 +1545,7 @@
        <rect>
         <x>350</x>
         <y>320</y>
-        <width>111</width>
+        <width>131</width>
         <height>16</height>
        </rect>
       </property>
@@ -2342,9 +1564,9 @@
      <widget class="QLineEdit" name="num_shots_txt">
       <property name="geometry">
        <rect>
-        <x>470</x>
+        <x>500</x>
         <y>320</y>
-        <width>281</width>
+        <width>251</width>
         <height>20</height>
        </rect>
       </property>
@@ -2451,7 +1673,7 @@
        </font>
       </property>
       <property name="text">
-       <string>Manual Step Length:</string>
+       <string>Relative Length (mm):</string>
       </property>
      </widget>
      <widget class="QPushButton" name="raster_btn">
@@ -2518,9 +1740,9 @@
    <widget class="QPushButton" name="Start">
     <property name="geometry">
      <rect>
-      <x>10</x>
+      <x>110</x>
       <y>670</y>
-      <width>401</width>
+      <width>341</width>
       <height>51</height>
      </rect>
     </property>
@@ -2644,16 +1866,16 @@
    <widget class="QPushButton" name="stop_btn">
     <property name="geometry">
      <rect>
-      <x>410</x>
+      <x>460</x>
       <y>670</y>
-      <width>391</width>
+      <width>341</width>
       <height>51</height>
      </rect>
     </property>
     <property name="font">
      <font>
       <family>Times New Roman</family>
-      <pointsize>12</pointsize>
+      <pointsize>16</pointsize>
       <weight>75</weight>
       <bold>true</bold>
      </font>
@@ -2681,6 +1903,46 @@
     </property>
     <property name="text">
      <string>Disconnect All</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_97">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>670</y>
+      <width>91</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Times New Roman</family>
+      <pointsize>12</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>RepRate (s):</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="rate_txt">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>690</y>
+      <width>91</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Times New Roman</family>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>2</string>
     </property>
    </widget>
   </widget>
