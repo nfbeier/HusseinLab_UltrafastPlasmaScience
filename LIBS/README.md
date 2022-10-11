@@ -1,6 +1,7 @@
 # Table of contents
 
 * [What is LIBS GUI?](README.md)
+* Location of LIBS Gitbook (https://ying-wan.gitbook.io/libs-gui/)
 
 ## Getting Set Up
 
