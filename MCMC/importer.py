@@ -1,59 +1,74 @@
-import pandas as pd
-import tables
 import scipy as sp
 import numpy as np
-import glob 
-import os
-
-#Function that obtains interpolator for k and j values, and an array energy axis. Only argument is SCRAM table directory
-def get_SCRAM(SCRAM_path):	
-
-    #import SCRAM files as a dataframe
-    SCRAMfiles = sorted(glob.glob(SCRAM_path))
-    k = pd.read_hdf(SCRAMfiles[0])
-    j = pd.read_hdf(SCRAMfiles[1])
-    conditions = pd.read_hdf(SCRAMfiles[2])
-
-    #Gather SCRAM temps, energy axis, and absorbtion/emissvity as arrays
-    temps = conditions["Te(eV)"].to_numpy().astype(float)
-    k = k.to_numpy().astype(float)
-    k_enrg_axs = k[:,0] #first column of SCRAM has energy axis
-    k = k[:,1:] #remaning columns hold absorbtions
-    j = j.to_numpy().astype(float)
-    j = j[:,1:] #disregard first column of emissivity table (energy axis)
-
-    #2D interpolation (T and E) to find unknown j and k values
-    # values = (np.log(k_enrg_axs),np.log(temps[1:])) #tuple of the form ([])
-    k = sp.interpolate.interp2d(k_enrg_axs, temps, k.flatten(),kind='linear')
-    j = sp.interpolate.interp2d(k_enrg_axs, temps, j.flatten(), kind='linear')
-
-    return k, j, k_enrg_axs
 
 
-#Function to import experimental spectra and returns interpolators for VH and HR spectra and error
-def get_expdata(expr_data_path, shot_nums):
+class SCRAM:
+    
+    def __init__(self, file_path):
+        
+        self.table = [line for line in open(file_path,"r")]
+        self.meta_data = []
+        for i in range(0,15): #metadata held in rows 0-15
+            self.meta_data.append(self.table[i].strip().replace("\t"," "))
+        
+        #Initialize SCRAM with attributes from txt file (Not including j and k)
+        self.attributes = []
+        self.meta_data.append("UNITS:")
+        dict_SCRAM = {}
+        for row in self.table[15:46]: #18th to 46th row holds non-essential data, 15-17 holds density, temp, energy
+          row = row.split("\t")
+          dict_SCRAM[row[0]] =  np.asarray(row[1:]).astype(float)
 
-    #Change to directory of data and import all files (Pick folder for a single date e.g. all Dec 14 shots)
-    os.chdir(expr_data_path)
-    shot_list = sorted(glob.glob("*"))
+        #Assigning each key in dictionary as an attribute of the class - this enables easy access for later use
+        for key in dict_SCRAM:
+          self.meta_data.append(key)
+          attribute_name = key.split("(")[0].replace("/","_") #Attributes cannot have brackets or slashes, 
+          self.attributes.append(attribute_name)              #refer to meta data for units (above line removes them)
+          setattr(self,attribute_name,dict_SCRAM[key])
 
+        #Extract absorbtion and emissivity
+        self.j_table, self.en = [], [] #Only one energy axis specified because j and k have the same axis values
+        for row in self.table[48:2045]:
+          row = row.split("\t")
+          self.en.append(row[0])
+          self.j_table.append(row[1:])
+        self.j_table, self.en = np.asarray(self.j_table).astype(float), np.asarray(self.en).astype(float)
 
-    #Extract spectra from shot_nums with "best focus" and laser conditions 
-    spec_VH,spec_HR = [],[]
-    shot = []
-    for i in shot_nums:
-        shot = pd.read_hdf(shot_list[i])
-        spec_VH.append(shot["Spectrum_VonHamos"]*1000)
-        spec_HR.append(shot["Spectrum_Kalpha"]*1000/2)
-        # spec_Kbeta = shot["Spectrum_Kbeta"]*1000/2
+        self.k_table = []
+        for row in self.table[2047:]:
+          row = row.split("\t")
+          self.k_table.append(row[1:])
+        self.k_table = np.asarray(self.k_table).astype(float)
 
-    #Obtain energy axes, error in intensity, and average intensity
-    enrg_ax_VH, enrg_ax_HR = shot["enAxis_VonHamos"], shot["enAxis_Kalpha"]
-    VH_err, HR_err = np.std(spec_VH, axis=0), np.std(spec_HR, axis=0)
-    spec_VH, spec_HR = np.average(spec_VH, axis = 0), np.average(spec_HR, axis = 0)
+        # Constructing a 4D array holding j/k values for each combination of T, ne, tauR 
+        dens = np.unique(self.D) #4 density points --> view meta_data for ordering
+        Te = np.unique(self.Te) #14 temp points --> view meta_data for ordering
+        tauR = np.unique(self.tauR[self.tauR != 0]) # 3 tauR points excluding fluorescense --> [0.1, 1, 1000]
+        self.j = np.zeros((len(dens), len(Te), len(tauR), len(self.en)))
+        self.k = self.j #initialize blank matrices for j/k
+        for ix,d in enumerate(dens): #loop through each combination and see which index it corresponds in the table of j/k values
+            for jx,t in enumerate(Te): #j/k tables are 224x1997, # of ne points = 4, # Te points = 14, # of tauR points = 4
+                for kx,tR in enumerate(tauR):                    # 4x14x4 = 224, 1997 photon energies used in for j/k emissions
+                    for mx in range(len(self.D)):
+                        if d == self.D[mx] and t == self.Te[mx] and tR == self.tauR[mx]:
+                            self.j[ix][jx][kx] = self.j_table[:,mx]
+                            self.k[ix][jx][kx] = self.k_table[:,mx]
 
-    #interpolate spectra and errors
-    spec_VH, spec_HR = sp.interpolate.interp1d(enrg_ax_VH,spec_VH), sp.interpolate.interp1d(enrg_ax_HR,spec_HR)
-    VH_err, HR_err = sp.interpolate.interp1d(enrg_ax_VH, VH_err), sp.interpolate.interp1d(enrg_ax_HR, HR_err)
+        # #fluoresence kept in separate matrix from regular emissions
+        self.j_fluor = np.zeros((len(dens), len(Te), len(self.en)))
+        self.k_fluor = self.j_fluor #initialize blank matrices for j/k
+        for ix,d in enumerate(dens):
+          for jx,t  in enumerate(Te):
+              for mx in range(len(self.D)):
+                  if d == self.D[mx] and t == self.Te[mx]:
+                      self.j_fluor[ix][jx] = self.j_table[:,mx]
+                      self.k_fluor[ix][jx] = self.k_table[:,mx]
 
-    return spec_VH, spec_HR, VH_err, HR_err
+        #  Instantiate interpolation objects for j/k (log interpolation used)
+        dens = np.log(dens); Te = np.log(Te); tauR = np.log(tauR); self.j = np.log(self.j) #logarithm of all quantities
+        self.k = np.log(self.k);  self.j_fluor = np.log(self.j_fluor); self.k_fluor = np.log(self.k_fluor)
+
+        self.j = sp.interpolate.RegularGridInterpolator((dens,Te,tauR),self.j) #interpolator objects
+        self.k = sp.interpolate.RegularGridInterpolator((dens,Te,tauR),self.k)
+        self.j_fluor = sp.interpolate.RegularGridInterpolator((dens,Te),self.j_fluor)
+        self.k_fluor = sp.interpolate.RegularGridInterpolator((dens,Te),self.k_fluor)
