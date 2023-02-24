@@ -1,7 +1,14 @@
 import scipy as sp
 import numpy as np
 
-
+#Class SCRAM: used to import new SCRAM tables given a local file path. Data from the scram tables are stored in attributes of the class,
+#and all attributes of the class can be accessed via SCRAM.attributes (e.g., Density (D), Electron temperature (Te), etc.)
+# -the full matrix of j/k emissions are held in 224 (combos of ne, Te, tauR) x 1997 (photon energies) matrices accessed by SCRAM.j_table and
+# SCRAM.k_table
+# - a 4 dimensional matrix is constructed for compatibility with the RegularGridInterpolator function. The nested for-loops go though all
+# combinations of ne, Te, and tauR, and assign a 1997x1 array of j/k to the corresponding index from SCRAM.j_table or SCRAM.k_table
+# - SCRAM.j and SCRAM.k are used to access the interpolator objects that are passed to the Model() class. NOTE that logarithmic interp.
+# is used, so one should exponentiate the values obtained in the Model.generateLayers() function
 class SCRAM:
     
     def __init__(self, file_path):
