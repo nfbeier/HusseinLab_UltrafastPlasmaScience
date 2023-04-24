@@ -25,13 +25,3 @@ In this version of LIBS GUI, three hardwares are parallelly operated (Thorlabs c
 • Wait a few minutes after booting the Raspberry Pi before running LIBSGUI.
 
 • If the single shot button is disabled, return home.
-
-# LIBS_GUI_190_500nm
-In this version, Thorlabs spectrometer is removed and added 3 more high resolution (0.1 nm) StellarNet spectrometers
-
-# LIBS_GUI_190_500nm-XPS
-In this version, The stepper motor translation stage is replaced by XPS translation stage
-
-# LIBS_GUI_190_500nm-XPS-Oci
-In this version, a Tektronix ocilloscope is added to measure the laser energy for each laser shot
-

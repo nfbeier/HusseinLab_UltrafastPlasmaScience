@@ -1,0 +1,2777 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>812</width>
+    <height>744</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QTabWidget" name="tabWidget">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>60</y>
+      <width>811</width>
+      <height>541</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Times New Roman</family>
+      <pointsize>12</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="currentIndex">
+     <number>3</number>
+    </property>
+    <widget class="QWidget" name="dg">
+     <attribute name="title">
+      <string>Delay Generator</string>
+     </attribute>
+     <widget class="QLabel" name="label">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>60</y>
+        <width>121</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Channels Delays:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_2">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>130</y>
+        <width>31</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>A =</string>
+      </property>
+     </widget>
+     <widget class="QTextEdit" name="A_ch">
+      <property name="geometry">
+       <rect>
+        <x>40</x>
+        <y>130</y>
+        <width>104</width>
+        <height>31</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_3">
+      <property name="geometry">
+       <rect>
+        <x>150</x>
+        <y>130</y>
+        <width>31</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>+</string>
+      </property>
+     </widget>
+     <widget class="QTextEdit" name="A_delay">
+      <property name="geometry">
+       <rect>
+        <x>170</x>
+        <y>130</y>
+        <width>104</width>
+        <height>31</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QTextEdit" name="A_delay_unit">
+      <property name="geometry">
+       <rect>
+        <x>280</x>
+        <y>130</y>
+        <width>31</width>
+        <height>31</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QTextEdit" name="B_delay_unit">
+      <property name="geometry">
+       <rect>
+        <x>280</x>
+        <y>160</y>
+        <width>31</width>
+        <height>31</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QTextEdit" name="B_ch">
+      <property name="geometry">
+       <rect>
+        <x>40</x>
+        <y>160</y>
+        <width>104</width>
+        <height>31</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_4">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>160</y>
+        <width>31</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>B =</string>
+      </property>
+     </widget>
+     <widget class="QTextEdit" name="B_delay">
+      <property name="geometry">
+       <rect>
+        <x>170</x>
+        <y>160</y>
+        <width>104</width>
+        <height>31</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_5">
+      <property name="geometry">
+       <rect>
+        <x>150</x>
+        <y>160</y>
+        <width>31</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>+</string>
+      </property>
+     </widget>
+     <widget class="QTextEdit" name="C_delay_unit">
+      <property name="geometry">
+       <rect>
+        <x>280</x>
+        <y>190</y>
+        <width>31</width>
+        <height>31</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QTextEdit" name="C_ch">
+      <property name="geometry">
+       <rect>
+        <x>40</x>
+        <y>190</y>
+        <width>104</width>
+        <height>31</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_6">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>190</y>
+        <width>31</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>C =</string>
+      </property>
+     </widget>
+     <widget class="QTextEdit" name="C_delay">
+      <property name="geometry">
+       <rect>
+        <x>170</x>
+        <y>190</y>
+        <width>104</width>
+        <height>31</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_7">
+      <property name="geometry">
+       <rect>
+        <x>150</x>
+        <y>190</y>
+        <width>31</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>+</string>
+      </property>
+     </widget>
+     <widget class="QTextEdit" name="D_delay_unit">
+      <property name="geometry">
+       <rect>
+        <x>280</x>
+        <y>220</y>
+        <width>31</width>
+        <height>31</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QTextEdit" name="D_ch">
+      <property name="geometry">
+       <rect>
+        <x>40</x>
+        <y>220</y>
+        <width>104</width>
+        <height>31</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_8">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>220</y>
+        <width>31</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>D =</string>
+      </property>
+     </widget>
+     <widget class="QTextEdit" name="D_delay">
+      <property name="geometry">
+       <rect>
+        <x>170</x>
+        <y>220</y>
+        <width>104</width>
+        <height>31</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_9">
+      <property name="geometry">
+       <rect>
+        <x>150</x>
+        <y>220</y>
+        <width>31</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>+</string>
+      </property>
+     </widget>
+     <widget class="QTextEdit" name="E_delay_unit">
+      <property name="geometry">
+       <rect>
+        <x>280</x>
+        <y>250</y>
+        <width>31</width>
+        <height>31</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QTextEdit" name="E_ch">
+      <property name="geometry">
+       <rect>
+        <x>40</x>
+        <y>250</y>
+        <width>104</width>
+        <height>31</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_10">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>250</y>
+        <width>31</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>E =</string>
+      </property>
+     </widget>
+     <widget class="QTextEdit" name="E_delay">
+      <property name="geometry">
+       <rect>
+        <x>170</x>
+        <y>250</y>
+        <width>104</width>
+        <height>31</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_11">
+      <property name="geometry">
+       <rect>
+        <x>150</x>
+        <y>250</y>
+        <width>31</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>+</string>
+      </property>
+     </widget>
+     <widget class="QTextEdit" name="F_delay_unit">
+      <property name="geometry">
+       <rect>
+        <x>280</x>
+        <y>280</y>
+        <width>31</width>
+        <height>31</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QTextEdit" name="F_ch">
+      <property name="geometry">
+       <rect>
+        <x>40</x>
+        <y>280</y>
+        <width>104</width>
+        <height>31</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_12">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>280</y>
+        <width>31</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>F =</string>
+      </property>
+     </widget>
+     <widget class="QTextEdit" name="F_delay">
+      <property name="geometry">
+       <rect>
+        <x>170</x>
+        <y>280</y>
+        <width>104</width>
+        <height>31</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_13">
+      <property name="geometry">
+       <rect>
+        <x>150</x>
+        <y>280</y>
+        <width>31</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>+</string>
+      </property>
+     </widget>
+     <widget class="QTextEdit" name="G_delay_unit">
+      <property name="geometry">
+       <rect>
+        <x>280</x>
+        <y>310</y>
+        <width>31</width>
+        <height>31</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QTextEdit" name="G_ch">
+      <property name="geometry">
+       <rect>
+        <x>40</x>
+        <y>310</y>
+        <width>104</width>
+        <height>31</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_14">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>310</y>
+        <width>31</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>G =</string>
+      </property>
+     </widget>
+     <widget class="QTextEdit" name="G_delay">
+      <property name="geometry">
+       <rect>
+        <x>170</x>
+        <y>310</y>
+        <width>104</width>
+        <height>31</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_15">
+      <property name="geometry">
+       <rect>
+        <x>150</x>
+        <y>310</y>
+        <width>31</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>+</string>
+      </property>
+     </widget>
+     <widget class="QTextEdit" name="H_delay_unit">
+      <property name="geometry">
+       <rect>
+        <x>280</x>
+        <y>340</y>
+        <width>31</width>
+        <height>31</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QTextEdit" name="H_ch">
+      <property name="geometry">
+       <rect>
+        <x>40</x>
+        <y>340</y>
+        <width>104</width>
+        <height>31</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_16">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>340</y>
+        <width>31</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>H =</string>
+      </property>
+     </widget>
+     <widget class="QTextEdit" name="H_delay">
+      <property name="geometry">
+       <rect>
+        <x>170</x>
+        <y>340</y>
+        <width>104</width>
+        <height>31</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_17">
+      <property name="geometry">
+       <rect>
+        <x>150</x>
+        <y>340</y>
+        <width>31</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>+</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_18">
+      <property name="geometry">
+       <rect>
+        <x>410</x>
+        <y>60</y>
+        <width>121</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Channels Voltage:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_19">
+      <property name="geometry">
+       <rect>
+        <x>490</x>
+        <y>90</y>
+        <width>61</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>10</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Offset (V)</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_20">
+      <property name="geometry">
+       <rect>
+        <x>610</x>
+        <y>90</y>
+        <width>81</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>10</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Amplitude (V)</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_21">
+      <property name="geometry">
+       <rect>
+        <x>410</x>
+        <y>120</y>
+        <width>31</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>AB =</string>
+      </property>
+     </widget>
+     <widget class="QTextEdit" name="AB_offset">
+      <property name="geometry">
+       <rect>
+        <x>470</x>
+        <y>120</y>
+        <width>104</width>
+        <height>31</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QTextEdit" name="AB_Amp">
+      <property name="geometry">
+       <rect>
+        <x>600</x>
+        <y>120</y>
+        <width>104</width>
+        <height>31</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_22">
+      <property name="geometry">
+       <rect>
+        <x>60</x>
+        <y>100</y>
+        <width>61</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>10</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Channel</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_23">
+      <property name="geometry">
+       <rect>
+        <x>190</x>
+        <y>100</y>
+        <width>61</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>10</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Delay</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_24">
+      <property name="geometry">
+       <rect>
+        <x>280</x>
+        <y>100</y>
+        <width>61</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>10</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Unit</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_25">
+      <property name="geometry">
+       <rect>
+        <x>410</x>
+        <y>150</y>
+        <width>31</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>CD =</string>
+      </property>
+     </widget>
+     <widget class="QTextEdit" name="CD_offset">
+      <property name="geometry">
+       <rect>
+        <x>470</x>
+        <y>150</y>
+        <width>104</width>
+        <height>31</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QTextEdit" name="CD_Amp">
+      <property name="geometry">
+       <rect>
+        <x>600</x>
+        <y>150</y>
+        <width>104</width>
+        <height>31</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_26">
+      <property name="geometry">
+       <rect>
+        <x>410</x>
+        <y>180</y>
+        <width>31</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>EF =</string>
+      </property>
+     </widget>
+     <widget class="QTextEdit" name="EF_offset">
+      <property name="geometry">
+       <rect>
+        <x>470</x>
+        <y>180</y>
+        <width>104</width>
+        <height>31</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QTextEdit" name="EF_Amp">
+      <property name="geometry">
+       <rect>
+        <x>600</x>
+        <y>180</y>
+        <width>104</width>
+        <height>31</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_27">
+      <property name="geometry">
+       <rect>
+        <x>410</x>
+        <y>210</y>
+        <width>31</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>GH =</string>
+      </property>
+     </widget>
+     <widget class="QTextEdit" name="GH_offset">
+      <property name="geometry">
+       <rect>
+        <x>470</x>
+        <y>210</y>
+        <width>104</width>
+        <height>31</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QTextEdit" name="GH_Amp">
+      <property name="geometry">
+       <rect>
+        <x>600</x>
+        <y>210</y>
+        <width>104</width>
+        <height>31</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="set_param_dg_A">
+      <property name="geometry">
+       <rect>
+        <x>310</x>
+        <y>130</y>
+        <width>75</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Set</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_28">
+      <property name="geometry">
+       <rect>
+        <x>410</x>
+        <y>250</y>
+        <width>121</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Display Delays:</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="T0_disp">
+      <property name="geometry">
+       <rect>
+        <x>470</x>
+        <y>280</y>
+        <width>41</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>T0</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="T1_disp">
+      <property name="geometry">
+       <rect>
+        <x>510</x>
+        <y>280</y>
+        <width>41</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>T1</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="A_disp">
+      <property name="geometry">
+       <rect>
+        <x>550</x>
+        <y>280</y>
+        <width>41</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>A</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="B_disp">
+      <property name="geometry">
+       <rect>
+        <x>590</x>
+        <y>280</y>
+        <width>41</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>B</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="C_disp">
+      <property name="geometry">
+       <rect>
+        <x>630</x>
+        <y>280</y>
+        <width>41</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>C</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="D_disp">
+      <property name="geometry">
+       <rect>
+        <x>470</x>
+        <y>330</y>
+        <width>41</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>D</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="G_disp">
+      <property name="geometry">
+       <rect>
+        <x>590</x>
+        <y>330</y>
+        <width>41</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>G</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="H_disp">
+      <property name="geometry">
+       <rect>
+        <x>630</x>
+        <y>330</y>
+        <width>41</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>H</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="F_disp">
+      <property name="geometry">
+       <rect>
+        <x>550</x>
+        <y>330</y>
+        <width>41</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>F</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="E_disp">
+      <property name="geometry">
+       <rect>
+        <x>510</x>
+        <y>330</y>
+        <width>41</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>E</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="set_param_dg_B">
+      <property name="geometry">
+       <rect>
+        <x>310</x>
+        <y>160</y>
+        <width>75</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Set</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="set_param_dg_C">
+      <property name="geometry">
+       <rect>
+        <x>310</x>
+        <y>190</y>
+        <width>75</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Set</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="set_param_dg_D">
+      <property name="geometry">
+       <rect>
+        <x>310</x>
+        <y>220</y>
+        <width>75</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Set</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="set_param_dg_E">
+      <property name="geometry">
+       <rect>
+        <x>310</x>
+        <y>250</y>
+        <width>75</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Set</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="set_param_dg_F">
+      <property name="geometry">
+       <rect>
+        <x>310</x>
+        <y>280</y>
+        <width>75</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Set</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="set_param_dg_G">
+      <property name="geometry">
+       <rect>
+        <x>310</x>
+        <y>310</y>
+        <width>75</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Set</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="set_param_dg_H">
+      <property name="geometry">
+       <rect>
+        <x>310</x>
+        <y>340</y>
+        <width>75</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Set</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="set_param_dg_AB">
+      <property name="geometry">
+       <rect>
+        <x>710</x>
+        <y>120</y>
+        <width>75</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Set</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="set_param_dg_CD">
+      <property name="geometry">
+       <rect>
+        <x>710</x>
+        <y>150</y>
+        <width>75</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Set</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="set_param_dg_EF">
+      <property name="geometry">
+       <rect>
+        <x>710</x>
+        <y>180</y>
+        <width>75</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Set</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="set_param_dg_GH">
+      <property name="geometry">
+       <rect>
+        <x>710</x>
+        <y>210</y>
+        <width>75</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Set</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="spectrometers">
+     <attribute name="title">
+      <string>Spectrometers</string>
+     </attribute>
+     <widget class="QLabel" name="label_30">
+      <property name="geometry">
+       <rect>
+        <x>570</x>
+        <y>30</y>
+        <width>71</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Thorlabs</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_31">
+      <property name="geometry">
+       <rect>
+        <x>570</x>
+        <y>250</y>
+        <width>71</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>StellarNet</string>
+      </property>
+     </widget>
+     <widget class="QTextEdit" name="stellarNet_inti_time">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>160</y>
+        <width>361</width>
+        <height>31</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_33">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>80</y>
+        <width>251</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Integration Time (ms): Thorlabs </string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_34">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>140</y>
+        <width>271</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Integration Time (ms):  StellarNet</string>
+      </property>
+     </widget>
+     <widget class="QTextEdit" name="thorlabs_inti_time">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>100</y>
+        <width>361</width>
+        <height>31</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QTextEdit" name="SaveData_dir">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>40</y>
+        <width>271</width>
+        <height>31</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_35">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>20</y>
+        <width>291</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Please choose directory for saving data</string>
+      </property>
+     </widget>
+     <widget class="QScrollArea" name="scrollArea">
+      <property name="geometry">
+       <rect>
+        <x>400</x>
+        <y>50</y>
+        <width>400</width>
+        <height>200</height>
+       </rect>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>400</width>
+        <height>200</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>400</width>
+        <height>200</height>
+       </size>
+      </property>
+      <property name="widgetResizable">
+       <bool>true</bool>
+      </property>
+      <widget class="QWidget" name="scrollAreaWidgetContents_2">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>381</width>
+         <height>480</height>
+        </rect>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <item>
+         <widget class="PlotWidget" name="plot_graph" native="true">
+          <property name="minimumSize">
+           <size>
+            <width>350</width>
+            <height>150</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>350</width>
+            <height>150</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="PlotWidget" name="plot_graph_2" native="true">
+          <property name="minimumSize">
+           <size>
+            <width>350</width>
+            <height>150</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>350</width>
+            <height>150</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="PlotWidget" name="plot_graph_3" native="true">
+          <property name="minimumSize">
+           <size>
+            <width>350</width>
+            <height>150</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>350</width>
+            <height>150</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+     <widget class="QScrollArea" name="scrollArea_2">
+      <property name="geometry">
+       <rect>
+        <x>400</x>
+        <y>270</y>
+        <width>400</width>
+        <height>200</height>
+       </rect>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>400</width>
+        <height>200</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>400</width>
+        <height>200</height>
+       </size>
+      </property>
+      <property name="widgetResizable">
+       <bool>true</bool>
+      </property>
+      <widget class="QWidget" name="scrollAreaWidgetContents_3">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>381</width>
+         <height>480</height>
+        </rect>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <item>
+         <widget class="PlotWidget" name="plot_graph_4" native="true">
+          <property name="minimumSize">
+           <size>
+            <width>350</width>
+            <height>150</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>350</width>
+            <height>150</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="PlotWidget" name="plot_graph_5" native="true">
+          <property name="minimumSize">
+           <size>
+            <width>350</width>
+            <height>150</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>350</width>
+            <height>150</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="PlotWidget" name="plot_graph_6" native="true">
+          <property name="minimumSize">
+           <size>
+            <width>350</width>
+            <height>150</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>350</width>
+            <height>150</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+     <widget class="QLabel" name="label_36">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>200</y>
+        <width>291</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Experimental Parameters:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_37">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>230</y>
+        <width>141</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Laser Energy (mJ) =</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_38">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>260</y>
+        <width>171</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Laser Wavelength (nm) = </string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_39">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>290</y>
+        <width>191</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Laser Pulse Duration (ns) = </string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_40">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>320</y>
+        <width>191</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Sample Type = </string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_41">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>350</y>
+        <width>191</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Focal Length (cm) = </string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_42">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>380</y>
+        <width>191</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Integration Time (ms) = </string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="set_exp_param">
+      <property name="geometry">
+       <rect>
+        <x>350</x>
+        <y>230</y>
+        <width>41</width>
+        <height>271</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Set</string>
+      </property>
+     </widget>
+     <widget class="QTextEdit" name="LaserEnergy">
+      <property name="geometry">
+       <rect>
+        <x>250</x>
+        <y>230</y>
+        <width>91</width>
+        <height>31</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QTextEdit" name="LaserWavelength">
+      <property name="geometry">
+       <rect>
+        <x>250</x>
+        <y>260</y>
+        <width>91</width>
+        <height>31</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QTextEdit" name="LaserPulseDuration">
+      <property name="geometry">
+       <rect>
+        <x>250</x>
+        <y>290</y>
+        <width>91</width>
+        <height>31</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QTextEdit" name="SampleType">
+      <property name="geometry">
+       <rect>
+        <x>250</x>
+        <y>320</y>
+        <width>91</width>
+        <height>31</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QTextEdit" name="FocalLength">
+      <property name="geometry">
+       <rect>
+        <x>250</x>
+        <y>350</y>
+        <width>91</width>
+        <height>31</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QTextEdit" name="IntegrationTime">
+      <property name="geometry">
+       <rect>
+        <x>250</x>
+        <y>380</y>
+        <width>91</width>
+        <height>31</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QTextEdit" name="FiberAngle">
+      <property name="geometry">
+       <rect>
+        <x>250</x>
+        <y>410</y>
+        <width>91</width>
+        <height>31</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_43">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>410</y>
+        <width>191</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Fiber Angle (degree) = </string>
+      </property>
+     </widget>
+     <widget class="QTextEdit" name="BackgroundSpectrum">
+      <property name="geometry">
+       <rect>
+        <x>250</x>
+        <y>440</y>
+        <width>91</width>
+        <height>31</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_44">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>440</y>
+        <width>231</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Background Spectrum (yes/no) = </string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_45">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>470</y>
+        <width>231</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Other Notes (if nothing: none)=</string>
+      </property>
+     </widget>
+     <widget class="QTextEdit" name="OtherNotes">
+      <property name="geometry">
+       <rect>
+        <x>250</x>
+        <y>470</y>
+        <width>91</width>
+        <height>31</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="file_browse_btn">
+      <property name="geometry">
+       <rect>
+        <x>310</x>
+        <y>40</y>
+        <width>81</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Browse</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="translationStage">
+     <attribute name="title">
+      <string>Translation Stage</string>
+     </attribute>
+     <widget class="QPushButton" name="left_btn">
+      <property name="geometry">
+       <rect>
+        <x>70</x>
+        <y>190</y>
+        <width>71</width>
+        <height>71</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>LEFT</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="right_btn">
+      <property name="geometry">
+       <rect>
+        <x>210</x>
+        <y>190</y>
+        <width>71</width>
+        <height>71</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>RIGHT</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="down_btn">
+      <property name="geometry">
+       <rect>
+        <x>140</x>
+        <y>190</y>
+        <width>71</width>
+        <height>71</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>DOWN</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="up_btn">
+      <property name="geometry">
+       <rect>
+        <x>140</x>
+        <y>120</y>
+        <width>71</width>
+        <height>71</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>UP</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="set_home_btn">
+      <property name="geometry">
+       <rect>
+        <x>70</x>
+        <y>300</y>
+        <width>211</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Set Home</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="return_home_btn">
+      <property name="geometry">
+       <rect>
+        <x>70</x>
+        <y>340</y>
+        <width>211</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Return Home</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="sample_height_txt">
+      <property name="geometry">
+       <rect>
+        <x>470</x>
+        <y>140</y>
+        <width>281</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_90">
+      <property name="geometry">
+       <rect>
+        <x>350</x>
+        <y>140</y>
+        <width>111</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Sample Height:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_91">
+      <property name="geometry">
+       <rect>
+        <x>350</x>
+        <y>200</y>
+        <width>111</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Sample Width:</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="sample_width_txt">
+      <property name="geometry">
+       <rect>
+        <x>470</x>
+        <y>200</y>
+        <width>281</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_92">
+      <property name="geometry">
+       <rect>
+        <x>350</x>
+        <y>260</y>
+        <width>111</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Step Length:</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="step_length_txt">
+      <property name="geometry">
+       <rect>
+        <x>470</x>
+        <y>260</y>
+        <width>281</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_93">
+      <property name="geometry">
+       <rect>
+        <x>350</x>
+        <y>290</y>
+        <width>111</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Max Steps:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="max_lbl">
+      <property name="geometry">
+       <rect>
+        <x>470</x>
+        <y>290</y>
+        <width>281</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_94">
+      <property name="geometry">
+       <rect>
+        <x>330</x>
+        <y>320</y>
+        <width>121</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Number of Steps:</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="num_shots_txt">
+      <property name="geometry">
+       <rect>
+        <x>470</x>
+        <y>320</y>
+        <width>281</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_95">
+      <property name="geometry">
+       <rect>
+        <x>70</x>
+        <y>110</y>
+        <width>141</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Manual:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_96">
+      <property name="geometry">
+       <rect>
+        <x>350</x>
+        <y>110</y>
+        <width>91</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Raster:</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="set_ybound_btn">
+      <property name="geometry">
+       <rect>
+        <x>660</x>
+        <y>160</y>
+        <width>91</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Set y Bound</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="set_xbound_btn">
+      <property name="geometry">
+       <rect>
+        <x>660</x>
+        <y>220</y>
+        <width>91</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Set x Bound</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_99">
+      <property name="geometry">
+       <rect>
+        <x>70</x>
+        <y>270</y>
+        <width>171</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Manual Step Length:</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="raster_btn">
+      <property name="geometry">
+       <rect>
+        <x>350</x>
+        <y>420</y>
+        <width>401</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Test Raster Path</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="manual_step_length_txt">
+      <property name="geometry">
+       <rect>
+        <x>230</x>
+        <y>270</y>
+        <width>51</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>2</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="num_shots_same_loc_txt">
+      <property name="geometry">
+       <rect>
+        <x>470</x>
+        <y>350</y>
+        <width>281</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_97">
+      <property name="geometry">
+       <rect>
+        <x>310</x>
+        <y>350</y>
+        <width>171</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Shots at same location:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="total_shots">
+      <property name="geometry">
+       <rect>
+        <x>470</x>
+        <y>380</y>
+        <width>281</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_98">
+      <property name="geometry">
+       <rect>
+        <x>380</x>
+        <y>380</y>
+        <width>81</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Total Shots:</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="oscilloscope">
+     <attribute name="title">
+      <string>Oscilloscope</string>
+     </attribute>
+    </widget>
+   </widget>
+   <widget class="QLabel" name="label_29">
+    <property name="geometry">
+     <rect>
+      <x>270</x>
+      <y>10</y>
+      <width>291</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Times New Roman</family>
+      <pointsize>20</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+      <underline>true</underline>
+     </font>
+    </property>
+    <property name="layoutDirection">
+     <enum>Qt::LeftToRight</enum>
+    </property>
+    <property name="text">
+     <string>Hussein Lab LIBS GUI</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="Start">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>670</y>
+      <width>401</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Times New Roman</family>
+      <pointsize>16</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Single Shot</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_32">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>610</y>
+      <width>141</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Times New Roman</family>
+      <pointsize>12</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Absolute Location:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_46">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>630</y>
+      <width>141</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Times New Roman</family>
+      <pointsize>12</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Relative Location:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="messages_lbl">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>650</y>
+      <width>771</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Times New Roman</family>
+      <pointsize>12</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="rel_location_lbl">
+    <property name="geometry">
+     <rect>
+      <x>180</x>
+      <y>630</y>
+      <width>241</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Times New Roman</family>
+      <pointsize>12</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="abs_location_lbl">
+    <property name="geometry">
+     <rect>
+      <x>180</x>
+      <y>610</y>
+      <width>241</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Times New Roman</family>
+      <pointsize>12</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="stop_btn">
+    <property name="geometry">
+     <rect>
+      <x>410</x>
+      <y>670</y>
+      <width>391</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Times New Roman</family>
+      <pointsize>12</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Stop</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="disconnect_all">
+    <property name="geometry">
+     <rect>
+      <x>690</x>
+      <y>60</y>
+      <width>111</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Times New Roman</family>
+      <pointsize>12</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Disconnect All</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>PlotWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">pyqtgraph</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>
