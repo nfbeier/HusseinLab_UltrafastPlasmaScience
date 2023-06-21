@@ -1,10 +1,16 @@
 ---
-description: 'Last Edited: October 11, 2022'
+Repository Description: 'Last Edited: June 21, 2023'
 ---
 
 Github repository for hardware and software interfacing used in the Hussein Ultrafast Plasma Science group at the University of Alberta.
 
-Currently two projects are in active development
+Currently three projects are in active development
+
+# Viron Laser System
+
+Development of communication protocal to control the Quantel Viron Laser System for Portable LIBS.
+
+-- Developed by Nick Beier, Shubho Mohajan and Liam Droog
 
 # LIBS
 
