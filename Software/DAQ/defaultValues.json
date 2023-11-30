@@ -1,0 +1,29 @@
+{
+    "Diagnostic Name": [
+        "XrayCCD",
+        "TopView",
+        "SideView"
+    ],
+    "File Type": [
+        ".sif",
+        ".tif",
+        ".tif"
+    ],
+    "File Path": [
+        "C:\\Users\\nfbei\\Documents\\UofA\\Research\\LaserNet_2021ALLS\\20211026\\shot85",
+        "C:\\Users\\nfbei\\Documents\\UofA\\Research\\LaserNet_2021ALLS\\20211026\\shot85\\sideView",
+        "C:\\Users\\nfbei\\Documents\\UofA\\Research\\LaserNet_2021ALLS\\20211026\\shot85\\topView"
+    ],
+    "Background": [
+        "C:\\Users\\nfbei\\Documents\\UofA\\Research\\LaserNet_2021ALLS\\20211026\\background\\betatron_14.26.46_080.sif",
+        "None",
+        "None"
+    ],
+    "Shots per Save": [
+        "1",
+        "1",
+        "1"
+    ],
+    "tableRows": 3,
+    "saveDirectory": "C:/Users/nfbei/Documents/UofA/Research/TestFolder"
+}
