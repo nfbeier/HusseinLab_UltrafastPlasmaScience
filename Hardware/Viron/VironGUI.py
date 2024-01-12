@@ -86,7 +86,19 @@ class LaserControlGUI(QMainWindow):
         if delay.isdigit():
             if self.laser.set_qs_delay(int(delay)):
                 print('Q-Switch Delay Set to ', delay)
-        return
+                return True
+        return False
+    
+    def handle_set_qs_pre(self):
+        '''
+        Handles the action when the "Set Q-Switch pre" button is clicked.
+        '''
+        delay = self.qswitch_pre_layout.get_value()
+        if delay.isdigit():
+            if self.laser.set_qs_pre(int(delay)):
+                print('Q-Switch Pre Set to ', delay)
+                return True
+        return False
     
     def _parse_status(self, hex_value):
         """
@@ -466,15 +478,19 @@ class LaserControlGUI(QMainWindow):
         first_tab_layout.addLayout(buttons_layout)
 
 
-        self.rep_rate_layout = InputLayout("Repetition Rate", func=self.handle_set_rep_rate)
+        self.rep_rate_layout = InputLayout("Repetition Rate (Hz)", func=self.handle_set_rep_rate)
         first_tab_layout.addLayout(self.rep_rate_layout)
         
-        self.qs_delay_layout = InputLayout("Q-Switch Delay", func=self.handle_set_qs_delay)
-        
+        self.qs_delay_layout = InputLayout("Q-Switch Delay (us)", func=self.handle_set_qs_delay)
         self.set_alignment_button = QPushButton("Set Alignment (Not Implemented)")
         self.set_alignment_button.clicked.connect(self.handle_alignment_mode)
         self.qs_delay_layout.addWidget(self.set_alignment_button)
         first_tab_layout.addLayout(self.qs_delay_layout)
+
+        self.qswitch_pre_layout = InputLayout("Q-Switch PrePulse (us)", func=None)
+        first_tab_layout.addLayout(self.qswitch_pre_layout)
+
+
         
         # critical status layout text box
         critical_status_layout = QHBoxLayout()

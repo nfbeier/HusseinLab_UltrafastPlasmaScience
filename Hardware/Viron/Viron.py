@@ -206,6 +206,23 @@ class VironLaser():
         Returns:
         - True if the QS Delay is set successfully.
         """
+        if delay not in range(0, 179) or type(delay) != int:
+            self.tngui_print("Invalid QSPRE")
+            return False
+        if self.send_command(f'$QSPRE {delay}'):
+            return True
+        return False
+    
+
+    def set_qs_pre(self, delay):
+        """
+        Sets the QS Delay of the Viron laser.
+        
+        Inputs:
+        - delay (int): The desired QS Delay in microseconds.
+        Returns:
+        - True if the QS Delay is set successfully.
+        """
         if delay not in range(0, 401) or type(delay) != int:
             self.tngui_print("Invalid QS Delay")
             return False
