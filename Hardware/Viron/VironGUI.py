@@ -16,7 +16,7 @@ class LaserControlGUI(QMainWindow):
         self.tngui = TelnetSessionGUI()
         self.currentstate = None
         self.connected = False
-        self.states = ['standby', 'stop', 'fire']
+        self.states = ['standby', 'stop', 'fire', 'single_shot']
         self.laser = VironLaser(self.host, self.port, self.password, telnetgui=self.tngui)
         self.tngui.set_laser(self.laser)
         
@@ -263,18 +263,20 @@ class LaserControlGUI(QMainWindow):
             None
         """
         if self.currentstate == 'standby':
-            return
-        self.laser.set_standby()
-        self.currentstate = 'standby'
-        
-        self.start_var.setChecked(False)
-        self.stop_var.setChecked(False)
-        self.single_shot_var.setChecked(False)
-        self.single_shot_var.setStyleSheet("background-color : lightgrey")
-        self.standby_var.setStyleSheet("background-color : lightgreen")
-        self.stop_var.setStyleSheet("background-color : lightgrey")
-        self.start_var.setStyleSheet("background-color : lightgrey")
-        self.set_alignment_button.setStyleSheet("background-color: lightgrey")
+            return True
+        if self.laser.set_standby():
+            self.currentstate = 'standby'
+            self.start_var.setChecked(False)
+            self.stop_var.setChecked(False)
+            self.single_shot_var.setChecked(False)
+            self.single_shot_var.setStyleSheet("background-color : lightgrey")
+            self.standby_var.setStyleSheet("background-color : lightgreen")
+            self.stop_var.setStyleSheet("background-color : lightgrey")
+            self.start_var.setStyleSheet("background-color : lightgrey")
+            self.set_alignment_button.setStyleSheet("background-color: lightgrey")
+            return True
+        print("Failed to set laser to standby")
+        return False
 
 
 
@@ -287,17 +289,22 @@ class LaserControlGUI(QMainWindow):
             None
         """
         if self.currentstate == 'stop' and self.stop_var.isChecked():
-            return
-        res = self.laser.set_stop()
-        self.currentstate = 'stop'
-        self.standby_var.setChecked(False)
-        self.start_var.setChecked(False)
-        self.single_shot_var.setChecked(False)
-        self.single_shot_var.setStyleSheet("background-color : lightgrey")
-        self.standby_var.setStyleSheet("background-color : lightgrey")
-        self.stop_var.setStyleSheet("background-color : lightgreen")
-        self.start_var.setStyleSheet("background-color : lightgrey")
-        self.set_alignment_button.setStyleSheet("background-color: lightgrey")
+            return True
+        
+        if self.laser.set_stop():
+            self.currentstate = 'stop'
+            self.standby_var.setChecked(False)
+            self.start_var.setChecked(False)
+            self.single_shot_var.setChecked(False)
+            self.single_shot_var.setStyleSheet("background-color : lightgrey")
+            self.standby_var.setStyleSheet("background-color : lightgrey")
+            self.stop_var.setStyleSheet("background-color : lightgreen")
+            self.start_var.setStyleSheet("background-color : lightgrey")
+            self.set_alignment_button.setStyleSheet("background-color: lightgrey")
+            return True
+        else:
+            print("failed to set stop")
+            return False
 
 
     def toggle_auto_fire(self):
@@ -351,7 +358,8 @@ class LaserControlGUI(QMainWindow):
             self.single_shot_var.setStyleSheet("background-color : red")
             self.set_alignment_button.setStyleSheet("background-color: lightgrey")
             
-        self.laser.fire_single_shot()
+        if self.laser.fire_single_shot():
+            print("fired mah lazor")
         
     def handle_set_diode_current(self):
         if self.laser.send_command("$DCURR " + str(self.diode_current_layout.get_value())):
