@@ -33,6 +33,7 @@ class TelnetSessionGUI(QWidget):
         self.terminal_output.setReadOnly(True)
 
         self.input_line = QLineEdit(self)
+        self.input_line.setText("Do not use this unless you have a very good understanding of what you're doing!")
         self.input_line.returnPressed.connect(self.send_command)
 
         layout = QVBoxLayout(self)
