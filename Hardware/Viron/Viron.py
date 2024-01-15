@@ -109,7 +109,7 @@ class VironLaser():
         - rate (int): The desired repetition rate.
         '''
         rate = int(rate)
-        self.tngui_print("Setting Rep Rate to: ", rate)
+        self.tngui_print("Setting Rep Rate to: " + str(rate))
         if rate in range(1, 21): 
             result = self.send_command(f'$DFREQ {rate}')  # Set the repetition rate
             self.tngui_print(result)
@@ -206,13 +206,18 @@ class VironLaser():
         Returns:
         - True if the QS Delay is set successfully.
         """
-        if delay not in range(0, 179) or type(delay) != int:
-            self.tngui_print("Invalid QSPRE")
-            return False
-        if self.send_command(f'$QSPRE {delay}'):
-            return True
+        delay = int(delay)
+        self.tngui_print("Setting qsdelay to: " + str(delay))
+        
+        if delay in range(1, 180):
+            result = self.send_command(f'$QSDELAY {delay}')
+            if not result:
+                self.tngui_print("Set failed. Is QSPRE less than QSDELAY?")    
+        else:
+            self.tngui_print('Invalid numerical qsdelay')
         return False
     
+
 
     def set_qs_pre(self, delay):
         """
@@ -223,11 +228,17 @@ class VironLaser():
         Returns:
         - True if the QS Delay is set successfully.
         """
-        if delay not in range(0, 401) or type(delay) != int:
-            self.tngui_print("Invalid QS Delay")
-            return False
-        if self.send_command(f'$QSDELAY {delay}'):
-            return True
+        delay = int(delay)
+        self.tngui_print("Setting qspre to: " + str(delay))
+        
+        if delay in range(1, 180):
+            result = self.send_command(f'$QSPRE {delay}')
+            if result:
+                self.tngui_print(result)
+            else:
+                self.tngui_print("Invalid qspre")    
+        else:
+            self.tngui_print('Invalid qspre')
         return False
     
     def set_single_shot(self):

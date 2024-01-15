@@ -389,13 +389,19 @@ class LaserControlGUI(QMainWindow):
         diode_current = self.laser.send_command('$DCURR ?', response=True)
         diode_pulse_width = self.laser.send_command('$DPW ?', response=True)
         qs_delay = self.laser.send_command('$QSDELAY ?', response=True)
+        qs_pre = self.laser.send_command('$QSPRE ?', response=True)
+        reprate = self.laser.send_command('$DFREQ ?', response=True)
+        
         if diode_current:
             self.diode_current_layout.set_value(str(diode_current.split()[1]))
         if diode_pulse_width:
             self.diode_pulse_width_layout.set_value(str(diode_pulse_width.split()[1]))
         if qs_delay:
             self.qs_delay_layout.set_value(str(qs_delay.split()[1]))
-        
+        if qs_pre:
+            self.qswitch_pre_layout.set_value(str(qs_pre).split()[1])
+        if reprate:
+            self.rep_rate_layout.set_value(str(reprate).split()[1])
         
     def on_close(self):
         res = self.laser.close()
@@ -487,7 +493,7 @@ class LaserControlGUI(QMainWindow):
         self.qs_delay_layout.addWidget(self.set_alignment_button)
         first_tab_layout.addLayout(self.qs_delay_layout)
 
-        self.qswitch_pre_layout = InputLayout("Q-Switch PrePulse (us)", func=None)
+        self.qswitch_pre_layout = InputLayout("Q-Switch PrePulse (us)", func=self.handle_set_qs_pre)
         first_tab_layout.addLayout(self.qswitch_pre_layout)
 
 
