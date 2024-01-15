@@ -28,7 +28,9 @@ class LaserControlGUI(QMainWindow):
         self.status_timer = QTimer()
         self.status_timer.timeout.connect(self.handle_get_status)
         self.status_timer.setInterval(5000)
-
+        
+        
+        
     def display_status(self, status):
         # Define the headers for each bundle of 8 lines
         headers = ["Status Byte 1", "Status Byte 2", "Fault Byte 1", "Fault Byte 2", "Warning Byte 1", "Warning Byte 2"]
@@ -232,7 +234,7 @@ class LaserControlGUI(QMainWindow):
             
         self.display_status(status)
         self.display_critical_info(status)
-
+        self._get_values()
 
     def handle_connect_to_laser(self):
         """
@@ -327,7 +329,7 @@ class LaserControlGUI(QMainWindow):
         Returns:
             None
         """
-        if self.currentstate == 'single_shot':
+        if self.currentstate != 'fire':
             # set to internal trigger
             self.laser.send_command("$QSON 1")
             
