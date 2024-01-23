@@ -10,14 +10,17 @@ import matplotlib.pyplot as plt
 
 # !!! START OF LIBRARY !!!
 
-#Class SCRAMTarget: converts temperatures into emission spectra
-#tempLayers holds the temperatures at each point in the copper target
-#k and j hold scipy.interpolator objects that take arrays of the form [E1, E2...], [T1, T1, ...]
-# Example: k([8001,120]) would return the k value at 8000keV energy and 120eV temp
-#en is an array holding the energy values extracted from SCRAM
+#Class SCRAMTarget: Converts temperature/density distribution into an array of intensities
+#Variables:
+#           temps - an array holding the temperature of a width dx of copper target
+#           dens - an array holding the desnity of a width dx of copper target
+#           k - scipy intepolator object holding absorbtions interpolated over energies from SCRAM table (1D interp)
+#           j - scipy intepolator object holding emissivity interpolated over energies from SCRAM table (1D interp)
+#           en - energy axis extracted from SCRAM table or chosen to best fit the experimental data
 class SCRAMTarget:
-    def __init__(self,temps,k,j,en):
-        self.temps = [temps[0]]*5
+    def __init__(self,temps,dens,k,j,en):
+        self.temps = temps #[temps[0]]*5 --> this syntax required for uniform temp..reason still unknown
+        self.dens = dens
         self.k = k
         self.j = j
         self.en = en
@@ -26,8 +29,8 @@ class SCRAMTarget:
 
     def generateLayers(self):
         # for i,t in enumerate(self.temps):
-        for t in self.temps:
-            k_layer = self.k(self.en,t)
+        for t,n in zip(self.temps,self.dens):
+            k_layer = self.k(self.en,t,n)
             j_layer = self.j(self.en,t)
             self.layers.append([t,k_layer,j_layer])
 
@@ -51,7 +54,7 @@ class SCRAMTarget:
         intensityTotal += intensity_layer*transmission
         return intensityTotal
 
-
+# Function model(): returns the simulated emission spectra after applying a Gaussian filter
     def model(self):
         
         #initialize with new temps
@@ -66,15 +69,15 @@ class SCRAMTarget:
         #Front Von Hamos Spectra
         front_emission = self.transportEmission(45,rear=False)
 
-        # SimulatedVH = sp.ndimage.gaussian_filter1d(front_emission*scaling,sigma)                                            #COMMENT EDIT
-        #what is all the funky unit conversion?
-        gaussLayerFront = sp.ndimage.gaussian_filter1d(front_emission*scaling*1000,8/(2*np.sqrt(2*np.log(2))))            #UNCOMMENT OG
+        SimulatedVH = sp.ndimage.gaussian_filter1d(front_emission*scaling,sigma)                                            #COMMENT EDIT
+        #what is all the weird unit conversion?
+#         gaussLayerFront = sp.ndimage.gaussian_filter1d(front_emission*scaling*1000,8/(2*np.sqrt(2*np.log(2))))            #UNCOMMENT OG
 
         #Rear High Res. Spectra
         rear_emission = self.transportEmission(0,rear=True)
-        # SimulatedHR = sp.ndimage.gaussian_filter1d(rear_emission*scaling*1000,sigma/8)                   #COMMENT EDIT
-        #what is all the funky unit conversion?
-        gaussLayerRear = sp.ndimage.gaussian_filter1d(rear_emission*scaling*1000,1/(2*np.sqrt(2*np.log(2))))              #UNCOMMENT OG
+        SimulatedHR = sp.ndimage.gaussian_filter1d(rear_emission*scaling*1000,sigma/8)                   #COMMENT EDIT
+        #what is all the weird unit conversion?
+#         gaussLayerRear = sp.ndimage.gaussian_filter1d(rear_emission*scaling*1000,1/(2*np.sqrt(2*np.log(2))))              #UNCOMMENT OG
 
         #Honestly still not sure what this does... Think it can be removed, but then what is the point of this function?
         # SimulatedVH = sp.interpolate.interp1d(self.en/1000,gaussLayerFront)                                        #UNCOMMENT OG
@@ -87,6 +90,8 @@ class SCRAMTarget:
 
         # return SimulatedVH(enrg_axs_VH), SimulatedHR(enrg_axs_HR)
         # return front_emission, rear_emission
-        # return SimulatedVH, SimulatedHR
-        return gaussLayerFront, gaussLayerRear
+        return SimulatedVH, SimulatedHR
+#         return gaussLayerFront, gaussLayerRear
 
+    
+  
