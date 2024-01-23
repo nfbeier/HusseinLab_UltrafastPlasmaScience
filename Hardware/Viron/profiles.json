@@ -1,0 +1,62 @@
+{
+    "profiles": {
+      "5mJ": {
+        "QSON": 0,
+        "DFREQ": 20,
+        "QSDIVBY": 0,
+        "QSBLANK": 0,
+        "QSDELAY": 0,
+        "QSPRE": 0,
+        "BURST": 0,
+        "BSTOF": 0,
+        "BSTON": 0
+      },
+      "10mJ": {
+        "QSON": 1,
+        "DFREQ": 20,
+        "QSDIVBY": 5,
+        "QSBLANK": 3,
+        "QSDELAY": 150,
+        "QSPRE": 50,
+        "BURST": 1,
+        "BSTOF": 10,
+        "BSTON": 5
+      },
+      "15mJ": {
+        "QSON": 2,
+        "DFREQ": 20,
+        "QSDIVBY": 10,
+        "QSBLANK": 6,
+        "QSDELAY": 250,
+        "QSPRE": 75,
+        "BURST": 2,
+        "BSTOF": 15,
+        "BSTON": 10
+      },
+      "20mJ": {
+        "QSON": 1,
+        "DFREQ": 20,
+        "QSDIVBY": 15,
+        "QSBLANK": 9,
+        "QSDELAY": 300,
+        "QSPRE": 100,
+        "BURST": 1,
+        "BSTOF": 20,
+        "BSTON": 15
+      },
+      "25mJ": {
+        "QSON": 1,
+        "DFREQ": 20,
+        "QSDIVBY": 1,
+        "QSBLANK": 12,
+        "QSDELAY": 179,
+        "QSPRE": 125,
+        "BURST": 0,
+        "BSTOF": 25,
+        "BSTON": 20,
+        "DCURR": 170,
+        "DPW": 178
+      }
+    }
+  }
+  
