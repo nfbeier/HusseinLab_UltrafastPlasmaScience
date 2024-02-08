@@ -375,6 +375,18 @@ class LaserControlGUI(QMainWindow):
         if self.laser.fire_single_shot():
             print("fired mah lazor")
         
+    def toggle_external_fire(self):
+        if self.laser.set_external_trigger():
+            self.external_shot_var.setStyleSheet("background-color : darkgreen")
+            self.standby_var.setStyleSheet("background-color : black")
+            self.stop_var.setStyleSheet("background-color : black")
+            self.start_var.setStyleSheet("background-color : black")  
+            self.single_shot_var.setStyleSheet("background-color : black")
+            return True
+        else:
+            print("failed to set external trigger")
+            return False   
+   
     def handle_set_diode_current(self):
         if self.laser.send_command("$DCURR " + str(self.diode_current_layout.get_value())):
             print("Diode Current Set to ", self.diode_current_layout.get_value())
@@ -483,11 +495,18 @@ class LaserControlGUI(QMainWindow):
         self.single_shot_var.setCheckable(True)
         buttons_layout.addWidget(self.single_shot_var)
         
+        self.external_shot_var = QPushButton("External Fire")
+        self.external_shot_var.clicked.connect(self.toggle_external_fire)
+        self.external_shot_var.setStyleSheet("background-color : lightgrey")
+        self.external_shot_var.setChecked(False)  # Set the default value
+        self.external_shot_var.setCheckable(True)
+        buttons_layout.addWidget(self.external_shot_var)
+
         first_tab_layout.addLayout(buttons_layout)
 
 
-        self.rep_rate_layout = InputLayout("Repetition Rate (Hz)", func=self.handle_set_rep_rate)
-        first_tab_layout.addLayout(self.rep_rate_layout)
+        # self.rep_rate_layout = InputLayout("Repetition Rate (DONT CHANGE)(Hz)", func=self.handle_set_rep_rate)
+        # first_tab_layout.addLayout(self.rep_rate_layout)
         
         self.qs_delay_layout = InputLayout("Q-Switch Delay (us)", func=self.handle_set_qs_delay)
         self.set_alignment_button = QPushButton("Set Alignment (Not Implemented)")

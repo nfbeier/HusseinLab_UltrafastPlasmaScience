@@ -100,7 +100,23 @@ class VironLaser():
         if self.send_command('$FIRE'):
             return True
         return False
-        
+    
+    def set_external_trigger(self):
+        """
+        Sets the Viron laser to external trigger mode.
+        """
+        # set trigger to external on diode and QS
+        if not self.send_command("$TRIG EI"):
+            return False
+        # set QS 
+        if not self.send_command("$QSON 1"):
+            return False
+        if not self.send_command("$QSBLANK 0"):
+            return False
+        if not self.send_command("$FIRE"):
+            return False
+        return True    
+    
     def set_rep_rate(self, rate):
         '''
         Sets the repetition rate of the Viron laser.
