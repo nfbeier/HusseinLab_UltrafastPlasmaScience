@@ -210,10 +210,10 @@ class LaserControlGUI(QMainWindow):
         Returns:
             None
         """
-        rate = self.rep_rate_layout.get_value()
-        if rate.isdigit():
-            self.laser.set_rep_rate(int(rate))
-
+        # rate = self.rep_rate_layout.get_value()
+        # if rate.isdigit():
+        #     self.laser.set_rep_rate(int(rate))
+        pass
 
     def handle_get_status(self, status_hex=None):
         """
@@ -376,6 +376,7 @@ class LaserControlGUI(QMainWindow):
             print("fired mah lazor")
         
     def toggle_external_fire(self):
+        self.currentstate = "external fire"
         if self.laser.set_external_trigger():
             self.external_shot_var.setStyleSheet("background-color : darkgreen")
             self.standby_var.setStyleSheet("background-color : black")
@@ -404,7 +405,7 @@ class LaserControlGUI(QMainWindow):
         diode_pulse_width = self.laser.send_command('$DPW ?', response=True)
         qs_delay = self.laser.send_command('$QSDELAY ?', response=True)
         qs_pre = self.laser.send_command('$QSPRE ?', response=True)
-        reprate = self.laser.send_command('$DFREQ ?', response=True)
+        # reprate = self.laser.send_command('$DFREQ ?', response=True)
         
         if diode_current:
             self.diode_current_layout.set_value(str(diode_current.split()[1]))
@@ -414,8 +415,9 @@ class LaserControlGUI(QMainWindow):
             self.qs_delay_layout.set_value(str(qs_delay.split()[1]))
         if qs_pre:
             self.qswitch_pre_layout.set_value(str(qs_pre).split()[1])
-        if reprate:
-            self.rep_rate_layout.set_value(str(reprate).split()[1])
+        # if reprate:
+            # self.rep_rate_layout.set_value(str(reprate).split()[1])
+            pass
         
     def on_close(self):
         res = self.laser.close()
@@ -505,8 +507,8 @@ class LaserControlGUI(QMainWindow):
         first_tab_layout.addLayout(buttons_layout)
 
 
-        # self.rep_rate_layout = InputLayout("Repetition Rate (DONT CHANGE)(Hz)", func=self.handle_set_rep_rate)
-        # first_tab_layout.addLayout(self.rep_rate_layout)
+        # # self.rep_rate_layout = InputLayout("Repetition Rate (DONT CHANGE)(Hz)", func=self.handle_set_rep_rate)
+        # first_tab_layout.addLayout(# self.rep_rate_layout)
         
         self.qs_delay_layout = InputLayout("Q-Switch Delay (us)", func=self.handle_set_qs_delay)
         self.set_alignment_button = QPushButton("Set Alignment (Not Implemented)")
