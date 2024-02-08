@@ -378,11 +378,11 @@ class LaserControlGUI(QMainWindow):
     def toggle_external_fire(self):
         self.currentstate = "external fire"
         if self.laser.set_external_trigger():
-            self.external_shot_var.setStyleSheet("background-color : darkgreen")
-            self.standby_var.setStyleSheet("background-color : black")
-            self.stop_var.setStyleSheet("background-color : black")
-            self.start_var.setStyleSheet("background-color : black")  
-            self.single_shot_var.setStyleSheet("background-color : black")
+            self.external_shot_var.setStyleSheet("background-color : green")
+            self.standby_var.setStyleSheet("background-color : lightgrey")
+            self.stop_var.setStyleSheet("background-color : lightgrey")
+            self.start_var.setStyleSheet("background-color : lightgrey")  
+            self.single_shot_var.setStyleSheet("background-color : lightgrey")
             return True
         else:
             print("failed to set external trigger")
