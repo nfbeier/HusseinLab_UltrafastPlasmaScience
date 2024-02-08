@@ -481,15 +481,15 @@ class LaserControlGUI(QMainWindow):
         self.stop_var.setStyleSheet("background-color : lightgrey")
         buttons_layout.addWidget(self.stop_var)
 
-        self.start_var = QPushButton("Auto Fire")
-        self.start_var.clicked.connect(self.toggle_auto_fire)
+        self.start_var = QPushButton("Auto Fire (deprecated)")
+        # self.start_var.clicked.connect(self.toggle_auto_fire)
         self.start_var.setStyleSheet("background-color : lightgrey")
         self.start_var.setChecked(False)  # Set the default value
         self.start_var.setCheckable(True)
         buttons_layout.addWidget(self.start_var)
 
-        self.single_shot_var = QPushButton("Single Fire")
-        self.single_shot_var.clicked.connect(self.handle_set_single_shot)
+        self.single_shot_var = QPushButton("Single Fire (deprecated)")
+        # self.single_shot_var.clicked.connect(self.handle_set_single_shot)
         self.single_shot_var.setStyleSheet("background-color : lightgrey")
         self.single_shot_var.setChecked(False)  # Set the default value
         self.single_shot_var.setCheckable(True)
@@ -646,7 +646,7 @@ class InputLayout(QHBoxLayout):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     try:
-        gui = LaserControlGUI(host='192.168.103.103', port=23, password='VR6BE4EE')
+        gui = LaserControlGUI(host='192.168.0.154', port=23, password='VR6BE4EE')
     except Exception as e:
         print(e)
         print("Something went wrong")
