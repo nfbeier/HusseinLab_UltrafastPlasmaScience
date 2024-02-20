@@ -26,7 +26,7 @@ class pyFROG_App(QtWidgets.QMainWindow):
         self.ui.in_scanstepsize.textChanged.connect(lambda: self.updateScanParameters(param='stepSize'))
 
         self.ui.ConnectXPS.clicked.connect(self._initXPS)
-        self.ui.ConnectThorlabs.clicked.connect(self._connectSpec)
+        self.ui.ConnectThorlabs.clicked.connect(self.initThorlabs)
 
     def _initXPS(self):
         #XPS Initialization
@@ -39,11 +39,20 @@ class pyFROG_App(QtWidgets.QMainWindow):
         #self.xpsStageStatus = self.xps.getStageStatus(self.)#["Not initialized state"]
         #self.x_xps.getStageStatus(self.x_axis)
 
-    def _connectSpec(self):
+    def _initThorlabs(self):
         #Spectrometer initialization
+        rm = ResourceManager()
+        res = rm.list_resources('?*::?*')
+        
+        if res:
+            paramsets = list_instruments()
+            self.spec = instrument(paramsets[0],reopen_policy = "reuse")# thorlabs ccs200
+        
+        self.wave = np.zeros((3648))
+        self.intensity = np.zeros((3648)) 
+        
         self.ui.alignmentPlot.axes.cla()
         #self.ui.canvas.axes
-        return 
     
     def updateScanParameters(self,param=None):
         if param == 'stepSize':
