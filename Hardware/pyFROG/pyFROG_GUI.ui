@@ -32,6 +32,9 @@
       <property name="text">
        <string>Hussein Lab pyFROG</string>
       </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
      </widget>
     </item>
     <item row="1" column="0">
@@ -211,29 +214,32 @@
          <widget class="MplCanvas" name="alignmentPlot" native="true"/>
         </item>
         <item>
+         <widget class="QLabel" name="label_11">
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>25</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Stage Motion Controls</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <layout class="QGridLayout" name="gridLayout">
-          <item row="4" column="0">
-           <widget class="QLabel" name="label_2">
+          <item row="2" column="1">
+           <widget class="QLineEdit" name="in_actabsmove">
             <property name="text">
-             <string>Small
-Relative
-Move</string>
+             <string>0.0</string>
             </property>
            </widget>
           </item>
-          <item row="4" column="3">
-           <widget class="QPushButton" name="p_actsmallforward">
+          <item row="5" column="2">
+           <widget class="QPushButton" name="p_actlargeback">
             <property name="text">
-             <string>Small Step
-Forward</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="2">
-           <widget class="QPushButton" name="p_actsmallback">
-            <property name="text">
-             <string>Small Step
- Back</string>
+             <string>Large Step
+Back</string>
             </property>
            </widget>
           </item>
@@ -245,6 +251,17 @@ Forward</string>
             </property>
            </widget>
           </item>
+          <item row="2" column="3">
+           <widget class="QCheckBox" name="c_actenableabs">
+            <property name="text">
+             <string>Enable Abs.
+Move</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="1">
+           <widget class="QLineEdit" name="out_saveposition"/>
+          </item>
           <item row="2" column="0">
            <widget class="QLabel" name="label">
             <property name="text">
@@ -253,18 +270,19 @@ Move</string>
             </property>
            </widget>
           </item>
-          <item row="2" column="1">
-           <widget class="QLineEdit" name="in_actabsmove">
+          <item row="4" column="0">
+           <widget class="QLabel" name="label_2">
             <property name="text">
-             <string>0.0</string>
+             <string>Small
+Relative
+Move</string>
             </property>
            </widget>
           </item>
-          <item row="2" column="2">
-           <widget class="QPushButton" name="p_actabsmove">
+          <item row="5" column="1">
+           <widget class="QLineEdit" name="in_actlargerel">
             <property name="text">
-             <string>Absolute
-Move</string>
+             <string>0.0</string>
             </property>
            </widget>
           </item>
@@ -277,21 +295,6 @@ Move</string>
             </property>
            </widget>
           </item>
-          <item row="5" column="2">
-           <widget class="QPushButton" name="p_actlargeback">
-            <property name="text">
-             <string>Large Step
-Back</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="1">
-           <widget class="QLineEdit" name="in_actsmallrel">
-            <property name="text">
-             <string>0.0</string>
-            </property>
-           </widget>
-          </item>
           <item row="1" column="2">
            <widget class="QLabel" name="label_7">
             <property name="text">
@@ -299,32 +302,18 @@ Back</string>
             </property>
            </widget>
           </item>
-          <item row="1" column="1">
-           <widget class="QLabel" name="label_4">
+          <item row="6" column="2">
+           <widget class="QPushButton" name="p_actsaveposition">
             <property name="text">
-             <string>Stage Settings</string>
+             <string>Save Home</string>
             </property>
            </widget>
           </item>
-          <item row="5" column="1">
-           <widget class="QLineEdit" name="in_actlargerel">
+          <item row="4" column="2">
+           <widget class="QPushButton" name="p_actsmallback">
             <property name="text">
-             <string>0.0</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="3">
-           <widget class="QCheckBox" name="c_actenableabs">
-            <property name="text">
-             <string>Enable Abs.
-Move</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="3">
-           <widget class="QLCDNumber" name="x_pos_lcd_2">
-            <property name="value" stdset="0">
-             <double>1.234000000000000</double>
+             <string>Small Step
+ Back</string>
             </property>
            </widget>
           </item>
@@ -335,13 +324,16 @@ Move</string>
             </property>
            </widget>
           </item>
-          <item row="6" column="1">
-           <widget class="QLineEdit" name="out_saveposition"/>
-          </item>
-          <item row="6" column="2">
-           <widget class="QPushButton" name="p_actsaveposition">
+          <item row="1" column="1">
+           <widget class="QLabel" name="label_4">
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>50</height>
+             </size>
+            </property>
             <property name="text">
-             <string>Save Home</string>
+             <string>Stage Settings</string>
             </property>
            </widget>
           </item>
@@ -349,6 +341,36 @@ Move</string>
            <widget class="QPushButton" name="go_home_button_2">
             <property name="text">
              <string>Go Home</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QLineEdit" name="in_actsmallrel">
+            <property name="text">
+             <string>0.0</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="3">
+           <widget class="QPushButton" name="p_actsmallforward">
+            <property name="text">
+             <string>Small Step
+Forward</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="2">
+           <widget class="QPushButton" name="p_actabsmove">
+            <property name="text">
+             <string>Absolute
+Move</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="3">
+           <widget class="QLabel" name="out_actcurrentpos">
+            <property name="text">
+             <string>0.00 mm</string>
             </property>
            </widget>
           </item>
@@ -362,9 +384,63 @@ Move</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_9">
         <item>
+         <widget class="QLabel" name="label_31">
+          <property name="font">
+           <font>
+            <family>Times New Roman</family>
+            <pointsize>20</pointsize>
+            <weight>75</weight>
+            <bold>true</bold>
+            <underline>false</underline>
+           </font>
+          </property>
+          <property name="layoutDirection">
+           <enum>Qt::LeftToRight</enum>
+          </property>
+          <property name="text">
+           <string>Thorlabs Spectrometer Controls</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
          <layout class="QGridLayout" name="gridLayout_7">
+          <item row="1" column="0">
+           <layout class="QGridLayout" name="gridLayout_4">
+            <item row="7" column="0">
+             <widget class="QCheckBox" name="c_subbkg">
+              <property name="text">
+               <string>Subtract Bkg</string>
+              </property>
+             </widget>
+            </item>
+            <item row="6" column="1">
+             <widget class="QCheckBox" name="c_darkcounts">
+              <property name="text">
+               <string>Dark Counts</string>
+              </property>
+             </widget>
+            </item>
+            <item row="6" column="0">
+             <widget class="QCheckBox" name="c_calibration">
+              <property name="text">
+               <string>Calibration</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
           <item row="0" column="0">
            <layout class="QFormLayout" name="formLayout">
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_5">
+              <property name="text">
+               <string>Thorlabs Exposure Time</string>
+              </property>
+             </widget>
+            </item>
             <item row="0" column="1">
              <widget class="QLineEdit" name="in_specexposure">
               <property name="text">
@@ -434,42 +510,10 @@ Move</string>
               </property>
              </widget>
             </item>
-            <item row="0" column="0">
-             <widget class="QLabel" name="label_5">
-              <property name="text">
-               <string>Thorlabs Exposure Time</string>
-              </property>
-             </widget>
-            </item>
             <item row="6" column="0">
              <widget class="QLabel" name="label_3">
               <property name="text">
                <string>Thorlabs Settings</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item row="1" column="0">
-           <layout class="QGridLayout" name="gridLayout_4">
-            <item row="7" column="0">
-             <widget class="QCheckBox" name="c_subbkg">
-              <property name="text">
-               <string>Subtract Bkg</string>
-              </property>
-             </widget>
-            </item>
-            <item row="6" column="1">
-             <widget class="QCheckBox" name="c_darkcounts">
-              <property name="text">
-               <string>Dark Counts</string>
-              </property>
-             </widget>
-            </item>
-            <item row="6" column="0">
-             <widget class="QCheckBox" name="c_calibration">
-              <property name="text">
-               <string>Calibration</string>
               </property>
              </widget>
             </item>
@@ -525,6 +569,41 @@ Move</string>
          </layout>
         </item>
         <item>
+         <spacer name="verticalSpacer_2">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_30">
+          <property name="font">
+           <font>
+            <family>Times New Roman</family>
+            <pointsize>20</pointsize>
+            <weight>75</weight>
+            <bold>true</bold>
+            <underline>false</underline>
+           </font>
+          </property>
+          <property name="layoutDirection">
+           <enum>Qt::LeftToRight</enum>
+          </property>
+          <property name="text">
+           <string>XPS Controls</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
          <layout class="QVBoxLayout" name="verticalLayout_5">
           <item>
            <layout class="QFormLayout" name="formLayout_2">
@@ -547,7 +626,7 @@ Move</string>
             <item row="1" column="1">
              <widget class="QLineEdit" name="in_actip">
               <property name="text">
-               <string>FROG</string>
+               <string>192.168.0.79</string>
               </property>
              </widget>
             </item>
@@ -588,7 +667,7 @@ Move</string>
               <item>
                <widget class="QLineEdit" name="in_actmaxlim">
                 <property name="text">
-                 <string>10</string>
+                 <string>25</string>
                 </property>
                </widget>
               </item>
@@ -604,7 +683,7 @@ Move</string>
                </widget>
               </item>
               <item>
-               <widget class="QLineEdit" name="in_actminlim_2">
+               <widget class="QLineEdit" name="in_actminlim">
                 <property name="text">
                  <string>0</string>
                 </property>
@@ -685,7 +764,7 @@ Move</string>
      <x>0</x>
      <y>0</y>
      <width>912</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

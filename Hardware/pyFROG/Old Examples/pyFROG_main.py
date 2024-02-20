@@ -134,10 +134,8 @@ class mywindow(QtWidgets.QMainWindow):
         self.updateGUIStatus()
         
     def updatePosition(self):
-        
         if self.xps:
-            self.ui.out_actcurrentpos.setText('%0.6f'%(self.xps.getStagePosition(self.xpsAxes[0])))
-            
+            self.ui.out_actcurrentpos.setText('{self.xps.getStagePosition(self.xpsAxes[0]):.6f} mm')
             self.in_actstatus = [self.xps.getStageStatus(axis) for axis in self.xpsAxes]
     def updateGroup(self):
         self.xpsAxes[0] = str(self.ui.in_groupname.currentText())
@@ -161,16 +159,13 @@ class mywindow(QtWidgets.QMainWindow):
         self.updateGUIStatus()         
         
     def updateXPSTravelLimits(self):
-        
         xpsMinLim = self.ui.in_actminlim
         xpsMaxLim = self.ui.in_actmaxlim
         print(xpsMinLim.text())
         print(xpsMaxLim.text())
         #main code
-        time.sleep(.5)
+        time.sleep(.1)
 
-                
-                
         try:
             limit = float(xpsMinLim.text())
             if limit < 0 or limit > 50:
