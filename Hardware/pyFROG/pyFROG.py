@@ -5,10 +5,12 @@ import numpy as np
 
 from pyvisa import ResourceManager
 from PyQt5 import QtCore, QtGui, QtWidgets
+import qdarktheme
 from instrumental import instrument, list_instruments
-from instrumental.drivers.spectrometers import thorlabs_ccs
+#from instrumental.drivers.spectrometers import thorlabs_ccs
 
 sys.path.append('C:/Users/R2D2/Documents/CODE/Github/HusseinLab_UltrafastPlasmaScience/Hardware')
+sys.path.append('C:/Users/nfbei/Documents/Research/Code/Github/HusseinLab_UltrafastPlasmaScience/Hardware')
 
 from pyFROG_GUI import Ui_MainWindow
 from XPS.XPS import XPS
@@ -54,6 +56,16 @@ class pyFROG_App(QtWidgets.QMainWindow):
         self.timer.setInterval(500)
         self.timer.timeout.connect(self.updatePosition)
         self.timer.start()
+
+        #Load old data as reference
+        file = r'Hardware\pyFROG\Old Examples\data\frg_trace_1580511001.pkl'
+        data = pd.read_pickle(file)
+        wave = data['wave'][0]
+        trace = data['trace'][0].T
+        self.ui.frogTracePlot.axTrace.imshow(trace,aspect = 'auto',extent = [-50,50,wave[0],wave[-1]],origin='lower')
+        self.ui.frogTracePlot.ax_autoconv.plot(np.sum(trace,axis = 1),wave)
+        self.ui.frogTracePlot.ax_autocorr.plot(np.sum(trace,axis = 0))
+        self.ui.alignmentPlot.axes.plot(wave,trace[:,0])
 
     def _initXPS(self):
         self.xps = XPS(str(self.ui.in_actip.text()))
@@ -231,6 +243,7 @@ class pyFROG_App(QtWidgets.QMainWindow):
 if __name__ == "__main__":
     #from ResultsWindow import Results
     app = QtWidgets.QApplication(sys.argv)
+    qdarktheme.setup_theme()
     application = pyFROG_App()
     application.show()
     sys.exit(app.exec_())  

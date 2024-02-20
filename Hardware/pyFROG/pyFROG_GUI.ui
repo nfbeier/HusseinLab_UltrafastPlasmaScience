@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>912</width>
-    <height>843</height>
+    <width>761</width>
+    <height>896</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,28 +15,6 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout_3">
-    <item row="0" column="0">
-     <widget class="QLabel" name="label_29">
-      <property name="font">
-       <font>
-        <family>Times New Roman</family>
-        <pointsize>20</pointsize>
-        <weight>75</weight>
-        <bold>true</bold>
-        <underline>true</underline>
-       </font>
-      </property>
-      <property name="layoutDirection">
-       <enum>Qt::LeftToRight</enum>
-      </property>
-      <property name="text">
-       <string>Hussein Lab pyFROG</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-     </widget>
-    </item>
     <item row="1" column="0">
      <widget class="QTabWidget" name="ControlTab">
       <property name="font">
@@ -70,128 +48,107 @@
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_6">
         <item>
-         <widget class="GraphicsLayoutWidget" name="plotWidget" native="true">
+         <widget class="frogTraceCanvas" name="frogTracePlot" native="true">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>500</height>
+           </size>
+          </property>
           <property name="baseSize">
            <size>
             <width>10</width>
-            <height>60</height>
+            <height>500</height>
            </size>
           </property>
          </widget>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_6">
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_5">
-            <property name="sizeConstraint">
-             <enum>QLayout::SetDefaultConstraint</enum>
+         <layout class="QFormLayout" name="formLayout_3">
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_17">
+            <property name="text">
+             <string>Scan Length (fs)</string>
             </property>
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_4">
-              <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_8">
-                <item>
-                 <layout class="QGridLayout" name="gridLayout_5">
-                  <item row="1" column="0">
-                   <widget class="QLabel" name="label_17">
-                    <property name="text">
-                     <string>Scan Length (fs)</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="1" column="1">
-                   <widget class="QLabel" name="label_18">
-                    <property name="text">
-                     <string>Scan Step Size (fs)</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="1" column="2">
-                   <widget class="QLabel" name="label_19">
-                    <property name="text">
-                     <string>Number of Steps</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="2" column="1">
-                   <widget class="QLineEdit" name="in_scanstepsize"/>
-                  </item>
-                  <item row="2" column="0">
-                   <widget class="QLineEdit" name="in_scanlen"/>
-                  </item>
-                  <item row="2" column="2">
-                   <widget class="QLineEdit" name="in_scanstepnumbers"/>
-                  </item>
-                 </layout>
-                </item>
-               </layout>
-              </item>
-             </layout>
-            </item>
-            <item>
-             <layout class="QGridLayout" name="gridLayout_6">
-              <item row="0" column="0">
-               <widget class="QPushButton" name="p_aquirescan">
-                <property name="text">
-                 <string>Aquire Scan</string>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="0">
-               <widget class="QPushButton" name="p_bkgscan">
-                <property name="text">
-                 <string>Background Scan</string>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="0">
-               <widget class="QPushButton" name="p_savescan">
-                <property name="text">
-                 <string>Save Scan</string>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="0">
-               <widget class="QCheckBox" name="c_scanautosave">
-                <property name="text">
-                 <string>Autosave</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-           </layout>
+           </widget>
           </item>
-          <item>
-           <layout class="QVBoxLayout" name="verticalLayout">
-            <item>
-             <widget class="QLabel" name="label_20">
-              <property name="text">
-               <string>Trace Directory</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="in_scansavedir">
-              <property name="minimumSize">
-               <size>
-                <width>200</width>
-                <height>20</height>
-               </size>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="label_21">
-              <property name="text">
-               <string>Trace Name</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="in_tracebasename"/>
-            </item>
-           </layout>
+          <item row="0" column="1">
+           <widget class="QLineEdit" name="in_scanlen"/>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_18">
+            <property name="text">
+             <string>Scan Step Size (fs)</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLineEdit" name="in_scanstepsize"/>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_19">
+            <property name="text">
+             <string>Number of Steps</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QLineEdit" name="in_scanstepnumbers"/>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="label_20">
+            <property name="text">
+             <string>Trace Directory</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QLineEdit" name="in_scansavedir">
+            <property name="minimumSize">
+             <size>
+              <width>200</width>
+              <height>20</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="QLabel" name="label_21">
+            <property name="text">
+             <string>Trace Name</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QLineEdit" name="in_tracebasename"/>
+          </item>
+          <item row="5" column="1">
+           <widget class="QPushButton" name="p_aquirescan">
+            <property name="text">
+             <string>Aquire Scan</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="1">
+           <widget class="QPushButton" name="p_savescan">
+            <property name="text">
+             <string>Save Scan</string>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="1">
+           <widget class="QPushButton" name="p_bkgscan">
+            <property name="text">
+             <string>Background Scan</string>
+            </property>
+           </widget>
+          </item>
+          <item row="8" column="1">
+           <widget class="QCheckBox" name="c_scanautosave">
+            <property name="text">
+             <string>Autosave</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>
@@ -211,35 +168,39 @@
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_8">
         <item>
-         <widget class="MplCanvas" name="alignmentPlot" native="true"/>
-        </item>
-        <item>
-         <widget class="QLabel" name="label_11">
-          <property name="maximumSize">
+         <widget class="MplCanvas" name="alignmentPlot" native="true">
+          <property name="minimumSize">
            <size>
-            <width>16777215</width>
-            <height>25</height>
+            <width>0</width>
+            <height>500</height>
            </size>
-          </property>
-          <property name="text">
-           <string>Stage Motion Controls</string>
           </property>
          </widget>
         </item>
         <item>
          <layout class="QGridLayout" name="gridLayout">
-          <item row="2" column="1">
-           <widget class="QLineEdit" name="in_actabsmove">
+          <item row="4" column="0">
+           <widget class="QLabel" name="label_2">
             <property name="text">
-             <string>0.0</string>
+             <string>Small
+Relative
+Move</string>
             </property>
            </widget>
           </item>
-          <item row="5" column="2">
-           <widget class="QPushButton" name="p_actlargeback">
+          <item row="4" column="3">
+           <widget class="QPushButton" name="p_actsmallforward">
             <property name="text">
-             <string>Large Step
-Back</string>
+             <string>Small Step
+Forward</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="2">
+           <widget class="QPushButton" name="p_actsmallback">
+            <property name="text">
+             <string>Small Step
+ Back</string>
             </property>
            </widget>
           </item>
@@ -251,17 +212,6 @@ Forward</string>
             </property>
            </widget>
           </item>
-          <item row="2" column="3">
-           <widget class="QCheckBox" name="c_actenableabs">
-            <property name="text">
-             <string>Enable Abs.
-Move</string>
-            </property>
-           </widget>
-          </item>
-          <item row="6" column="1">
-           <widget class="QLineEdit" name="out_saveposition"/>
-          </item>
           <item row="2" column="0">
            <widget class="QLabel" name="label">
             <property name="text">
@@ -270,19 +220,18 @@ Move</string>
             </property>
            </widget>
           </item>
-          <item row="4" column="0">
-           <widget class="QLabel" name="label_2">
+          <item row="2" column="1">
+           <widget class="QLineEdit" name="in_actabsmove">
             <property name="text">
-             <string>Small
-Relative
-Move</string>
+             <string>0.0</string>
             </property>
            </widget>
           </item>
-          <item row="5" column="1">
-           <widget class="QLineEdit" name="in_actlargerel">
+          <item row="2" column="2">
+           <widget class="QPushButton" name="p_actabsmove">
             <property name="text">
-             <string>0.0</string>
+             <string>Absolute
+Move</string>
             </property>
            </widget>
           </item>
@@ -295,52 +244,11 @@ Move</string>
             </property>
            </widget>
           </item>
-          <item row="1" column="2">
-           <widget class="QLabel" name="label_7">
+          <item row="5" column="2">
+           <widget class="QPushButton" name="p_actlargeback">
             <property name="text">
-             <string>Currrent Position:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="6" column="2">
-           <widget class="QPushButton" name="p_actsaveposition">
-            <property name="text">
-             <string>Save Home</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="2">
-           <widget class="QPushButton" name="p_actsmallback">
-            <property name="text">
-             <string>Small Step
- Back</string>
-            </property>
-           </widget>
-          </item>
-          <item row="6" column="0">
-           <widget class="QLabel" name="label_24">
-            <property name="text">
-             <string>Last Saved Home</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QLabel" name="label_4">
-            <property name="maximumSize">
-             <size>
-              <width>16777215</width>
-              <height>50</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>Stage Settings</string>
-            </property>
-           </widget>
-          </item>
-          <item row="6" column="3">
-           <widget class="QPushButton" name="go_home_button_2">
-            <property name="text">
-             <string>Go Home</string>
+             <string>Large Step
+Back</string>
             </property>
            </widget>
           </item>
@@ -351,26 +259,63 @@ Move</string>
             </property>
            </widget>
           </item>
-          <item row="4" column="3">
-           <widget class="QPushButton" name="p_actsmallforward">
+          <item row="1" column="2">
+           <widget class="QLabel" name="label_7">
             <property name="text">
-             <string>Small Step
-Forward</string>
+             <string>Currrent Position:</string>
             </property>
            </widget>
           </item>
-          <item row="2" column="2">
-           <widget class="QPushButton" name="p_actabsmove">
+          <item row="1" column="1">
+           <widget class="QLabel" name="label_4">
             <property name="text">
-             <string>Absolute
+             <string>Stage Settings</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="1">
+           <widget class="QLineEdit" name="in_actlargerel">
+            <property name="text">
+             <string>0.0</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="3">
+           <widget class="QCheckBox" name="c_actenableabs">
+            <property name="text">
+             <string>Enable Abs.
 Move</string>
             </property>
            </widget>
           </item>
           <item row="1" column="3">
-           <widget class="QLabel" name="out_actcurrentpos">
+           <widget class="QLCDNumber" name="x_pos_lcd_2">
+            <property name="value" stdset="0">
+             <double>1.234000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="0">
+           <widget class="QLabel" name="label_24">
             <property name="text">
-             <string>0.00 mm</string>
+             <string>Last Saved Home</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="1">
+           <widget class="QLineEdit" name="out_saveposition"/>
+          </item>
+          <item row="6" column="2">
+           <widget class="QPushButton" name="p_actsaveposition">
+            <property name="text">
+             <string>Save Home</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="3">
+           <widget class="QPushButton" name="go_home_button_2">
+            <property name="text">
+             <string>Go Home</string>
             </property>
            </widget>
           </item>
@@ -384,7 +329,7 @@ Move</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_9">
         <item>
-         <widget class="QLabel" name="label_31">
+         <widget class="QLabel" name="label_30">
           <property name="font">
            <font>
             <family>Times New Roman</family>
@@ -407,31 +352,6 @@ Move</string>
         </item>
         <item>
          <layout class="QGridLayout" name="gridLayout_7">
-          <item row="1" column="0">
-           <layout class="QGridLayout" name="gridLayout_4">
-            <item row="7" column="0">
-             <widget class="QCheckBox" name="c_subbkg">
-              <property name="text">
-               <string>Subtract Bkg</string>
-              </property>
-             </widget>
-            </item>
-            <item row="6" column="1">
-             <widget class="QCheckBox" name="c_darkcounts">
-              <property name="text">
-               <string>Dark Counts</string>
-              </property>
-             </widget>
-            </item>
-            <item row="6" column="0">
-             <widget class="QCheckBox" name="c_calibration">
-              <property name="text">
-               <string>Calibration</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
           <item row="0" column="0">
            <layout class="QFormLayout" name="formLayout">
             <item row="0" column="0">
@@ -519,6 +439,31 @@ Move</string>
             </item>
            </layout>
           </item>
+          <item row="1" column="0">
+           <layout class="QGridLayout" name="gridLayout_4">
+            <item row="7" column="0">
+             <widget class="QCheckBox" name="c_subbkg">
+              <property name="text">
+               <string>Subtract Bkg</string>
+              </property>
+             </widget>
+            </item>
+            <item row="6" column="1">
+             <widget class="QCheckBox" name="c_darkcounts">
+              <property name="text">
+               <string>Dark Counts</string>
+              </property>
+             </widget>
+            </item>
+            <item row="6" column="0">
+             <widget class="QCheckBox" name="c_calibration">
+              <property name="text">
+               <string>Calibration</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
           <item row="0" column="1">
            <layout class="QVBoxLayout" name="verticalLayout_4">
             <item>
@@ -569,20 +514,7 @@ Move</string>
          </layout>
         </item>
         <item>
-         <spacer name="verticalSpacer_2">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
-         <widget class="QLabel" name="label_30">
+         <widget class="QLabel" name="label_31">
           <property name="font">
            <font>
             <family>Times New Roman</family>
@@ -607,6 +539,13 @@ Move</string>
          <layout class="QVBoxLayout" name="verticalLayout_5">
           <item>
            <layout class="QFormLayout" name="formLayout_2">
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_10">
+              <property name="text">
+               <string>Group Name</string>
+              </property>
+             </widget>
+            </item>
             <item row="0" column="1">
              <widget class="QComboBox" name="in_groupname">
               <item>
@@ -644,13 +583,6 @@ Move</string>
               </property>
              </widget>
             </item>
-            <item row="0" column="0">
-             <widget class="QLabel" name="label_10">
-              <property name="text">
-               <string>Group Name</string>
-              </property>
-             </widget>
-            </item>
            </layout>
           </item>
           <item>
@@ -667,7 +599,7 @@ Move</string>
               <item>
                <widget class="QLineEdit" name="in_actmaxlim">
                 <property name="text">
-                 <string>25</string>
+                 <string>10</string>
                 </property>
                </widget>
               </item>
@@ -683,7 +615,7 @@ Move</string>
                </widget>
               </item>
               <item>
-               <widget class="QLineEdit" name="in_actminlim">
+               <widget class="QLineEdit" name="in_actminlim_2">
                 <property name="text">
                  <string>0</string>
                 </property>
@@ -756,6 +688,28 @@ Move</string>
       </widget>
      </widget>
     </item>
+    <item row="0" column="0">
+     <widget class="QLabel" name="label_29">
+      <property name="font">
+       <font>
+        <family>Times New Roman</family>
+        <pointsize>20</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+        <underline>true</underline>
+       </font>
+      </property>
+      <property name="layoutDirection">
+       <enum>Qt::LeftToRight</enum>
+      </property>
+      <property name="text">
+       <string>Hussein Lab pyFROG</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -763,8 +717,8 @@ Move</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>912</width>
-     <height>21</height>
+     <width>761</width>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -784,15 +738,15 @@ Move</string>
  </widget>
  <customwidgets>
   <customwidget>
-   <class>GraphicsLayoutWidget</class>
-   <extends>QWidget</extends>
-   <header>pyqtgraph</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>MplCanvas</class>
    <extends>QWidget</extends>
    <header>mplcanvas.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>frogTraceCanvas</class>
+   <extends>QWidget</extends>
+   <header>frogtracecanvas.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
