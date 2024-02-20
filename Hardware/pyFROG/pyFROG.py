@@ -15,6 +15,19 @@ class pyFROG_App(QtWidgets.QMainWindow):
 
         self.threadpool = QtCore.QThreadPool()
 
+        #GUI Interactions
+        self.ui.in_scanlen.setText('0.01')
+        self.ui.in_scanstepnumbers.setText('10')
+        self.ui.in_scanstepsize.setText('0.01')
+        self.updateScanParameters(param='scanLength')
+        
+        self.ui.in_scanlen.textChanged.connect(lambda: self.updateScanParameters(param='scanLength'))
+        self.ui.in_scanstepnumbers.textChanged.connect(lambda: self.updateScanParameters(param='numberSteps'))
+        self.ui.in_scanstepsize.textChanged.connect(lambda: self.updateScanParameters(param='stepSize'))
+
+        self.ui.ConnectXPS.clicked.connect(self._initXPS)
+        self.ui.ConnectThorlabs.clicked.connect(self._connectSpec)
+
     def _initXPS(self):
         #XPS Initialization
         self.xpsAxes = [str(self.ui.in_groupname.currentText())]
@@ -26,6 +39,24 @@ class pyFROG_App(QtWidgets.QMainWindow):
         #self.xpsStageStatus = self.xps.getStageStatus(self.)#["Not initialized state"]
         #self.x_xps.getStageStatus(self.x_axis)
 
+    def _connectSpec(self):
+        #Spectrometer initialization
+        self.ui.alignmentPlot.axes.cla()
+        #self.ui.canvas.axes
+        return 
+    
+    def updateScanParameters(self,param=None):
+        if param == 'stepSize':
+            if not(self.ui.in_scanstepnumbers.text()) == '' and not(self.ui.in_scanstepsize.text() == ''):
+                self.ui.in_scanlen.setText(str(int(self.ui.in_scanstepnumbers.text())*float(self.ui.in_scanstepsize.text())))
+        elif param == 'scanLength':
+            if not(self.ui.in_scanlen.text()) == '' and not(self.ui.in_scanstepnumbers.text() == ''):
+                self.ui.in_scanstepsize.setText(str(float(self.ui.in_scanlen.text())/int(self.ui.in_scanstepnumbers.text()))) 
+        elif param == 'numberSteps':
+            if not(self.ui.in_scanstepnumbers.text()) == '' and not(self.ui.in_scanstepsize.text() == ''):
+                self.ui.in_scanlen.setText(str(int(self.ui.in_scanstepnumbers.text())*float(self.ui.in_scanstepsize.text()))) 
+        else:
+            print("Don't know how you triggered this but something went really wrong apparently in the updateScanparameters function")
 
 if __name__ == "__main__":
     #from ResultsWindow import Results
