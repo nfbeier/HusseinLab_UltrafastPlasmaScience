@@ -2,6 +2,8 @@ import pandas as pd
 import time, sys
 import pyqtgraph as pg
 import numpy as np
+from matplotlib.pyplot import draw, pause
+from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 
 from pyvisa import ResourceManager
 from PyQt5 import QtCore, QtGui, QtWidgets
@@ -14,6 +16,25 @@ sys.path.append('C:/Users/nfbei/Documents/Research/Code/Github/HusseinLab_Ultraf
 
 from pyFROG_GUI import Ui_MainWindow
 from XPS.XPS import XPS
+
+class ThorlabsSpecThread(QtCore.QThread):
+    beep=QtCore.pyqtSignal(object)
+
+    def __init__(self,spec):
+        super(ThorlabsSpecThread, self).__init__()
+        self.spec = spec
+        self.running = False
+
+    def run(self):
+        self.running = True
+        self.spec.start_continuous_scan()
+        while self.running:
+            self.intensity = np.array(self.spec.get_scan_data())
+            self.beep.emit(self.intensity)
+
+    def stop(self):
+        self.running = False
+        self.spec.stop_scan
 
 class pyFROG_App(QtWidgets.QMainWindow):
     def __init__(self):
@@ -37,6 +58,7 @@ class pyFROG_App(QtWidgets.QMainWindow):
 
         self.ui.ConnectXPS.clicked.connect(self._initXPS)
         self.ui.ConnectThorlabs.clicked.connect(self._initThorlabs)
+        self.ui.in_specexposure.textChanged.connect(lambda: self.updateThorlabsParameters(param ="integrationTime"))
 
         self.ui.actionExit.triggered.connect(self.stopBtn)
         self.ui.p_actsetlim.clicked.connect(self.updateXPSTravelLimits)
@@ -56,6 +78,12 @@ class pyFROG_App(QtWidgets.QMainWindow):
         self.timer.setInterval(500)
         self.timer.timeout.connect(self.updatePosition)
         self.timer.start()
+
+        self.navi_toolbar = NavigationToolbar(self.ui.alignmentPlot, self)
+        self.ui.verticalLayout_8.insertWidget(0,self.navi_toolbar)
+
+        self.navi_toolbar_2 = NavigationToolbar(self.ui.frogTracePlot, self)
+        self.ui.verticalLayout_6.insertWidget(0,self.navi_toolbar_2)
 
         #Load old data as reference
         file = r'Hardware\pyFROG\Old Examples\data\frg_trace_1580511001.pkl'
@@ -87,16 +115,29 @@ class pyFROG_App(QtWidgets.QMainWindow):
         if res:
             paramsets = list_instruments()
             self.spec = instrument(paramsets[0],reopen_policy = "reuse")# thorlabs ccs200
-        
-        self.wave = np.zeros((3648))
-        self.intensity = np.zeros((3648)) 
+
+        self.wave = self.spec._wavelength_array
+        self.spec.set_integration_time('100 ms')
+        print(self.spec.get_integration_time())
+
+        self.spec.start_single_scan()
+        intensity=np.array(self.spec.get_scan_data())
 
         self.ui.alignmentPlot.axes.cla()
-        self.ui.alignmentPlot.axes.plot(self.wave,self.intensity)
-    
+        self.alignPlot, = self.ui.alignmentPlot.axes.plot(self.wave,intensity)
+        self.ui.alignmentPlot.axes.set_xlabel("Wavelength [nm]")
+        self.ui.alignmentPlot.axes.set_ylabel("Intensity [a.u.]")
+
+        self.ThorlabsThread = ThorlabsSpecThread(self.spec)
+        self.ThorlabsThread.beep.connect(self.updateAlignmentPlot)
+        self.ThorlabsThread.start()
+
     def updateThorlabsParameters(self,param = None):
+        '''Note this function is causing crashing at the moment. Haven't had time to debug it.'''
         if param == "integrationTime":
-            self.spec.set_integration_time('{} ms')
+            if self.spec:
+                intTime = self.ui.in_specexposure.text()
+                self.spec.set_integration_time(f'{intTime} ms')
 
     def updateScanParameters(self,param=None):
         if param == 'stepSize':
@@ -123,7 +164,7 @@ class pyFROG_App(QtWidgets.QMainWindow):
         self.xpsStageStatus = self.xps.getStageStatus(self.xpsFROGAxis)
         if self.xpsStageStatus.upper() == "Disabled state".upper():
             self.xps.enableGroup(self.xpsFROGAxis)
-        elif self.xpsStageStatus[0][:11].upper() == "Ready state".upper():
+        elif self.xpsStageStatus[:11].upper() == "Ready state".upper():
             self.xps.disableGroup(self.xpsFROGAxis)
         self.updateGUIStatus()       
 
@@ -155,7 +196,8 @@ class pyFROG_App(QtWidgets.QMainWindow):
 
     def updatePosition(self):
         if self.xps:
-            self.ui.out_actcurrentpos.setText('%0.6f mm'%(self.xps.getStagePosition(self.xpsFROGAxis)))
+            pos = round(self.xps.getStagePosition(self.xpsFROGAxis),4)
+            self.ui.out_actcurrentpos.setText(f'{pos:.4f} mm')
             self.ui.in_actstatus.setText(self.xps.getStageStatus(self.xpsFROGAxis))
 
     def updateXPSTravelLimits(self):
@@ -232,6 +274,11 @@ class pyFROG_App(QtWidgets.QMainWindow):
             self.ui.in_actstatus.setText("Ready state")
         
         self.updatePosition()
+
+    def updateAlignmentPlot(self,intensity):
+        self.alignPlot.set_ydata(intensity)
+        self.ui.alignmentPlot.fig.canvas.draw()
+        pause(.01)  # give the gui time to process the draw events
 
     def stopBtn(self):
         if self.xps:
