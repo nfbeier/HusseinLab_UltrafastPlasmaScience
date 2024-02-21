@@ -2,13 +2,19 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.ticker import NullFormatter, MaxNLocator
 import numpy as np
+from scipy.signal import find_peaks, peak_widths
+
+file_bkg = r'Hardware\pyFROG\Old Examples\data\frg_trace.pkl'
 file = r'Hardware\pyFROG\Old Examples\data\frg_trace_1580511001.pkl'
 
+data_bkg = pd.read_pickle(file_bkg)
 data = pd.read_pickle(file)
 
 #plt.plot(data['wave'],data['trace'])
 wave = data['wave'][0]
-trace = data['trace'][0].T
+trace = data['trace'][0]
+trace_bkg = data_bkg['trace'][0]
+trace -= trace_bkg
 
 # Define the locations for the axes
 left, width = 0.12, 0.55
@@ -31,13 +37,21 @@ nullfmt = NullFormatter()
 ax_autocorr.xaxis.set_major_formatter(nullfmt)
 ax_autoconv.yaxis.set_major_formatter(nullfmt)
 
-axTrace.imshow(trace,aspect = 'auto',extent = [-50,50,wave[0],wave[-1]],origin='lower')
-ax_autoconv.plot(np.sum(trace,axis = 1),wave)
-ax_autocorr.plot(np.sum(trace,axis = 0))
-#plt.colorbar()
+timeAxis = np.linspace(-300,300,100)
+axTrace.imshow(trace.T,aspect = 'auto',origin = 'lower',extent = [timeAxis[0],timeAxis[-1],wave[0],wave[-1]])
+autocorr = np.sum(trace,axis = 1)
+autoconv = np.sum(trace,axis = 0)
+ax_autoconv.plot(autoconv,wave)
+ax_autocorr.plot(timeAxis, autocorr)
+
+peaks,_ = find_peaks(autocorr,distance=100)
+results_half = peak_widths(autocorr,peaks,rel_height=0.5)[0]
+print(results_half*(timeAxis[1]-timeAxis[0]))
+
 axTrace.set_xlabel("Delay [fs]")
 axTrace.set_ylabel("Wavelength [nm]")
+ax_autocorr.set_xlim([-300,300])
+ax_autoconv.set_ylim([wave[0],wave[-1]])
 ax_autoconv.set_title("Autoconvolution")
 ax_autocorr.set_title("Autocorrelation")
-plt.tight_layout()
 plt.show()

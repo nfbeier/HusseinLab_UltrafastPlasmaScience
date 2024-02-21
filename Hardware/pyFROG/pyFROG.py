@@ -2,6 +2,7 @@ import pandas as pd
 import time, sys
 import pyqtgraph as pg
 import numpy as np
+from scipy import constants
 from matplotlib.pyplot import draw, pause
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 
@@ -9,7 +10,6 @@ from pyvisa import ResourceManager
 from PyQt5 import QtCore, QtGui, QtWidgets
 import qdarktheme
 from instrumental import instrument, list_instruments
-#from instrumental.drivers.spectrometers import thorlabs_ccs
 
 sys.path.append('C:/Users/R2D2/Documents/CODE/Github/HusseinLab_UltrafastPlasmaScience/Hardware')
 sys.path.append('C:/Users/nfbei/Documents/Research/Code/Github/HusseinLab_UltrafastPlasmaScience/Hardware')
@@ -47,9 +47,9 @@ class pyFROG_App(QtWidgets.QMainWindow):
         self.xps, self.spec = None, None
 
         #GUI Interactions
-        self.ui.in_scanlen.setText('0.01')
-        self.ui.in_scanstepnumbers.setText('10')
-        self.ui.in_scanstepsize.setText('0.01')
+        self.ui.in_scanlen.setText('300')
+        self.ui.in_scanstepnumbers.setText('100')
+        self.ui.in_scanstepsize.setText('3')
         self.updateScanParameters(param='scanLength')
         
         self.ui.in_scanlen.textChanged.connect(lambda: self.updateScanParameters(param='scanLength'))
@@ -73,6 +73,8 @@ class pyFROG_App(QtWidgets.QMainWindow):
         self.ui.p_actlargeback.clicked.connect(lambda: self.xpsMove('LargeBack'))
         self.ui.p_actlargeforward.clicked.connect(lambda: self.xpsMove('LargeForward'))
 
+        self.ui.p_aquirescan.clicked.connect(self.acquireTrace)
+
         #Timer
         self.timer = QtCore.QTimer(self)
         self.timer.setInterval(500)
@@ -88,12 +90,15 @@ class pyFROG_App(QtWidgets.QMainWindow):
         #Load old data as reference
         file = r'Hardware\pyFROG\Old Examples\data\frg_trace_1580511001.pkl'
         data = pd.read_pickle(file)
-        wave = data['wave'][0]
-        trace = data['trace'][0].T
-        self.ui.frogTracePlot.axTrace.imshow(trace,aspect = 'auto',extent = [-50,50,wave[0],wave[-1]],origin='lower')
-        self.ui.frogTracePlot.ax_autoconv.plot(np.sum(trace,axis = 1),wave)
-        self.ui.frogTracePlot.ax_autocorr.plot(np.sum(trace,axis = 0))
-        self.ui.alignmentPlot.axes.plot(wave,trace[:,0])
+        self.wave = data['wave'][0]
+        trace = data['trace'][0]
+
+        timeAxis = np.linspace(-300,300,100)
+        self.ui.frogTracePlot.axTrace.imshow(trace.T,aspect = 'auto',origin = 'lower',extent = [timeAxis[0],timeAxis[-1],self.wave[0],self.wave[-1]])
+        autocorr = np.sum(trace,axis = 1)
+        autoconv = np.sum(trace,axis = 0)
+        self.ui.frogTracePlot.ax_autoconv.plot(autoconv,self.wave)
+        self.ui.frogTracePlot.ax_autocorr.plot(timeAxis, autocorr)
 
     def _initXPS(self):
         self.xps = XPS(str(self.ui.in_actip.text()))
@@ -121,10 +126,10 @@ class pyFROG_App(QtWidgets.QMainWindow):
         print(self.spec.get_integration_time())
 
         self.spec.start_single_scan()
-        intensity=np.array(self.spec.get_scan_data())
+        self.intensity=np.array(self.spec.get_scan_data())
 
         self.ui.alignmentPlot.axes.cla()
-        self.alignPlot, = self.ui.alignmentPlot.axes.plot(self.wave,intensity)
+        self.alignPlot, = self.ui.alignmentPlot.axes.plot(self.wave,self.intensity)
         self.ui.alignmentPlot.axes.set_xlabel("Wavelength [nm]")
         self.ui.alignmentPlot.axes.set_ylabel("Intensity [a.u.]")
 
@@ -276,9 +281,54 @@ class pyFROG_App(QtWidgets.QMainWindow):
         self.updatePosition()
 
     def updateAlignmentPlot(self,intensity):
-        self.alignPlot.set_ydata(intensity)
+        self.intensity = intensity
+        self.alignPlot.set_ydata(self.intensity)
         self.ui.alignmentPlot.fig.canvas.draw()
         pause(.01)  # give the gui time to process the draw events
+
+    def acquireTrace(self,pause=0.005):
+            num_steps = int(self.ui.in_scanstepnumbers.text())
+            scanLength = float(self.ui.in_scanlen.text())
+            step_size = float(self.ui.in_scanstepsize.text())
+            
+            delay = np.linspace(-0.5*scanLength,0.5*scanLength,num_steps)
+            actsteps = round(delay/(2*constants.c),4)
+            actstep = actsteps[1]-actsteps[0]
+
+            self.ui.frogTracePlot.ax_autoconv.cla()
+            self.ui.frogTracePlot.ax_autocorr.cla()
+
+            trace = np.zeros((num_steps,len(self.wave)))
+            autocorr = np.sum(trace,axis = 1)
+            autoconv = np.sum(trace,axis = 0)
+
+            im = self.ui.frogTracePlot.axTrace.imshow(trace.T,aspect = 'auto',origin = 'lower',extent = [delay[0],delay[-1],self.wave[0],self.wave[-1]])
+            self.autoconvPlot, = self.ui.frogTracePlot.ax_autoconv.plot(autoconv,self.wave)
+            self.autocorrPlot, = self.ui.frogTracePlot.ax_autocorr.plot(delay,autocorr) 
+
+            self.ui.frogTracePlot.ax_autocorr.set_xlim([delay[0],delay[-1]])
+            self.ui.frogTracePlot.ax_autoconv.set_ylim([self.wave[0],self.wave[-1]])
+            self.ui.frogTracePlot.ax_autoconv.set_title("Autoconvolution")
+            self.ui.frogTracePlot.ax_autocorr.set_title("Autocorrelation")
+            self.ui.frogTracePlot.ax_autocorr.xaxis.set_major_formatter(self.ui.frogTracePlot.nullfmt)
+            self.ui.frogTracePlot.ax_autoconv.yaxis.set_major_formatter(self.ui.frogTracePlot.nullfmt)
+
+            self.ui.frogTracePlot.fig.canvas.draw()    
+
+            pos = round(self.xps.getStagePosition(self.xpsFROGAxis),4)
+            self.xpsMove('LargeBack')
+            self.xps.moveAbsolute(self.xpsFROGAxis,pos-actsteps[0])
+
+            for ii in range(num_steps):
+                time.sleep(pause)
+                trace[ii] = self.intensity
+                autocorr = np.sum(trace,axis = 1)
+                autoconv = np.sum(trace,axis = 0)
+                self.autoconvPlot.set_ydata(autoconv)
+                self.autocorrPlot.set_ydata(autocorr)
+                im.setImage(trace)
+                self.ui.frogTracePlot.fig.canvas.draw()
+                self.xps.moveRelative(self.xpsFROGAxis,actstep)
 
     def stopBtn(self):
         if self.xps:
@@ -290,7 +340,7 @@ class pyFROG_App(QtWidgets.QMainWindow):
 if __name__ == "__main__":
     #from ResultsWindow import Results
     app = QtWidgets.QApplication(sys.argv)
-    qdarktheme.setup_theme()
+    #qdarktheme.setup_theme()
     application = pyFROG_App()
     application.show()
     sys.exit(app.exec_())  

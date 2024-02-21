@@ -5,7 +5,7 @@ from matplotlib.ticker import NullFormatter, MaxNLocator
 
 class frogTraceCanvas(FigureCanvas):
     def __init__(self, parent=None, width=8, height=6, dpi=100):
-        fig = Figure(figsize=(width, height), dpi=dpi)
+        self.fig = Figure(figsize=(width, height), dpi=dpi)
 
         # Define the locations for the axes
         left, width = 0.12, 0.55
@@ -18,18 +18,18 @@ class frogTraceCanvas(FigureCanvas):
         rect_autoconv = [left_h, bottom, 0.25, height] # dimensions of y-histogram
 
         # Make the three plots
-        self.axTrace = fig.add_axes(rect_trace) # temperature plot
-        self.ax_autocorr = fig.add_axes(rect_autocorr) # x histogram
-        self.ax_autoconv = fig.add_axes(rect_autoconv) # y histogram
+        self.axTrace = self.fig.add_axes(rect_trace) # temperature plot
+        self.ax_autocorr = self.fig.add_axes(rect_autocorr) # x histogram
+        self.ax_autoconv = self.fig.add_axes(rect_autoconv) # y histogram
 
         # Remove the inner axes numbers of the histograms
-        nullfmt = NullFormatter()
-        self.ax_autocorr.xaxis.set_major_formatter(nullfmt)
-        self.ax_autoconv.yaxis.set_major_formatter(nullfmt)
+        self.nullfmt = NullFormatter()
+        self.ax_autocorr.xaxis.set_major_formatter(self.nullfmt)
+        self.ax_autoconv.yaxis.set_major_formatter(self.nullfmt)
 
         self.axTrace.set_xlabel("Delay [fs]")
         self.axTrace.set_ylabel("Wavelength [nm]")
         self.ax_autoconv.set_title("Autoconvolution")
         self.ax_autocorr.set_title("Autocorrelation")
         
-        super(frogTraceCanvas, self).__init__(fig)
+        super(frogTraceCanvas, self).__init__(self.fig)
