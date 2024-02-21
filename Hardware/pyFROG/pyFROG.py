@@ -25,6 +25,9 @@ class ThorlabsSpecThread(QtCore.QThread):
         self.spec = spec
         self.running = False
 
+    def __del__(self):
+        self.wait()
+
     def run(self):
         self.running = True
         self.spec.start_continuous_scan()
@@ -33,10 +36,49 @@ class ThorlabsSpecThread(QtCore.QThread):
                 self.intensity = np.array(self.spec.get_scan_data())
                 self.beep.emit(self.intensity)
                 time.sleep(0.1) 
+        self.spec.stop_scan()
 
     def stop(self):
         self.running = False
-        self.spec.stop_scan
+
+class FROGTraceThread(QtCore.QThread):
+    beep=QtCore.pyqtSignal(object)
+    finished = QtCore.pyqtSignal()
+    def __init__(self,spec,xps,xpsFROGAxis,plots,trace,numsteps,actstep):
+        super(FROGTraceThread, self).__init__()
+        self.spec = spec
+        self.running = False
+        self.numsteps = numsteps
+        self.actstep = actstep
+        self.trace = trace
+        self.plots = plots
+        self.xps = xps
+        self.xpsFROGAxis = xpsFROGAxis
+
+    def run(self):
+        self.spec.start_continuous_scan()
+
+        for ii in range(self.num_steps):
+            time.sleep(0.1)
+            self.intensity = np.array(self.spec.get_scan_data())
+            self.trace[ii] = self.intensity
+            autocorr = np.sum(self.trace,axis = 1)
+            autoconv = np.sum(self.trace,axis = 0)
+
+            self.plots[0].set_data(self.trace.T)
+            self.plots[1].set_xdata(autoconv)
+            self.plots[2].set_ydata(autocorr)
+
+            self.plots[3].ax_autocorr.set_ylim([0,np.amax(autocorr)])
+            self.plots[3].ax_autoconv.set_xlim([0,np.amax(autoconv)])
+            self.plots[0].set_clim(vmin=0, vmax = np.amax(self.trace))
+            
+            self.plots[3].fig.canvas.draw()
+            self.xps.moveRelative(self.xpsFROGAxis,self.actstep)
+
+        self.beep.emit(self.trace)
+        self.spec.stop_scan()
+        self.finished.emit()
 
 class pyFROG_App(QtWidgets.QMainWindow):
     def __init__(self):
@@ -103,16 +145,19 @@ class pyFROG_App(QtWidgets.QMainWindow):
         self.ui.frogTracePlot.ax_autocorr.plot(timeAxis, autocorr)
 
     def _initXPS(self):
-        self.xps = XPS(str(self.ui.in_actip.text()))
-        self.xpsGroupNames = self.xps.getXPSStatus()
-        self.ui.in_groupname.clear()
-        self.ui.in_groupname.addItems(list(self.xpsGroupNames.keys()))
-        self.xpsAxes = [str(self.ui.in_groupname.currentText())]
-        self.xpsFROGAxis = self.xpsAxes[0]
+        try:
+            self.xps = XPS(str(self.ui.in_actip.text()))
+            self.xpsGroupNames = self.xps.getXPSStatus()
+            self.ui.in_groupname.clear()
+            self.ui.in_groupname.addItems(list(self.xpsGroupNames.keys()))
+            self.xpsAxes = [str(self.ui.in_groupname.currentText())]
+            self.xpsFROGAxis = self.xpsAxes[0]
 
-        self.xps.setGroup(self.xpsFROGAxis)
-        self.xpsStageStatus = self.xps.getStageStatus(self.xpsFROGAxis)
-        self.updateGUIStatus()
+            self.xps.setGroup(self.xpsFROGAxis)
+            self.xpsStageStatus = self.xps.getStageStatus(self.xpsFROGAxis)
+            self.updateGUIStatus()
+        except AttributeError:
+            self.xps = None
 
     def _initThorlabs(self):
         #Spectrometer initialization
@@ -289,6 +334,9 @@ class pyFROG_App(QtWidgets.QMainWindow):
         self.ui.alignmentPlot.fig.canvas.draw()
         pause(.01)  # give the gui time to process the draw events
 
+    def updateTrace(self,trace):
+        self.trace = trace
+
     def acquireTrace(self,pause=0.5):
             num_steps = int(self.ui.in_scanstepnumbers.text())
             scanLength = float(self.ui.in_scanlen.text())
@@ -305,10 +353,10 @@ class pyFROG_App(QtWidgets.QMainWindow):
             autocorr = np.sum(trace,axis = 1)
             autoconv = np.sum(trace,axis = 0)
 
-            im = self.ui.frogTracePlot.axTrace.imshow(trace.T,aspect = 'auto',origin = 'lower',vmin = 0, vmax = np.amax(self.intensity),extent = [delay[0],delay[-1],self.wave[0],self.wave[-1]])
+            self.im = self.ui.frogTracePlot.axTrace.imshow(trace.T,aspect = 'auto',origin = 'lower',vmin = 0, vmax = np.amax(self.intensity),extent = [delay[0],delay[-1],self.wave[0],self.wave[-1]])
             self.autoconvPlot, = self.ui.frogTracePlot.ax_autoconv.plot(autoconv,self.wave)
             self.autocorrPlot, = self.ui.frogTracePlot.ax_autocorr.plot(delay,autocorr) 
-
+            self.plots = [self.im,self.autoconvPlot,self.autocorrPlot,self.ui.frogTracePlot]
             self.ui.frogTracePlot.ax_autocorr.set_xlim([delay[0],delay[-1]])
             self.ui.frogTracePlot.ax_autoconv.set_ylim([self.wave[0],self.wave[-1]])
             self.ui.frogTracePlot.ax_autoconv.set_title("Autoconvolution")
@@ -322,7 +370,13 @@ class pyFROG_App(QtWidgets.QMainWindow):
                 self.xpsMove('LargeBack')
                 self.xps.moveAbsolute(self.xpsFROGAxis,pos+round(actsteps[0],4))
 
-                for ii in range(num_steps):
+                self.ThorlabsThread.stop()
+                self.FROGTraceThread = FROGTraceThread(self.spec,self.xps,\
+                    self.xpsFROGAxis,self.plots,self.trace,num_steps,actstep)
+                self.FROGTraceThread.beep.connect(self.updateTrace)
+                self.FROGTraceThread.start()
+                self.FROGTraceThread.finished.connect(self.ThorlabsThread.run())
+                '''for ii in range(num_steps):
                     time.sleep(pause)
                     self.intensity = np.array(self.spec.get_scan_data())
                     trace[ii] = self.intensity
@@ -332,10 +386,10 @@ class pyFROG_App(QtWidgets.QMainWindow):
                     self.autocorrPlot.set_ydata(autocorr)
                     self.ui.frogTracePlot.ax_autocorr.set_ylim([0,np.amax(autocorr)])
                     self.ui.frogTracePlot.ax_autoconv.set_xlim([0,np.amax(autoconv)])
-                    im.set_data(trace.T)
-                    im.set_clim(vmin=0, vmax = np.amax(trace))
+                    self.im.set_data(trace.T)
+                    self.im.set_clim(vmin=0, vmax = np.amax(trace))
                     self.ui.frogTracePlot.fig.canvas.draw()
-                    self.xps.moveRelative(self.xpsFROGAxis,actstep)
+                    self.xps.moveRelative(self.xpsFROGAxis,actstep)'''
             else:
                 print("Either the XPS or the Spectrometer are not enabled.")
 
