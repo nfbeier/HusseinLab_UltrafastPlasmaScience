@@ -382,10 +382,11 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.label_17.setText(_translate("MainWindow", "Scan Length (fs)"))
-        self.in_scanlen.setText(_translate("MainWindow", "100"))
+        self.in_scanlen.setText(_translate("MainWindow", "1000"))
         self.label_18.setText(_translate("MainWindow", "Scan Step Size (fs)"))
-        self.in_scanstepsize.setText(_translate("MainWindow", "5"))
+        self.in_scanstepsize.setText(_translate("MainWindow", "4.0"))
         self.label_19.setText(_translate("MainWindow", "Number of Steps"))
+        self.in_scanstepnumbers.setText(_translate("MainWindow", "250"))
         self.label_20.setText(_translate("MainWindow", "Trace Directory"))
         self.label_21.setText(_translate("MainWindow", "Trace Name"))
         self.p_aquirescan.setText(_translate("MainWindow", "Aquire Scan"))
@@ -404,7 +405,7 @@ class Ui_MainWindow(object):
 "Forward"))
         self.label.setText(_translate("MainWindow", "Absolute\n"
 "Move"))
-        self.in_actabsmove.setText(_translate("MainWindow", "0.0"))
+        self.in_actabsmove.setText(_translate("MainWindow", "13.980"))
         self.p_actabsmove.setText(_translate("MainWindow", "Absolute\n"
 "Move"))
         self.label_9.setText(_translate("MainWindow", "Large\n"
@@ -412,10 +413,10 @@ class Ui_MainWindow(object):
 "Move"))
         self.p_actlargeback.setText(_translate("MainWindow", "Large Step\n"
 "Back"))
-        self.in_actsmallrel.setText(_translate("MainWindow", "0.0"))
+        self.in_actsmallrel.setText(_translate("MainWindow", "0.002"))
         self.label_7.setText(_translate("MainWindow", "Currrent Position:"))
         self.label_4.setText(_translate("MainWindow", "Stage Settings"))
-        self.in_actlargerel.setText(_translate("MainWindow", "0.0"))
+        self.in_actlargerel.setText(_translate("MainWindow", ".1"))
         self.c_actenableabs.setText(_translate("MainWindow", "Enable Abs.\n"
 "Move"))
         self.label_24.setText(_translate("MainWindow", "Last Saved Home"))

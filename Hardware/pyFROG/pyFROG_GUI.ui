@@ -29,7 +29,7 @@
        <enum>Qt::LeftToRight</enum>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab_FROG">
        <property name="font">
@@ -75,7 +75,7 @@
           <item row="0" column="1">
            <widget class="QLineEdit" name="in_scanlen">
             <property name="text">
-             <string>100</string>
+             <string>1000</string>
             </property>
            </widget>
           </item>
@@ -89,7 +89,7 @@
           <item row="1" column="1">
            <widget class="QLineEdit" name="in_scanstepsize">
             <property name="text">
-             <string>5</string>
+             <string>4.0</string>
             </property>
            </widget>
           </item>
@@ -101,7 +101,11 @@
            </widget>
           </item>
           <item row="2" column="1">
-           <widget class="QLineEdit" name="in_scanstepnumbers"/>
+           <widget class="QLineEdit" name="in_scanstepnumbers">
+            <property name="text">
+             <string>250</string>
+            </property>
+           </widget>
           </item>
           <item row="3" column="0">
            <widget class="QLabel" name="label_20">
@@ -231,7 +235,7 @@ Move</string>
           <item row="2" column="1">
            <widget class="QLineEdit" name="in_actabsmove">
             <property name="text">
-             <string>0.0</string>
+             <string>13.980</string>
             </property>
            </widget>
           </item>
@@ -263,7 +267,7 @@ Back</string>
           <item row="4" column="1">
            <widget class="QLineEdit" name="in_actsmallrel">
             <property name="text">
-             <string>0.0</string>
+             <string>0.002</string>
             </property>
            </widget>
           </item>
@@ -284,7 +288,7 @@ Back</string>
           <item row="5" column="1">
            <widget class="QLineEdit" name="in_actlargerel">
             <property name="text">
-             <string>0.0</string>
+             <string>.1</string>
             </property>
            </widget>
           </item>
