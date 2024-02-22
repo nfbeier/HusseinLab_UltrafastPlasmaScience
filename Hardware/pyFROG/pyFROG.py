@@ -92,22 +92,35 @@ class FROGTraceThread(QtCore.QThread):
         self.wave, self.intensity = None, None
         self.trace = None
         
-    def configureTrace(self,wave,intensity,num_steps,actstep):
+    def configureTrace(self,wave,intensity,num_steps,actstep,boxcar_avg,num_avg):
         self.wave = wave
         self.intensity = intensity
         self.num_steps = num_steps
         self.actstep = actstep
+        self.num_avg = num_avg
+        self.kernel_size = boxcar_avg
         self.trace = np.zeros((num_steps,len(self.wave)))
+
+        self.kernel = np.ones(self.kernel_size) / self.kernel_size
 
     def setIntensity(self,intensity):
         self.intensity = intensity
 
     def run(self):
         for ii in range(self.num_steps):
-            time.sleep(0.1)
+            intTotal = []
+            for num in range(self.num_avg):
+                time.sleep(0.01)
+                intTotal.append(self.intensity)
+
+            self.moveXPS.emit(self.actstep)
+            self.intensity = np.average(intTotal,axis = 0)
+
+            #if self.kernel_size > 0:
+            #    self.intensity = np.convolve(self.intensity, self.kernel, mode="same")
+
             self.trace[ii] = self.intensity
             self.beep.emit(self.trace)
-            self.moveXPS.emit(self.actstep)
 
         self.finished.emit()
 
@@ -332,9 +345,10 @@ class pyFROG_App(QtWidgets.QMainWindow):
 
     def updateIntensity(self,intensity):
         self.intensity = intensity
-        self.updateAlignmentPlot()
         if self.FROGTraceThread:
             self.FROGTraceThread.setIntensity(intensity)
+        self.updateAlignmentPlot()
+
             
     def initializeTracePlot(self):
         self.ui.frogTracePlot.axTrace.cla()
@@ -349,6 +363,8 @@ class pyFROG_App(QtWidgets.QMainWindow):
         self.autoconvPlot, = self.ui.frogTracePlot.ax_autoconv.plot(autoconv,self.wave)
         self.autocorrPlot, = self.ui.frogTracePlot.ax_autocorr.plot(self.delay,autocorr) 
 
+        self.ui.frogTracePlot.axTrace.set_xlabel("Delay [fs]")
+        self.ui.frogTracePlot.axTrace.set_ylabel("Wavelength [nm]")
         self.ui.frogTracePlot.ax_autocorr.set_xlim([self.delay[0],self.delay[-1]])
         self.ui.frogTracePlot.ax_autoconv.set_ylim([self.wave[0],self.wave[-1]])
         self.ui.frogTracePlot.ax_autoconv.set_title("Autoconvolution")
@@ -372,7 +388,7 @@ class pyFROG_App(QtWidgets.QMainWindow):
     def updateAlignmentPlot(self):
         self.alignPlot.set_ydata(self.intensity)
         self.ui.alignmentPlot.fig.canvas.draw()
-        pause(.01)  # give the gui time to process the draw events
+        pause(.001)  # give the gui time to process the draw events
 
     def acquireTrace(self):
         self.num_steps = int(self.ui.in_scanstepnumbers.text())
@@ -380,15 +396,15 @@ class pyFROG_App(QtWidgets.QMainWindow):
 
         self.delay = np.linspace(-0.5*scanLength,0.5*scanLength,self.num_steps)
         self.actsteps = self.delay/2*constants.c*1e-12 #convert to fs from mm
-        self.actstep = float(round(self.actsteps[1]-self.actsteps[0],4))
+        self.actstep = float(self.actsteps[1]-self.actsteps[0])
 
-        scanParams = [self.wave,self.intensity,self.num_steps,self.actstep]
+        scanParams = [self.wave,self.intensity,self.num_steps,self.actstep,self.ui.in_boxcar.value(),self.ui.in_numberaverage.value()]
         self.initializeTracePlot()
 
         if self.xps and self.xpsStageStatus[:11].upper() == "Ready state".upper():
-            pos = round(self.xps.getStagePosition(self.xpsFROGAxis),4)
+            pos = self.xps.getStagePosition(self.xpsFROGAxis)
             self.xpsMove('LargeBack')
-            self.xps.moveAbsolute(self.xpsFROGAxis,pos+round(self.actsteps[0],4))
+            self.xps.moveAbsolute(self.xpsFROGAxis,pos+self.actsteps[0])
 
             self.FROGTraceThread.configureTrace(*scanParams)
             self.FROGTraceThread.moveXPS.connect(lambda: self.xps.moveRelative(self.xpsFROGAxis, self.actstep))
@@ -407,7 +423,7 @@ class pyFROG_App(QtWidgets.QMainWindow):
         self.ui.frogTracePlot.axTrace.text(1.05, 1.49, f'Autocorrelation: {autocorr_val:.1f} fs\nTemporal FWHM: {tempFWHM:.1f} fs', transform=self.ui.frogTracePlot.axTrace.transAxes, fontsize=10,
                 verticalalignment='top')
         self.ui.frogTracePlot.fig.canvas.draw()
-        
+
         if self.ui.c_scanautosave.isChecked():
             print("Autosaving FROG")
             self.saveFROG()

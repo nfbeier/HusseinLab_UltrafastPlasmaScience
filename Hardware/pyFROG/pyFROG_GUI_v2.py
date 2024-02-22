@@ -183,6 +183,7 @@ class Ui_MainWindow(object):
         self.label_37.setObjectName("label_37")
         self.formLayout_5.setWidget(3, QtWidgets.QFormLayout.LabelRole, self.label_37)
         self.in_numberaverage = QtWidgets.QSpinBox(self.centralwidget)
+        self.in_numberaverage.setMinimum(1)
         self.in_numberaverage.setObjectName("in_numberaverage")
         self.formLayout_5.setWidget(3, QtWidgets.QFormLayout.FieldRole, self.in_numberaverage)
         self.label_38 = QtWidgets.QLabel(self.centralwidget)
