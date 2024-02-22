@@ -37,7 +37,7 @@ nullfmt = NullFormatter()
 ax_autocorr.xaxis.set_major_formatter(nullfmt)
 ax_autoconv.yaxis.set_major_formatter(nullfmt)
 
-timeAxis = np.linspace(-300,300,100)
+timeAxis = np.linspace(-100,100,100)
 axTrace.imshow(trace.T,aspect = 'auto',origin = 'lower',extent = [timeAxis[0],timeAxis[-1],wave[0],wave[-1]])
 autocorr = np.sum(trace,axis = 1)
 autoconv = np.sum(trace,axis = 0)
@@ -46,12 +46,19 @@ ax_autocorr.plot(timeAxis, autocorr)
 
 peaks,_ = find_peaks(autocorr,distance=100)
 results_half = peak_widths(autocorr,peaks,rel_height=0.5)[0]
-print(results_half*(timeAxis[1]-timeAxis[0]))
+autocorr_val = results_half[0]*(timeAxis[1]-timeAxis[0])
+tempFWHM = autocorr_val/np.sqrt(2)
 
 axTrace.set_xlabel("Delay [fs]")
 axTrace.set_ylabel("Wavelength [nm]")
-ax_autocorr.set_xlim([-300,300])
+ax_autocorr.set_xlim([-100,100])
 ax_autoconv.set_ylim([wave[0],wave[-1]])
 ax_autoconv.set_title("Autoconvolution")
 ax_autocorr.set_title("Autocorrelation")
+peaks,_ = find_peaks(autocorr,distance=100)
+results_half = peak_widths(autocorr,peaks,rel_height=0.5)[0]
+autocorr_val = results_half[0]*(timeAxis[1]-timeAxis[0])
+tempFWHM = autocorr_val/np.sqrt(2)
+axTrace.text(1.05, 1.49, f'Autocorrelation: {autocorr_val:.1f} fs\nTemporal FWHM: {tempFWHM:.1f} fs', transform=axTrace.transAxes, fontsize=10,
+        verticalalignment='top')
 plt.show()
