@@ -2,6 +2,8 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 from matplotlib.ticker import NullFormatter, MaxNLocator
+import pandas as pd
+import numpy as np
 
 class frogTraceCanvas(FigureCanvas):
     def __init__(self, parent=None, width=8, height=6, dpi=100):
@@ -32,4 +34,24 @@ class frogTraceCanvas(FigureCanvas):
         self.ax_autoconv.set_title("Autoconvolution")
         self.ax_autocorr.set_title("Autocorrelation")
         
+        #Load old data as reference
+        file = r'Hardware\pyFROG\Old Examples\data\frg_trace_1580511001.pkl'
+        data = pd.read_pickle(file)
+        self.wave = data['wave'][0]
+        trace = data['trace'][0]
+
+        timeAxis = np.linspace(-300,300,100)
+        self.axTrace.imshow(trace.T,aspect = 'auto',origin = 'lower',extent = [timeAxis[0],timeAxis[-1],self.wave[0],self.wave[-1]])
+        autocorr = np.sum(trace,axis = 1)
+        autoconv = np.sum(trace,axis = 0)
+        self.ax_autoconv.plot(autoconv,self.wave)
+        self.ax_autocorr.plot(timeAxis, autocorr)
+
+        #peaks,_ = find_peaks(autocorr,distance=100)
+        #results_half = peak_widths(autocorr,peaks,rel_height=0.5)[0]
+        #autocorr_val = results_half[0]*(timeAxis[1]-timeAxis[0])
+        #tempFWHM = autocorr_val/np.sqrt(2)
+        self.axTrace.text(1.05, 1.49, f'Autocorrelation: {45.0:.1f} fs\nTemporal FWHM: {45/np.sqrt(2):.1f} fs', transform=self.axTrace.transAxes, fontsize=10,
+                verticalalignment='top')
+
         super(frogTraceCanvas, self).__init__(self.fig)

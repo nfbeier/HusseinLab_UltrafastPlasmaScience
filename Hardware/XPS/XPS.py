@@ -1,6 +1,7 @@
 # Author: Dr. Nicholas Beier
 
 from newportxps import NewportXPS
+from newportxps.XPS_C8_drivers import XPSException
 
 class Actuator(object):
     '''
@@ -385,8 +386,11 @@ class XPS(Actuator):
             if float(self.getStagePosition(group)) + float(pos) > float(self.getmaxLimit(group)) or float(self.getStagePosition(group)) + float(pos) < float(self.getminLimit(group)):
                 print("Relative Motion out of Bounds")
                 return True
-            else:    
-                self.xps.move_stage(self.groupList[group].getPos(),pos,relative = True)
+            else:  
+                try:
+                    self.xps.move_stage(self.groupList[group].getPos(),pos,relative = True)
+                except XPSException: 
+                    print("XPS returnd an error code.")
                 return True
         else:
             print("Stage not ready to move")
