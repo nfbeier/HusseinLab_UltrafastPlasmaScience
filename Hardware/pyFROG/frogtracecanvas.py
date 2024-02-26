@@ -40,12 +40,12 @@ class frogTraceCanvas(FigureCanvas):
         self.wave = data['wave'][0]
         trace = data['trace'][0]
 
-        timeAxis = np.linspace(-300,300,100)
-        self.axTrace.imshow(trace.T,aspect = 'auto',origin = 'lower',extent = [timeAxis[0],timeAxis[-1],self.wave[0],self.wave[-1]])
+        delay = np.linspace(-300,300,100)
+        self.axTrace.pcolormesh(delay,self.wave,trace.T,cmap = "inferno")
         autocorr = np.sum(trace,axis = 1)
         autoconv = np.sum(trace,axis = 0)
         self.ax_autoconv.plot(autoconv,self.wave)
-        self.ax_autocorr.plot(timeAxis, autocorr)
+        self.ax_autocorr.plot(delay, autocorr)
 
         #peaks,_ = find_peaks(autocorr,distance=100)
         #results_half = peak_widths(autocorr,peaks,rel_height=0.5)[0]

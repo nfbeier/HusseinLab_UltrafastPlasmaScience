@@ -6,7 +6,6 @@ import numpy as np
 from scipy import constants
 from scipy.signal import find_peaks, peak_widths
 
-from matplotlib.pyplot import draw, pause
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from PyQt5 import QtCore, QtGui, QtWidgets
 import qdarktheme
@@ -16,11 +15,11 @@ sys.path.append('C:/Users/nfbei/Documents/Research/Code/Github/HusseinLab_Ultraf
 
 from pyvisa import ResourceManager
 from instrumental import instrument, list_instruments
-from pyFROG_GUI_v2 import Ui_MainWindow
+from pyFROG_GUI import Ui_MainWindow
 from XPS.XPS import XPS
 
 class ThorlabsSpecThread(QtCore.QThread):
-    beep=QtCore.pyqtSignal(object)
+    acquired=QtCore.pyqtSignal(object)
 
     def __init__(self,exposureTime):
         super(ThorlabsSpecThread, self).__init__()
@@ -49,7 +48,7 @@ class ThorlabsSpecThread(QtCore.QThread):
         while self.running:
             if self.spec:
                     self.intensity = np.array(self.spec.get_scan_data())
-                    self.beep.emit(self.intensity)
+                    self.acquired.emit(self.intensity)
                     time.sleep(0.001)
             while self.is_paused:
                 time.sleep(0.01)
@@ -82,46 +81,123 @@ class ThorlabsSpecThread(QtCore.QThread):
         self.resume()
 
 class FROGTraceThread(QtCore.QThread):
-    beep=QtCore.pyqtSignal(object)
+    updateTrace=QtCore.pyqtSignal(object)
     finished = QtCore.pyqtSignal()
-    moveXPS=QtCore.pyqtSignal(object)
-    
-    def __init__(self):
+    updateXPS=QtCore.pyqtSignal(object)
+    limits = QtCore.pyqtSignal(object)
+
+    def __init__(self,xps_ipaddress):
         super(FROGTraceThread, self).__init__()
+        self.xps = XPS(xps_ipaddress)
+        self.xpsGroupNames = self.xps.getXPSStatus()
+        xpsGroups = list(self.xpsGroupNames.keys())
+        self.xpsAxis = str(xpsGroups[0])
+
+        self.xps.setGroup(self.xpsAxis)
+        self.xpsStageStatus = self.xps.getStageStatus(self.xpsAxis)
+
+        self.updateTimer = True
+        self.timer = QtCore.QTimer(self)
+        self.timer.setInterval(500)
+        self.timer.timeout.connect(self.updateXPSStatus)
+        self.timer.start()
+
         self.running = False
         self.wave, self.intensity = None, None
         self.trace = None
-        
-    def configureTrace(self,wave,intensity,num_steps,actstep,boxcar_avg,num_avg):
+
+    def updateXPSStatus(self):
+        if self.updateTimer:
+            pos = round(self.xps.getStagePosition(self.xpsAxis),5)
+            status = self.xps.getStageStatus(self.xpsAxis)
+            xpsStatus = [pos,status]
+            self.updateXPS.emit(xpsStatus)
+
+    def xpsInitialize(self):
+        self.xps.initializeStage(self.xpsAxis)
+        self.updateXPSStatus()
+        self.xpsUpdateLimits()
+
+    def xpsHome(self):
+        self.xps.homeStage(self.xpsAxis)            
+        self.updateXPSStatus()
+
+    def xpsEnableDisable(self):
+        self.xpsStageStatus = self.xps.getStageStatus(self.xpsAxis)
+        if self.xpsStageStatus.upper() == "Disabled state".upper():
+            self.xps.enableGroup(self.xpsAxis)
+        elif self.xpsStageStatus[:11].upper() == "Ready state".upper():
+            self.xps.disableGroup(self.xpsAxis)
+        self.updateXPSStatus()    
+
+    def xpsUpdateLimits(self,xpsMinLim= None,xpsMaxLim=None):
+        if xpsMinLim:
+            if xpsMinLim < 0 or xpsMinLim > 50:
+                print("Invalid minimum limit")
+                xpsMinLim = self.xps.getminLimit(self.xpsAxis)
+            else:
+                self.xps.setminLimit(self.xpsAxis,xpsMinLim)
+
+        if xpsMaxLim:    
+            if xpsMaxLim < 0 or xpsMaxLim > 50:
+                print("Invalid maximum limit")
+                xpsMaxLim = self.xps.getmaxLimit(self.xpsAxis)
+            else:
+                self.xps.setmaxLimit(self.xpsAxis,xpsMaxLim)
+
+        newLimits = [self.xps.getminLimit(self.xpsAxis), self.xps.getmaxLimit(self.xpsAxis)]
+        self.limits.emit(newLimits)
+
+    def xpsMove(self, btn, posX):
+        if btn == "Absolute":
+            self.xps.moveAbsolute(self.xpsAxis,posX)
+        else:
+            self.xps.moveRelative(self.xpsAxis,posX)
+
+    def configureTrace(self,wave,intensity,num_steps,actsteps,actstep,boxcar_avg,num_avg):
         self.wave = wave
         self.intensity = intensity
+        self.trace = np.zeros((num_steps,len(self.wave)))
+
         self.num_steps = num_steps
+        self.actsteps = actsteps
         self.actstep = actstep
         self.num_avg = num_avg
         self.kernel_size = boxcar_avg
-        self.trace = np.zeros((num_steps,len(self.wave)))
-
+        
         self.kernel = np.ones(self.kernel_size) / self.kernel_size
 
     def setIntensity(self,intensity):
         self.intensity = intensity
+        self.waiting = False
 
     def run(self):
+        self.updateTimer = False
+        pos = self.xps.getStagePosition(self.xpsAxis)
+        self.xpsMove('Relative',-0.5)
+        self.xpsMove('Absolute',pos+self.actsteps[0])
+        print("Here okay")
+
         for ii in range(self.num_steps):
+            self.waiting = True
             intTotal = []
-            for num in range(self.num_avg):
-                time.sleep(0.01)
+            for num in range(self.num_avg): 
+                while self.waiting:
+                    time.sleep(0.001)
                 intTotal.append(self.intensity)
+                self.waiting = True
 
-            self.moveXPS.emit(self.actstep)
+            self.xpsMove('Relative', self.actstep)
             self.intensity = np.average(intTotal,axis = 0)
-
-            #if self.kernel_size > 0:
-            #    self.intensity = np.convolve(self.intensity, self.kernel, mode="same")
+            
+            if self.kernel_size > 0:
+                self.intensity = np.convolve(self.intensity, self.kernel, mode="same")
 
             self.trace[ii] = self.intensity
-            self.beep.emit(self.trace)
+            self.updateTrace.emit(self.trace)
 
+        self.xpsMove('Absolute',pos)
+        self.updateTimer = True
         self.finished.emit()
 
 class pyFROG_App(QtWidgets.QMainWindow):
@@ -136,6 +212,7 @@ class pyFROG_App(QtWidgets.QMainWindow):
         self.intensity, self.trace = None, None
         self.trace_bkg = None
         self.ThorlabsThread, self.FROGTraceThread = None, None
+        self.savePos = None
 
         #GUI Interactions
         self.ui.in_scanlen.setText('1000')
@@ -152,12 +229,9 @@ class pyFROG_App(QtWidgets.QMainWindow):
         self.ui.in_specexposure.textChanged.connect(lambda: self.ThorlabsThread.updateThorlabsParameters(self.ui.in_specexposure.text(),param ="integrationTime"))
 
         self.ui.actionExit.triggered.connect(self.stopBtn)
-        self.ui.p_actsetlim.clicked.connect(self.updateXPSTravelLimits)
-        self.ui.p_actinit.clicked.connect(lambda: self.xpsInitialize())
-        self.ui.p_actenable.clicked.connect(lambda: self.xpsEnableDisable())
-        self.ui.p_actsaveposition.clicked.connect(lambda: self.savePosition())
-        self.ui.p_acthome.clicked.connect(lambda: self.xpsHome())
+        self.ui.p_actsaveposition.clicked.connect(self.savePosition)
 
+        self.ui.go_home_button.clicked.connect(lambda: self.xpsMove('SavedHome'))
         self.ui.p_actabsmove.clicked.connect(lambda: self.xpsMove('Absolute'))
         self.ui.p_actsmallback.clicked.connect(lambda: self.xpsMove('SmallBack'))
         self.ui.p_actsmallforward.clicked.connect(lambda: self.xpsMove('SmallForward'))
@@ -168,16 +242,6 @@ class pyFROG_App(QtWidgets.QMainWindow):
         self.ui.p_savescan.clicked.connect(self.saveFROG)
         self.ui.p_bkgscan.clicked.connect(lambda: self.saveFROG(bkg = True))
 
-        self.FROGTraceThread = FROGTraceThread()
-        self.FROGTraceThread.beep.connect(self.updateTracePlot)
-        self.FROGTraceThread.finished.connect(self.completeFROG)
-
-        #Timer
-        self.timer = QtCore.QTimer(self)
-        self.timer.setInterval(100)
-        self.timer.timeout.connect(self.updatePosition)
-        self.timer.start()
-
         self.navi_toolbar = NavigationToolbar(self.ui.frogTracePlot, self)
         self.ui.verticalLayout.insertWidget(0,self.navi_toolbar)
 
@@ -186,33 +250,36 @@ class pyFROG_App(QtWidgets.QMainWindow):
 
     def _initXPS(self):
         try:
-            self.xps = XPS(str(self.ui.in_actip.text()))
-            self.xpsGroupNames = self.xps.getXPSStatus()
-            self.ui.in_groupname.clear()
-            self.ui.in_groupname.addItems(list(self.xpsGroupNames.keys()))
-            self.xpsAxes = [str(self.ui.in_groupname.currentText())]
-            self.xpsFROGAxis = self.xpsAxes[0]
+            xps_ipaddress = str(self.ui.in_actip.text())
+            self.FROGTraceThread = FROGTraceThread(xps_ipaddress)
+            self.FROGTraceThread.updateTrace.connect(self.updateTracePlot)
+            self.FROGTraceThread.finished.connect(self.completeFROG)
+            self.FROGTraceThread.updateXPS.connect(self.updateGUIStatus)
+            self.FROGTraceThread.limits.connect(self.updateXPSTravelLimits)
 
-            self.xps.setGroup(self.xpsFROGAxis)
-            self.xpsStageStatus = self.xps.getStageStatus(self.xpsFROGAxis)
-            self.updateGUIStatus()
-
+            self.ui.p_actinit.clicked.connect(self.FROGTraceThread.xpsInitialize)
+            self.ui.p_acthome.clicked.connect(self.FROGTraceThread.xpsHome)
+            self.ui.p_actenable.clicked.connect(self.FROGTraceThread.xpsEnableDisable)
+            self.ui.p_actsetlim.clicked.connect(self.requestNewXPSTravelLimits)
         except AttributeError:
             self.xps = None
 
     def _initThorlabs(self):
-        #Spectrometer initialization
-        self.ThorlabsThread = ThorlabsSpecThread(self.ui.in_specexposure.text())
-        self.wave = self.ThorlabsThread.getWavelength()
-        self.intensity = self.ThorlabsThread.getIntensity()
-        self.ui.alignmentPlot.axes.cla()
-        self.alignPlot, = self.ui.alignmentPlot.axes.plot(self.wave,self.intensity)
-        self.ui.alignmentPlot.axes.set_xlabel("Wavelength [nm]")
-        self.ui.alignmentPlot.axes.set_ylabel("Intensity [a.u.]")
-        self.ui.alignmentPlot.axes.set_ylim([0,1])
+        if self.ThorlabsThread:
+            print("Thorlabs Spectrometer has already been initialized")
+        else:
+            #Spectrometer initialization
+            self.ThorlabsThread = ThorlabsSpecThread(self.ui.in_specexposure.text())
+            self.wave = self.ThorlabsThread.getWavelength()
+            self.intensity = self.ThorlabsThread.getIntensity()
+            self.ui.alignmentPlot.axes.cla()
+            self.alignPlot, = self.ui.alignmentPlot.axes.plot(self.wave,self.intensity)
+            self.ui.alignmentPlot.axes.set_xlabel("Wavelength [nm]")
+            self.ui.alignmentPlot.axes.set_ylabel("Intensity [a.u.]")
+            self.ui.alignmentPlot.axes.set_ylim([0,1])
 
-        self.ThorlabsThread.beep.connect(self.updateIntensity)
-        self.ThorlabsThread.start()
+            self.ThorlabsThread.acquired.connect(self.updateIntensity)
+            self.ThorlabsThread.start()
 
     def updateScanParameters(self,param=None):
         if param == 'stepSize':
@@ -225,78 +292,62 @@ class pyFROG_App(QtWidgets.QMainWindow):
             if not(self.ui.in_scanstepnumbers.text()) == '' and not(self.ui.in_scanstepsize.text() == ''):
                 self.ui.in_scanlen.setText(str(int(self.ui.in_scanstepnumbers.text())*float(self.ui.in_scanstepsize.text()))) 
         else:
-            print("Don't know how you triggered this but something went really wrong apparently in the updateScanparameters function")
-
-    def xpsInitialize(self):
-        self.xps.initializeStage(self.xpsFROGAxis)
-        self.updateGUIStatus()
-        self.updateXPSTravelLimits()
-
-    def xpsHome(self):
-        self.xps.homeStage(self.xpsFROGAxis)            
-        self.updateGUIStatus()
-
-    def xpsEnableDisable(self):
-        self.xpsStageStatus = self.xps.getStageStatus(self.xpsFROGAxis)
-        if self.xpsStageStatus.upper() == "Disabled state".upper():
-            self.xps.enableGroup(self.xpsFROGAxis)
-        elif self.xpsStageStatus[:11].upper() == "Ready state".upper():
-            self.xps.disableGroup(self.xpsFROGAxis)
-        self.updateGUIStatus()       
+            print("Don't know how you triggered this but something went really wrong apparently in the updateScanparameters function")   
 
     def xpsMove(self, btn):
             if self.xpsStageStatus[:11].upper() == "Ready state".upper():
                 if btn == "Absolute":
                     if self.ui.c_actenableabs.isChecked():
                         posX = float(self.ui.in_actabsmove.text())
-        
-                        self.xps.moveAbsolute(self.xpsFROGAxis,posX)
+                        self.FROGTraceThread.xpsMove('Absolute',posX)
                     else:
                         print('Absolute Move is Disabled')
+
+                elif btn == "SavedHome":
+                    if self.ui.c_actenableabs.isChecked():
+                        self.FROGTraceThread.xpsMove('Absolute',self.savePos)
+                    else:
+                        print('Absolute Move is Disabled')
+
                 elif btn == "SmallForward":
                     posX = float(self.ui.in_actsmallrel.text())
-                    self.xps.moveRelative(self.xpsFROGAxis,posX)
+                    self.FROGTraceThread.xpsMove('Relative',posX)
                 elif btn == "SmallBack":
                     posX = float(self.ui.in_actsmallrel.text())
-                    self.xps.moveRelative(self.xpsFROGAxis,-1*posX)
+                    self.FROGTraceThread.xpsMove('Relative',-1*posX)
                 elif btn == "LargeForward":
                     posX = float(self.ui.in_actlargerel.text())
-                    self.xps.moveRelative(self.xpsFROGAxis,posX)
+                    self.FROGTraceThread.xpsMove('Relative',posX)
                 elif btn == "LargeBack":
                     posX = float(self.ui.in_actlargerel.text())
-                    self.xps.moveRelative(self.xpsFROGAxis,-1*posX)
+                    self.FROGTraceThread.xpsMove('Relative',-1*posX)
                 else:
-                    print('Error: \'%s\' is an invalid entry')
+                    print(f'Error: {btn} is an invalid entry')
             else:
                 print("Stage not ready to move")
 
-    def updatePosition(self):
-        if self.xps:
-            pos = round(self.xps.getStagePosition(self.xpsFROGAxis),4)
-            self.ui.out_actcurrentpos.setText(f'{pos:.4f} mm')
-            self.ui.in_actstatus.setText(self.xps.getStageStatus(self.xpsFROGAxis))
+    def requestNewXPSTravelLimits(self):
+        xpsMinLim = float(self.ui.in_actminlim.text())
+        xpsMaxLim = float(self.ui.in_actmaxlim.text())
 
-    def updateXPSTravelLimits(self):
-        xpsMinLim = self.ui.in_actminlim
-        xpsMaxLim = self.ui.in_actmaxlim
+        self.FROGTraceThread.xpsUpdateLimits(xpsMinLim,xpsMaxLim)
 
-        limit = float(xpsMinLim.text())
-        if limit < 0 or limit > 50:
-            print("Invalid minimum limit")
-            xpsMinLim.setText(str(self.xps.getminLimit(self.xpsFROGAxis)))
-        else:
-            self.xps.setminLimit(self.xpsFROGAxis,limit)
-            
-        limit = float(xpsMaxLim.text())
-        if limit < 0 or limit > 50:
-            
-            print("Invalid maximum limit")
-            xpsMaxLim.setText(str(self.xps.getmaxLimit(self.xpsFROGAxis)))
-        else:
-            self.xps.setmaxLimit(self.xpsFROGAxis,limit)
+    def updateXPSTravelLimits(self,newLimits):
+        self.ui.in_actminlim.setText(str(newLimits[0]))
+        self.ui.in_actmaxlim.setText(str(newLimits[1]))
 
-    def updateGUIStatus(self):
-        self.xpsStageStatus = self.xps.getStageStatus(self.xpsFROGAxis)
+    def savePosition(self):
+        self.savePos = self.xpsPos
+        print(self.savePos)
+        self.ui.out_saveposition.setText(str(self.savePos))
+
+    def updateGUIStatus(self, xpsStatus):
+        self.xpsPos = xpsStatus[0]
+        self.xpsStageStatus = xpsStatus[1]
+    
+        self.ui.out_actcurrentpos.setText(f'{self.xpsPos:.5f} mm')
+        self.ui.in_actstatus.setText(self.xpsStageStatus)
+
         if self.xpsStageStatus == "Not initialized state" or self.xpsStageStatus == "Not initialized state due to a GroupKill or KillAll command":
             self.ui.p_actinit.setEnabled(True)
             self.ui.p_acthome.setEnabled(False)
@@ -341,14 +392,11 @@ class pyFROG_App(QtWidgets.QMainWindow):
             self.ui.p_actlargeforward.setEnabled(True)
             self.ui.in_actstatus.setText("Ready state")
         
-        self.updatePosition()
-
     def updateIntensity(self,intensity):
         self.intensity = intensity
         if self.FROGTraceThread:
             self.FROGTraceThread.setIntensity(intensity)
         self.updateAlignmentPlot()
-
             
     def initializeTracePlot(self):
         self.ui.frogTracePlot.axTrace.cla()
@@ -359,7 +407,7 @@ class pyFROG_App(QtWidgets.QMainWindow):
         autocorr = np.sum(self.trace,axis = 1)
         autoconv = np.sum(self.trace,axis = 0)
 
-        self.im = self.ui.frogTracePlot.axTrace.imshow(self.trace.T,aspect = 'auto',origin = 'lower',vmin = 0, vmax = np.amax(self.intensity),extent = [self.delay[0],self.delay[-1],self.wave[0],self.wave[-1]])
+        self.im = self.ui.frogTracePlot.axTrace.pcolormesh(self.delay,self.wave,self.trace.T,vmin = 0, vmax = np.amax(self.intensity))
         self.autoconvPlot, = self.ui.frogTracePlot.ax_autoconv.plot(autoconv,self.wave)
         self.autocorrPlot, = self.ui.frogTracePlot.ax_autocorr.plot(self.delay,autocorr) 
 
@@ -381,14 +429,13 @@ class pyFROG_App(QtWidgets.QMainWindow):
         self.autocorrPlot.set_ydata(self.autocorr)
         self.ui.frogTracePlot.ax_autocorr.set_ylim([0,np.amax(self.autocorr)])
         self.ui.frogTracePlot.ax_autoconv.set_xlim([0,np.amax(self.autoconv)])
-        self.im.set_data(trace.T)
+        self.im.set_array(trace.T)
         self.im.set_clim(vmin=0, vmax = np.amax(trace))
         self.ui.frogTracePlot.fig.canvas.draw()
 
     def updateAlignmentPlot(self):
         self.alignPlot.set_ydata(self.intensity)
         self.ui.alignmentPlot.fig.canvas.draw()
-        pause(.001)  # give the gui time to process the draw events
 
     def acquireTrace(self):
         self.num_steps = int(self.ui.in_scanstepnumbers.text())
@@ -398,16 +445,11 @@ class pyFROG_App(QtWidgets.QMainWindow):
         self.actsteps = self.delay/2*constants.c*1e-12 #convert to fs from mm
         self.actstep = float(self.actsteps[1]-self.actsteps[0])
 
-        scanParams = [self.wave,self.intensity,self.num_steps,self.actstep,self.ui.in_boxcar.value(),self.ui.in_numberaverage.value()]
+        scanParams = [self.wave,self.intensity,self.num_steps,self.actsteps,self.actstep,self.ui.in_boxcar.value(),self.ui.in_numberaverage.value()]
         self.initializeTracePlot()
 
-        if self.xps and self.xpsStageStatus[:11].upper() == "Ready state".upper():
-            pos = self.xps.getStagePosition(self.xpsFROGAxis)
-            self.xpsMove('LargeBack')
-            self.xps.moveAbsolute(self.xpsFROGAxis,pos+self.actsteps[0])
-
+        if self.FROGTraceThread and self.xpsStageStatus[:11].upper() == "Ready state".upper():
             self.FROGTraceThread.configureTrace(*scanParams)
-            self.FROGTraceThread.moveXPS.connect(lambda: self.xps.moveRelative(self.xpsFROGAxis, self.actstep))
             self.FROGTraceThread.start()
         else:
             print("XPS is not ready to perform scan")
