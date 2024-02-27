@@ -23,3 +23,15 @@ Controls for automated laser-induced breakdown spectroscopy (LIBS) experiments. 
 Development of linear translation stations controlled by the Newport XPS D4 system.
 
 -- Developed by Shubho Mohajan and Ying Wan
+
+#pyFROG
+
+Development of ultrafast pulse measurement Frequency Resolved Optical Gating (FROG) diagnostic for use with the Spitfire laser system. Currently the software controls the Newport XPS and a Thorlabs CCS200 spectrometer
+
+-- Developed by Nick Beier
+
+#DAQ
+
+Development of real-time data acquisition and analysis scripts. Currently fielded at the ALLS facility in Quebec. Watchdog scripts are used to pull data from remote desktops before being combined into a single file system.
+
+--Developed by Nick Beier
