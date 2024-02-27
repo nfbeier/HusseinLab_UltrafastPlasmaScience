@@ -210,10 +210,10 @@ class LaserControlGUI(QMainWindow):
         Returns:
             None
         """
-        rate = self.rep_rate_layout.get_value()
-        if rate.isdigit():
-            self.laser.set_rep_rate(int(rate))
-
+        # rate = self.rep_rate_layout.get_value()
+        # if rate.isdigit():
+        #     self.laser.set_rep_rate(int(rate))
+        pass
 
     def handle_get_status(self, status_hex=None):
         """
@@ -375,6 +375,19 @@ class LaserControlGUI(QMainWindow):
         if self.laser.fire_single_shot():
             print("fired mah lazor")
         
+    def toggle_external_fire(self):
+        self.currentstate = "external fire"
+        if self.laser.set_external_trigger():
+            self.external_shot_var.setStyleSheet("background-color : green")
+            self.standby_var.setStyleSheet("background-color : lightgrey")
+            self.stop_var.setStyleSheet("background-color : lightgrey")
+            self.start_var.setStyleSheet("background-color : lightgrey")  
+            self.single_shot_var.setStyleSheet("background-color : lightgrey")
+            return True
+        else:
+            print("failed to set external trigger")
+            return False   
+   
     def handle_set_diode_current(self):
         if self.laser.send_command("$DCURR " + str(self.diode_current_layout.get_value())):
             print("Diode Current Set to ", self.diode_current_layout.get_value())
@@ -392,7 +405,7 @@ class LaserControlGUI(QMainWindow):
         diode_pulse_width = self.laser.send_command('$DPW ?', response=True)
         qs_delay = self.laser.send_command('$QSDELAY ?', response=True)
         qs_pre = self.laser.send_command('$QSPRE ?', response=True)
-        reprate = self.laser.send_command('$DFREQ ?', response=True)
+        # reprate = self.laser.send_command('$DFREQ ?', response=True)
         
         if diode_current:
             self.diode_current_layout.set_value(str(diode_current.split()[1]))
@@ -402,8 +415,9 @@ class LaserControlGUI(QMainWindow):
             self.qs_delay_layout.set_value(str(qs_delay.split()[1]))
         if qs_pre:
             self.qswitch_pre_layout.set_value(str(qs_pre).split()[1])
-        if reprate:
-            self.rep_rate_layout.set_value(str(reprate).split()[1])
+        # if reprate:
+            # self.rep_rate_layout.set_value(str(reprate).split()[1])
+            pass
         
     def on_close(self):
         res = self.laser.close()
@@ -469,25 +483,32 @@ class LaserControlGUI(QMainWindow):
         self.stop_var.setStyleSheet("background-color : lightgrey")
         buttons_layout.addWidget(self.stop_var)
 
-        self.start_var = QPushButton("Auto Fire")
-        self.start_var.clicked.connect(self.toggle_auto_fire)
+        self.start_var = QPushButton("Auto Fire (deprecated)")
+        # self.start_var.clicked.connect(self.toggle_auto_fire)
         self.start_var.setStyleSheet("background-color : lightgrey")
         self.start_var.setChecked(False)  # Set the default value
         self.start_var.setCheckable(True)
         buttons_layout.addWidget(self.start_var)
 
-        self.single_shot_var = QPushButton("Single Fire")
-        self.single_shot_var.clicked.connect(self.handle_set_single_shot)
+        self.single_shot_var = QPushButton("Single Fire (deprecated)")
+        # self.single_shot_var.clicked.connect(self.handle_set_single_shot)
         self.single_shot_var.setStyleSheet("background-color : lightgrey")
         self.single_shot_var.setChecked(False)  # Set the default value
         self.single_shot_var.setCheckable(True)
         buttons_layout.addWidget(self.single_shot_var)
         
+        self.external_shot_var = QPushButton("External Fire")
+        self.external_shot_var.clicked.connect(self.toggle_external_fire)
+        self.external_shot_var.setStyleSheet("background-color : lightgrey")
+        self.external_shot_var.setChecked(False)  # Set the default value
+        self.external_shot_var.setCheckable(True)
+        buttons_layout.addWidget(self.external_shot_var)
+
         first_tab_layout.addLayout(buttons_layout)
 
 
-        self.rep_rate_layout = InputLayout("Repetition Rate (Hz)", func=self.handle_set_rep_rate)
-        first_tab_layout.addLayout(self.rep_rate_layout)
+        # # self.rep_rate_layout = InputLayout("Repetition Rate (DONT CHANGE)(Hz)", func=self.handle_set_rep_rate)
+        # first_tab_layout.addLayout(# self.rep_rate_layout)
         
         self.qs_delay_layout = InputLayout("Q-Switch Delay (us)", func=self.handle_set_qs_delay)
         self.set_alignment_button = QPushButton("Set Alignment (Not Implemented)")
@@ -627,7 +648,7 @@ class InputLayout(QHBoxLayout):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     try:
-        gui = LaserControlGUI(host='192.168.103.103', port=23, password='VR6BE4EE')
+        gui = LaserControlGUI(host='192.168.0.154', port=23, password='VR6BE4EE')
     except Exception as e:
         print(e)
         print("Something went wrong")
