@@ -1,6 +1,7 @@
 # Author: Dr. Nicholas Beier
 
 from newportxps import NewportXPS
+from newportxps.XPS_C8_drivers import XPSException
 
 class Actuator(object):
     '''
@@ -172,7 +173,7 @@ class XPS(Actuator):
     '''
     
     
-    def __init__(self):
+    def __init__(self,ipAddress = '192.168.0.79',username = 'Administrator',password = 'Administrator'):
         '''
         Initializes the XPS class.
         
@@ -185,7 +186,7 @@ class XPS(Actuator):
         '''
         
         try:
-            self.xps = NewportXPS("192.168.254.254", username = "Administrator", password = "Administrator")
+            self.xps = NewportXPS(ipAddress, username = username, password = password)
         except:
             print("XPS connection cannot be established.")
         self.groupList = {}
@@ -385,8 +386,11 @@ class XPS(Actuator):
             if float(self.getStagePosition(group)) + float(pos) > float(self.getmaxLimit(group)) or float(self.getStagePosition(group)) + float(pos) < float(self.getminLimit(group)):
                 print("Relative Motion out of Bounds")
                 return True
-            else:    
-                self.xps.move_stage(self.groupList[group].getPos(),pos,relative = True)
+            else:  
+                try:
+                    self.xps.move_stage(self.groupList[group].getPos(),pos,relative = True)
+                except XPSException: 
+                    print("XPS returnd an error code.")
                 return True
         else:
             print("Stage not ready to move")

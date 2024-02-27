@@ -4,6 +4,7 @@ Created on Fri May  6 15:18:50 2022
 
 @author: Hussein-Lab
 """
+
 import sys
 # To use this, we need to install the thorlabs OSA software and driver in pc
 sys.path.append(r"C:\Users\R2D2\Documents\CODE\Github\HusseinLab_UltrafastPlasmaScience\Hardware\Thorlabs CCS200")
@@ -16,6 +17,20 @@ import pyvisa
 from instrumental import instrument, list_instruments
 from instrumental.drivers.spectrometers import thorlabs_ccs
 import matplotlib.pyplot as plt
+
+rm = pyvisa.ResourceManager()
+
+print(rm)
+
+res = rm.list_resources('?*::?*')
+
+print(res)
+
+#%%
+
+paramsets = list_instruments()
+
+print(paramsets)
 
 #%%
 spec = instrument(paramsets[0],reopen_policy = "new")
@@ -32,6 +47,7 @@ data = spec.get_scan_data()
 #%%
 plt.plot(data)
 #%%
+=======
 class ThorlabsCCS:
     def __init__(self):
         rm = pyvisa.ResourceManager()   
