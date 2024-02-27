@@ -24,13 +24,13 @@ Development of linear translation stations controlled by the Newport XPS D4 syst
 
 -- Developed by Shubho Mohajan and Ying Wan
 
-#pyFROG
+# pyFROG  
 
 Development of ultrafast pulse measurement Frequency Resolved Optical Gating (FROG) diagnostic for use with the Spitfire laser system. Currently the software controls the Newport XPS and a Thorlabs CCS200 spectrometer
 
 -- Developed by Nick Beier
 
-#DAQ
+# DAQ
 
 Development of real-time data acquisition and analysis scripts. Currently fielded at the ALLS facility in Quebec. Watchdog scripts are used to pull data from remote desktops before being combined into a single file system.
 
