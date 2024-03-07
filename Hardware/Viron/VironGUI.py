@@ -568,23 +568,6 @@ class LaserControlGUI(QMainWindow):
 
         # Add the second tab to the tab widget
         tab_widget.addTab(second_tab, "Status")
-        
-        
-        # third tab for testing
-        third_tab = QWidget()
-        third_tab_layout = QVBoxLayout(third_tab)
-        
-        
-        self.diode_current_layout = InputLayout("Diode Current", func=self.handle_set_diode_current)
-        self.diode_pulse_width_layout = InputLayout("Diode Pulse Width", func=self.handle_set_diode_current)
-        get_values_button = QPushButton("Get Values")
-        get_values_button.clicked.connect(self._get_values)
-        third_tab_layout.addWidget(get_values_button)
-        
-        third_tab_layout.addLayout(self.diode_current_layout)
-        third_tab_layout.addLayout(self.diode_pulse_width_layout)
-
-        tab_widget.addTab(third_tab, "Test")
 
 
         fourth_tab = QWidget()
