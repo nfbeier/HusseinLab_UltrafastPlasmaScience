@@ -17,6 +17,7 @@ class LaserControlGUI(QMainWindow):
         self.currentstate = None
         self.connected = False
         self.states = ['standby', 'stop', 'fire', 'single_shot']
+        self.laser_simple_status = {"isReady" : 'Disconnected'}
         self.laser = VironLaser(self.host, self.port, self.password, telnetgui=self.tngui)
         self.tngui.set_laser(self.laser)
         
@@ -79,7 +80,8 @@ class LaserControlGUI(QMainWindow):
         status_text += f"  Laser Temp: {temps['Laser Temp']} C\n"
         status_text += f"  Diode Temp: {temps['Diode Temp']} C\n"
         self.critical_status_label.setText(status_text)
-        
+        self.laser_status_label.setText(self.laser_simple_status['isReady'])
+
     def handle_set_qs_delay(self):
         '''
         Handles the action when the "Set Q-Switch Delay" button is clicked.
@@ -179,6 +181,14 @@ class LaserControlGUI(QMainWindow):
         status['NLO Oven 1 timeout, oven 1 off'] = 'OK' if binary_string[45] == '0' else 'Warning'
         status['NLO Oven 1 over temp, oven 1 off'] = 'OK' if binary_string[46] == '0' else 'Warning'
         status['NLO Oven 1 open sensor, oven 1 off'] = 'OK' if binary_string[47] == '0' else 'Warning'
+
+        # warming / rtf / fault
+        if binary_string[16:47] == str('0'*31):
+            self.laser_simple_status['isReady'] = 'Ready'
+        elif binary_string[16:47] == str('0'*23 + '10000100') or str('0'*23 + '00000100'):
+            self.laser_simple_status['isReady'] = 'Warming'
+        else:
+            self.laser_simple_status['isReady'] = 'Fault'      
 
         return status
 
@@ -402,23 +412,17 @@ class LaserControlGUI(QMainWindow):
             print("Diode Pulse Width Not Set")
     
     def _get_values(self):
-        diode_current = self.laser.send_command('$DCURR ?', response=True)
-        diode_pulse_width = self.laser.send_command('$DPW ?', response=True)
         qs_delay = self.laser.send_command('$QSDELAY ?', response=True)
         qs_pre = self.laser.send_command('$QSPRE ?', response=True)
-        # reprate = self.laser.send_command('$DFREQ ?', response=True)
+        qsdivby = self.laser.send_command('$QSDIVBY ?', response=True)
         
-        if diode_current:
-            self.diode_current_layout.set_value(str(diode_current.split()[1]))
-        if diode_pulse_width:
-            self.diode_pulse_width_layout.set_value(str(diode_pulse_width.split()[1]))
+       
         if qs_delay:
-            self.qs_delay_layout.set_value(str(qs_delay.split()[1]))
+            self.viron_qsdelay_entry.setText(str(qs_delay.split()[1]))
         if qs_pre:
-            self.qswitch_pre_layout.set_value(str(qs_pre).split()[1])
-        # if reprate:
-            # self.rep_rate_layout.set_value(str(reprate).split()[1])
-            pass
+            self.viron_qspre_entry.setText(str(qs_pre).split()[1])
+        if qsdivby:
+            self.viron_reprate_entry.setText(str(20 / qsdivby).split()[1])  
         
     def on_close(self):
         res = self.laser.close()
@@ -524,10 +528,15 @@ class LaserControlGUI(QMainWindow):
         
         # critical status layout text box
         critical_status_layout = QHBoxLayout()
+        self.laser_status_label = QLabel(self.laser_simple_status['isReady'])
+        self.laser_status_label.setAlignment(Qt.AlignVCenter)
+        self.laser_status_label.setAlignment(Qt.AlignHCenter)
+        
         critical_status_label = QLabel("Status:")
         critical_status_label.setAlignment(Qt.AlignVCenter)
         critical_status_label.setAlignment(Qt.AlignRight)
         self.critical_status_label = QLabel()
+        critical_status_layout.addWidget(self.laser_status_label)
         critical_status_layout.addWidget(critical_status_label)
         critical_status_layout.addWidget(self.critical_status_label)
         # get status button for first page
@@ -561,7 +570,7 @@ class LaserControlGUI(QMainWindow):
         get_status_button = QPushButton("Get Status")
         get_status_button.clicked.connect(lambda: self.handle_get_status())
         status_layout.addWidget(get_status_button)
-
+        
         self.handle_get_status("0x000000000000")
 
         second_tab_layout.addLayout(status_layout)
