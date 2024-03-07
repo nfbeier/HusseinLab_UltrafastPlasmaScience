@@ -220,7 +220,7 @@ class LaserControlGUI(QMainWindow):
         Returns:
             None
         """
-        rate = self.viron_reprate_entry.text()
+        rate = self.rep_rate_layout.get_value()
         if rate.isdigit():
             self.laser.set_rep_rate(int(rate))
 
@@ -271,7 +271,7 @@ class LaserControlGUI(QMainWindow):
         self.stop_var.setChecked(False)
         self.single_shot_var.setChecked(False)
         self.standby_var.setChecked(False)
-        self.set_alignment_button.setStyleSheet("background-color: lightgreen")
+        # self.set_alignment_button.setStyleSheet("background-color: lightgreen")
         self.single_shot_var.setStyleSheet("background-color : lightgrey")
         self.standby_var.setStyleSheet("background-color : lightgrey")
         self.stop_var.setStyleSheet("background-color : lightgrey")
@@ -296,7 +296,7 @@ class LaserControlGUI(QMainWindow):
             self.standby_var.setStyleSheet("background-color : lightgreen")
             self.stop_var.setStyleSheet("background-color : lightgrey")
             self.start_var.setStyleSheet("background-color : lightgrey")
-            self.set_alignment_button.setStyleSheet("background-color: lightgrey")
+            # self.set_alignment_button.setStyleSheet("background-color: lightgrey")
             return True
         print("Failed to set laser to standby")
         return False
@@ -323,7 +323,7 @@ class LaserControlGUI(QMainWindow):
             self.standby_var.setStyleSheet("background-color : lightgrey")
             self.stop_var.setStyleSheet("background-color : lightgreen")
             self.start_var.setStyleSheet("background-color : lightgrey")
-            self.set_alignment_button.setStyleSheet("background-color: lightgrey")
+            # self.set_alignment_button.setStyleSheet("background-color: lightgrey")
             return True
         else:
             print("failed to set stop")
@@ -357,7 +357,7 @@ class LaserControlGUI(QMainWindow):
         self.standby_var.setStyleSheet("background-color : lightgrey")
         self.stop_var.setStyleSheet("background-color : lightgrey")
         self.start_var.setStyleSheet("background-color : red")
-        self.set_alignment_button.setStyleSheet("background-color: lightgrey")
+        # self.set_alignment_button.setStyleSheet("background-color: lightgrey")
 
     def handle_set_single_shot(self):
         """
@@ -381,7 +381,7 @@ class LaserControlGUI(QMainWindow):
             self.stop_var.setStyleSheet("background-color : lightgrey")
             self.start_var.setStyleSheet("background-color : lightgrey")
             self.single_shot_var.setStyleSheet("background-color : red")
-            self.set_alignment_button.setStyleSheet("background-color: lightgrey")
+            # self.set_alignment_button.setStyleSheet("background-color: lightgrey")
             
         if self.laser.fire_single_shot():
             print("fired mah lazor")
@@ -418,11 +418,11 @@ class LaserControlGUI(QMainWindow):
         
        
         if qs_delay:
-            self.viron_qsdelay_entry.setText(str(qs_delay.split()[1]))
+            self.qs_delay_layout.set_value(str(qs_delay.split()[1]))
         if qs_pre:
-            self.viron_qspre_entry.setText(str(qs_pre).split()[1])
+            self.qswitch_pre_layout.set_value(str(qs_pre).split()[1])
         if qsdivby:
-            self.viron_reprate_entry.setText(str(20 / qsdivby).split()[1])  
+            self.rep_rate_layout.set_value(str(20 / int(str(qsdivby).split()[1])))  
         
     def on_close(self):
         res = self.laser.close()
@@ -516,9 +516,9 @@ class LaserControlGUI(QMainWindow):
         first_tab_layout.addLayout(self.rep_rate_layout)
         
         self.qs_delay_layout = InputLayout("Q-Switch Delay (us)", func=self.handle_set_qs_delay)
-        # self.set_alignment_button = QPushButton("Set Alignment (Not Implemented)")
-        # self.set_alignment_button.clicked.connect(self.handle_alignment_mode)
-        # self.qs_delay_layout.addWidget(self.set_alignment_button)
+        # # self.set_alignment_button = QPushButton("Set Alignment (Not Implemented)")
+        # # self.set_alignment_button.clicked.connect(self.handle_alignment_mode)
+        # self.qs_delay_layout.addWidget(# self.set_alignment_button)
         first_tab_layout.addLayout(self.qs_delay_layout)
 
         self.qswitch_pre_layout = InputLayout("Q-Switch PrePulse (us)", func=self.handle_set_qs_pre)
