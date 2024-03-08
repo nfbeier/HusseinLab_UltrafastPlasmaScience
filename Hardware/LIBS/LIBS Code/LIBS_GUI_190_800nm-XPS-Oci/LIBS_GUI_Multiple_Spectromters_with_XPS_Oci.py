@@ -7,7 +7,7 @@ import sys, threading, h5py
 from fractions import Fraction
 from XPS import XPS
 import json
-import visa
+import pyvisa as visa
 
 from pyqtgraph import PlotWidget
 import pyqtgraph as pg
@@ -32,7 +32,13 @@ import stellarnet_driver3 as sn
 import matplotlib.pyplot as plt
 logging.basicConfig(format='%(asctime)s %(message)s')
 
-sn.installDeviceDriver()
+def wavelengthCalibration(coeffs):
+    pixels = np.arange(2048)#.reshape(-1, 1)
+    wave = coeffs[2]+coeffs[0]*pixels/2+coeffs[1]*(pixels/2)**2+coeffs[3]*(pixels/2)**3
+    return wave
+  
+#This doesn't need to run every time  
+#sn.installDeviceDriver()
 
 #GUI Design file importing here (qt design file)
 qtcreator_file  = "LIBS_GUI_Multiple_Spectromters_with_XPS_Oci.ui" # Enter file here.
@@ -41,146 +47,48 @@ Ui_MainWindow, QtBaseClass = uic.loadUiType(qtcreator_file)
 #Connecting all hardwares
 
 # Connect Delay Generator
-ins = ik.srs.SRSDG645.open_serial('COM13', 9600) # dg645
+ins = ik.srs.SRSDG645.open_serial('COM8', 9600) # dg645
 
 # Connect Spectrometers 
-spectrometer00, wav00 = sn.array_get_spec(2) # stellerNet 400-500 nm
-spectrometer11, wav11 = sn.array_get_spec(1) # stellerNet 300-400 nm
-spectrometer22, wav22 = sn.array_get_spec(0) # stellerNet 190-300 nm
+#These spectrometer IDs are device specific and don't change
+spectrometerIDs = {'23020204':1,'23092809':3,'23092819':4,'23092829':5}
 
-spectrometer33, wav33 = sn.array_get_spec(3) # stellerNet 500-600 nm
-spectrometer44, wav44 = sn.array_get_spec(4) # stellerNet 600-700 nm
-spectrometer55, wav55 = sn.array_get_spec(5) # stellerNet 700-800 nm
+#Sort through the devices and assign the ones with fixed IDs to their correct locations
+devices = sn.find_devices()
+devices = [i for i in devices]
+spectrometers, waves = [0,0,0,0,0,0], [0,0,0,0,0,0]
+for key,elem in spectrometerIDs.items():
+    for count,device in enumerate(devices):
+        if device.get_device_id() == key:
+            spectrometers[elem] = device
+            coeffs = device.get_config()['coeffs']
+            waves[elem] = wavelengthCalibration(coeffs)
+            devices.pop(count)
 
-# sn.array_get_spec(#num) connect the spectrometers randomly. To ensure the wavelength range 
-#here doing some conditional management
+#The UV and 400-500 nm have no IDs and are assigned random ones. However, we can use their coefficients to determine which is which
+if devices[0].get_config()['coeffs'][2] < devices[1].get_config()['coeffs'][2]:
+    spectrometers[0] = devices[0]
+    waves[0] = wavelengthCalibration(devices[0].get_config()['coeffs'])
+    spectrometers[2] = devices[1]
+    waves[2] = wavelengthCalibration(devices[1].get_config()['coeffs'])
+else:
+    spectrometers[2] = devices[0]
+    waves[2] = wavelengthCalibration(devices[0].get_config()['coeffs'])
+    spectrometers[0] = devices[1]
+    waves[0] = wavelengthCalibration(devices[1].get_config()['coeffs'])
 
-# For wav00
-if 250 >= np.min(wav00) and 250 <= np.max(wav00): # to ensure spectrometer2 is 190-300 nm
-    wav2 = wav00
-    spectrometer2 = spectrometer00
-if 350 >= np.min(wav00) and 350 <= np.max(wav00): # to ensure spectrometer1 is 300-400 nm
-    wav1 = wav00
-    spectrometer1 = spectrometer00
-if 450 >= np.min(wav00) and 450 <= np.max(wav00): # to ensure spectrometer1 is 400-500 nm
-    wav0 = wav00
-    spectrometer0 = spectrometer00
-if 550 >= np.min(wav00) and 550 <= np.max(wav00): # to ensure spectrometer1 is 500-600 nm
-    wav3 = wav00
-    spectrometer3 = spectrometer00
-if 650 >= np.min(wav00) and 650 <= np.max(wav00): # to ensure spectrometer1 is 600-700 nm
-    wav4 = wav00
-    spectrometer4 = spectrometer00
-if 750 >= np.min(wav00) and 750 <= np.max(wav00): # to ensure spectrometer1 is 500-600 nm
-    wav5 = wav00
-    spectrometer5 = spectrometer00
+[wav2,wav1,wav0,wav3,wav4,wav5] = waves
+[spectrometer2,spectrometer1,spectrometer0,spectrometer3,spectrometer4,spectrometer5] = spectrometers
 
-# For wav11
-if 250 >= np.min(wav11) and 250 <= np.max(wav11): # to ensure spectrometer2 is 190-300 nm
-    wav2 = wav11
-    spectrometer2 = spectrometer11
-if 350 >= np.min(wav11) and 350 <= np.max(wav11): # to ensure spectrometer1 is 300-400 nm
-    wav1 = wav11
-    spectrometer1 = spectrometer11
-if 450 >= np.min(wav11) and 450 <= np.max(wav11): # to ensure spectrometer1 is 400-500 nm
-    wav0 = wav11
-    spectrometer0 = spectrometer11
-if 550 >= np.min(wav11) and 550 <= np.max(wav11): # to ensure spectrometer1 is 500-600 nm
-    wav3 = wav11
-    spectrometer3 = spectrometer11
-if 650 >= np.min(wav11) and 650 <= np.max(wav11): # to ensure spectrometer1 is 600-700 nm
-    wav4 = wav11
-    spectrometer4 = spectrometer11
-if 750 >= np.min(wav11) and 750 <= np.max(wav11): # to ensure spectrometer1 is 500-600 nm
-    wav5 = wav11
-    spectrometer5 = spectrometer11
-    
-# For wav22
-if 250 >= np.min(wav22) and 250 <= np.max(wav22): # to ensure spectrometer2 is 190-300 nm
-    wav2 = wav22
-    spectrometer2 = spectrometer22
-if 350 >= np.min(wav22) and 350 <= np.max(wav22): # to ensure spectrometer1 is 300-400 nm
-    wav1 = wav22
-    spectrometer1 = spectrometer22
-if 450 >= np.min(wav22) and 450 <= np.max(wav22): # to ensure spectrometer1 is 400-500 nm
-    wav0 = wav22
-    spectrometer0 = spectrometer22
-if 550 >= np.min(wav22) and 550 <= np.max(wav22): # to ensure spectrometer1 is 500-600 nm
-    wav3 = wav22
-    spectrometer3 = spectrometer22
-if 650 >= np.min(wav22) and 650 <= np.max(wav22): # to ensure spectrometer1 is 600-700 nm
-    wav4 = wav22
-    spectrometer4 = spectrometer22
-if 750 >= np.min(wav22) and 750 <= np.max(wav22): # to ensure spectrometer1 is 500-600 nm
-    wav5 = wav22
-    spectrometer5 = spectrometer22
-    
-# For wav33
-if 250 >= np.min(wav33) and 250 <= np.max(wav33): # to ensure spectrometer2 is 190-300 nm
-    wav2 = wav33
-    spectrometer2 = spectrometer33
-if 350 >= np.min(wav33) and 350 <= np.max(wav33): # to ensure spectrometer1 is 300-400 nm
-    wav1 = wav33
-    spectrometer1 = spectrometer33
-if 450 >= np.min(wav33) and 450 <= np.max(wav33): # to ensure spectrometer1 is 400-500 nm
-    wav0 = wav33
-    spectrometer0 = spectrometer33
-if 550 >= np.min(wav33) and 550 <= np.max(wav33): # to ensure spectrometer1 is 500-600 nm
-    wav3 = wav33
-    spectrometer3 = spectrometer33
-if 650 >= np.min(wav33) and 650 <= np.max(wav33): # to ensure spectrometer1 is 600-700 nm
-    wav4 = wav33
-    spectrometer4 = spectrometer33
-if 750 >= np.min(wav33) and 750 <= np.max(wav33): # to ensure spectrometer1 is 500-600 nm
-    wav5 = wav33
-    spectrometer5 = spectrometer33
-    
-# For wav44
-if 250 >= np.min(wav44) and 250 <= np.max(wav44): # to ensure spectrometer2 is 190-300 nm
-    wav2 = wav44
-    spectrometer2 = spectrometer44
-if 350 >= np.min(wav44) and 350 <= np.max(wav44): # to ensure spectrometer1 is 300-400 nm
-    wav1 = wav44
-    spectrometer1 = spectrometer44
-if 450 >= np.min(wav44) and 450 <= np.max(wav44): # to ensure spectrometer1 is 400-500 nm
-    wav0 = wav44
-    spectrometer0 = spectrometer44
-if 550 >= np.min(wav44) and 550 <= np.max(wav44): # to ensure spectrometer1 is 500-600 nm
-    wav3 = wav44
-    spectrometer3 = spectrometer44
-if 650 >= np.min(wav44) and 650 <= np.max(wav44): # to ensure spectrometer1 is 600-700 nm
-    wav4 = wav44
-    spectrometer4 = spectrometer44
-if 750 >= np.min(wav44) and 750 <= np.max(wav44): # to ensure spectrometer1 is 500-600 nm
-    wav5 = wav44
-    spectrometer5 = spectrometer44
-    
-# For wav55
-if 250 >= np.min(wav55) and 250 <= np.max(wav55): # to ensure spectrometer2 is 190-300 nm
-    wav2 = wav55
-    spectrometer2 = spectrometer55
-if 350 >= np.min(wav55) and 350 <= np.max(wav55): # to ensure spectrometer1 is 300-400 nm
-    wav1 = wav55
-    spectrometer1 = spectrometer55
-if 450 >= np.min(wav55) and 450 <= np.max(wav55): # to ensure spectrometer1 is 400-500 nm
-    wav0 = wav55
-    spectrometer0 = spectrometer55
-if 550 >= np.min(wav55) and 550 <= np.max(wav55): # to ensure spectrometer1 is 500-600 nm
-    wav3 = wav55
-    spectrometer3 = spectrometer55
-if 650 >= np.min(wav55) and 650 <= np.max(wav55): # to ensure spectrometer1 is 600-700 nm
-    wav4 = wav55
-    spectrometer4 = spectrometer55
-if 750 >= np.min(wav55) and 750 <= np.max(wav55): # to ensure spectrometer1 is 500-600 nm
-    wav5 = wav55
-    spectrometer5 = spectrometer55
-    
 scansavg = 1
 smooth = 1
 
 # Connect to the oscilloscope
 rm = visa.ResourceManager()
 scope = rm.open_resource('USB0::0x0699::0x03C7::C020817::INSTR')
+
+
+
 
 #Global variables for data saving and plotting
 data_stellar0 = None # wavelength and intensity for stellerNet
@@ -212,16 +120,17 @@ class StellerNet_functions:
     
     #function for getting spectrum f rom stellArNet
     def getSpectrum(spectrometer, wav, inttime, scansavg, smooth):
-        logging.warning('requesting spectrum')
-        spectrometer['device'].set_config(int_time=inttime, scans_to_avg=scansavg, x_smooth=smooth)
-        sn.setTempComp(spectrometer, True) 
-        spectrum = sn.array_spectrum(spectrometer, wav)
-        logging.warning('recieved spectrum')
+        # logging.warning('requesting spectrum')
+        spectrometer.set_config(int_time=inttime, scans_to_avg=scansavg, x_smooth=smooth,temp_comp=True)
+        #sn.setTempComp(spectrometer, True) 
+        spectrum = spectrometer.read_spectrum()
+        # logging.warning('recieved spectrum')
         return spectrum 
     
     # function external triger of stellarNet    
     def external_trigger(spectrometer,trigger):
-        sn.ext_trig(spectrometer,trigger)    
+        spectrometer.extrig(trigger)
+        #sn.ext_trig(spectrometer,trigger)    
 
 
 class StellerNet0TriggerThread(threading.Thread):
@@ -229,8 +138,8 @@ class StellerNet0TriggerThread(threading.Thread):
         super(StellerNet0TriggerThread,self).__init__()
         self.inttime = inttime
         global data_stellar0
-        logging.warning('displaying spectrum')
-        StellerNet_functions.external_trigger(spectrometer0,True)
+        # logging.warning('displaying spectrum')
+        StellerNet_functions.external_trigger(spectrometer0, True)
         data_stellar0 = StellerNet_functions.getSpectrum(spectrometer0, wav0, inttime, scansavg, smooth)
 
 
@@ -239,7 +148,7 @@ class StellerNet1TriggerThread(threading.Thread):
         super(StellerNet1TriggerThread,self).__init__()
         self.inttime = inttime
         global data_stellar1
-        logging.warning('displaying spectrum')
+        # logging.warning('displaying spectrum')
         StellerNet_functions.external_trigger(spectrometer1,True)
         data_stellar1 = StellerNet_functions.getSpectrum(spectrometer1, wav1, inttime, scansavg, smooth)
 
@@ -249,7 +158,7 @@ class StellerNet2TriggerThread(threading.Thread):
         super(StellerNet2TriggerThread,self).__init__()
         self.inttime = inttime
         global data_stellar2
-        logging.warning('displaying spectrum')
+        # logging.warning('displaying spectrum')
         StellerNet_functions.external_trigger(spectrometer2,True)
         data_stellar2 = StellerNet_functions.getSpectrum(spectrometer2, wav2, inttime, scansavg, smooth)
 
@@ -258,7 +167,7 @@ class StellerNet3TriggerThread(threading.Thread):
         super(StellerNet3TriggerThread,self).__init__()
         self.inttime = inttime
         global data_stellar3
-        logging.warning('displaying spectrum')
+        # logging.warning('displaying spectrum')
         StellerNet_functions.external_trigger(spectrometer3,True)
         data_stellar3 = StellerNet_functions.getSpectrum(spectrometer3, wav3, inttime, scansavg, smooth)
 
@@ -267,7 +176,7 @@ class StellerNet4TriggerThread(threading.Thread):
         super(StellerNet4TriggerThread,self).__init__()
         self.inttime = inttime
         global data_stellar4
-        logging.warning('displaying spectrum')
+        # logging.warning('displaying spectrum')
         StellerNet_functions.external_trigger(spectrometer4,True)
         data_stellar4 = StellerNet_functions.getSpectrum(spectrometer4, wav4, inttime, scansavg, smooth)
 
@@ -276,7 +185,7 @@ class StellerNet5TriggerThread(threading.Thread):
         super(StellerNet5TriggerThread,self).__init__()
         self.inttime = inttime
         global data_stellar5
-        logging.warning('displaying spectrum')
+        # logging.warning('displaying spectrum')
         StellerNet_functions.external_trigger(spectrometer5,True)
         data_stellar5 = StellerNet_functions.getSpectrum(spectrometer5, wav5, inttime, scansavg, smooth)
         
@@ -286,8 +195,9 @@ class ocilloscopeThread(threading.Thread):
         # self.start = start
         global data_oci
         data_oci=self.ocilloscope(data_source, trig_source, v_div, t_div, rec_length)
+        
     def ocilloscope(self, data_source, trig_source, v_div, t_div, rec_length):
-        # Set up acquisition parameters
+        # # Set up acquisition parameters
         scope.write('DATa:SOUrce '+ data_source)   # Select channel 4 as data source
         scope.write('DATa:ENCdg RIBinary')   # Set binary data encoding
         scope.write('WFMPre:XINcr?')   # Query the x-axis increment
@@ -304,8 +214,8 @@ class ocilloscopeThread(threading.Thread):
         scope.write('HOR:SCALE '+ t_div) # Set the horizontal scale to 1ms/div
         
         # Arm the scope and wait for trigger
-        scope.write('ACQuire:STOPAfter SEQuence')   # Stop acquisition after one sequence
-        scope.write('ACQuire:STATE ON')   # Start acquisition
+        # scope.write('ACQuire:STOPAfter SEQuence')   # Stop acquisition after one sequence
+        # scope.write('ACQuire:STATE ON')   # Start acquisition
         scope.query('*OPC?')   # Wait for acquisition to complete
 
         # Read the acquired data
@@ -348,8 +258,6 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
         QtWidgets.QMainWindow.__init__(self)
         Ui_MainWindow.__init__(self)
         self.setupUi(self)
-
-
         
         # STAGE CONTROL ----------------------------------------------------------------------        
         # self.setupUi(self)
@@ -447,6 +355,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
         
         # self.Time_data = 0
         # self.Volts_data=0
+        
 
 
 
@@ -664,6 +573,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.SaveData_dir.setText(dir_path)
         
     def MySpectrometers(self):
+        start_time = time.time()
         # Calling hardware threads   
         StellerNet0TrigThread = threading.Thread(target=StellerNet0TriggerThread, args=(self.inttime, ))
         StellerNet1TrigThread = threading.Thread(target=StellerNet1TriggerThread, args=(self.inttime, ))
@@ -683,7 +593,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
         StellerNet4TrigThread.start()
         StellerNet5TrigThread.start()
         ocilloscopeTrigThread.start()
-        time.sleep(1)
+        time.sleep(0.1)
         Fire.start()
         # data_oci = np.array(self.Time_data, self.Volts_data)
         
@@ -722,6 +632,29 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
         global data_stellar4_bkg
         global data_stellar5_bkg
         
+        data_stellar0 = np.array(data_stellar0)
+        data_stellar1 = np.array(data_stellar1)
+        data_stellar2 = np.array(data_stellar2)
+        data_stellar3 = np.array(data_stellar3)
+        data_stellar4 = np.array(data_stellar4)
+        data_stellar5 = np.array(data_stellar5)
+        
+        data_stellar0 =  np.vstack([wav0, data_stellar0])
+        data_stellar1 =  np.vstack([wav1, data_stellar1])
+        data_stellar2 =  np.vstack([wav2, data_stellar2])
+        data_stellar3 =  np.vstack([wav3, data_stellar3])
+        data_stellar4 =  np.vstack([wav4, data_stellar4])
+        data_stellar5 =  np.vstack([wav5, data_stellar5])
+        
+        data_stellar0 = data_stellar0.T
+        data_stellar1 = data_stellar1.T
+        data_stellar2 = data_stellar2.T
+        data_stellar3 = data_stellar3.T
+        data_stellar4 = data_stellar4.T
+        data_stellar5 = data_stellar5.T
+        
+        # print(data_stellar0.shape)
+        
 
         temp_steller0 = data_stellar0[:,1].reshape(2048,1)
         intensity_steller0_all = np.hstack([intensity_steller0_all, temp_steller0])
@@ -757,77 +690,77 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
         if self.subtract_bkg.isChecked():
             if self.acquire_bkg.isChecked():
                 self.plot_graph_7.clear()
-                self.plot_graph_7.plot(data_stellar0[:,0],intensity_steller0_all[:,-1], pen='y')
-                self.plot_graph_7.plot(data_stellar1[:,0],intensity_steller1_all[:,-1], pen='c')
-                self.plot_graph_7.plot(data_stellar2[:,0],intensity_steller2_all[:,-1], pen='b')
-                self.plot_graph_7.plot(data_stellar3[:,0],intensity_steller3_all[:,-1], pen='g')
-                self.plot_graph_7.plot(data_stellar4[:,0],intensity_steller4_all[:,-1], pen='m')
-                self.plot_graph_7.plot(data_stellar5[:,0],intensity_steller5_all[:,-1], pen='r')
+                self.plot_graph_7.plot(wav0,intensity_steller0_all[:,-1], pen='k')
+                self.plot_graph_7.plot(wav1,intensity_steller1_all[:,-1], pen='c')
+                self.plot_graph_7.plot(wav2,intensity_steller2_all[:,-1], pen='b')
+                self.plot_graph_7.plot(wav3,intensity_steller3_all[:,-1], pen='g')
+                self.plot_graph_7.plot(wav4,intensity_steller4_all[:,-1], pen='m')
+                self.plot_graph_7.plot(wav5,intensity_steller5_all[:,-1], pen='r')
         
                 self.plot_graph_8.clear()
-                self.plot_graph_8.plot(data_stellar0[:,0],intensity_steller0_all[:,-2], pen='y')
-                self.plot_graph_8.plot(data_stellar1[:,0],intensity_steller1_all[:,-2], pen='c')
-                self.plot_graph_8.plot(data_stellar2[:,0],intensity_steller2_all[:,-2], pen='b')
-                self.plot_graph_8.plot(data_stellar3[:,0],intensity_steller3_all[:,-2], pen='g')
-                self.plot_graph_8.plot(data_stellar4[:,0],intensity_steller4_all[:,-2], pen='m')
-                self.plot_graph_8.plot(data_stellar5[:,0],intensity_steller5_all[:,-2], pen='r')
+                self.plot_graph_8.plot(wav0,intensity_steller0_all[:,-2], pen='k')
+                self.plot_graph_8.plot(wav1,intensity_steller1_all[:,-2], pen='c')
+                self.plot_graph_8.plot(wav2,intensity_steller2_all[:,-2], pen='b')
+                self.plot_graph_8.plot(wav3,intensity_steller3_all[:,-2], pen='g')
+                self.plot_graph_8.plot(wav4,intensity_steller4_all[:,-2], pen='m')
+                self.plot_graph_8.plot(wav5,intensity_steller5_all[:,-2], pen='r')
         
                 self.plot_graph_9.clear()
-                self.plot_graph_9.plot(data_stellar0[:,0],intensity_steller0_all[:,-3], pen='y')
-                self.plot_graph_9.plot(data_stellar1[:,0],intensity_steller1_all[:,-3], pen='c')
-                self.plot_graph_9.plot(data_stellar2[:,0],intensity_steller2_all[:,-3], pen='b')
-                self.plot_graph_9.plot(data_stellar3[:,0],intensity_steller3_all[:,-3], pen='g')
-                self.plot_graph_9.plot(data_stellar4[:,0],intensity_steller4_all[:,-3], pen='m')
-                self.plot_graph_9.plot(data_stellar5[:,0],intensity_steller5_all[:,-3], pen='r')
+                self.plot_graph_9.plot(wav0,intensity_steller0_all[:,-3], pen='k')
+                self.plot_graph_9.plot(wav1,intensity_steller1_all[:,-3], pen='c')
+                self.plot_graph_9.plot(wav2,intensity_steller2_all[:,-3], pen='b')
+                self.plot_graph_9.plot(wav3,intensity_steller3_all[:,-3], pen='g')
+                self.plot_graph_9.plot(wav4,intensity_steller4_all[:,-3], pen='m')
+                self.plot_graph_9.plot(wav5,intensity_steller5_all[:,-3], pen='r')
             else:
                 self.plot_graph_7.clear()
-                self.plot_graph_7.plot(data_stellar0[:,0].reshape(2048,),(intensity_steller0_all[:,-1].reshape(2048,)-avg_data_stellar0_bkg.reshape(2048,)), pen='y')
-                self.plot_graph_7.plot(data_stellar1[:,0].reshape(2048,),(intensity_steller1_all[:,-1].reshape(2048,)-avg_data_stellar1_bkg.reshape(2048,)), pen='c')
-                self.plot_graph_7.plot(data_stellar2[:,0].reshape(2048,),(intensity_steller2_all[:,-1].reshape(2048,)-avg_data_stellar2_bkg.reshape(2048,)), pen='b')
-                self.plot_graph_7.plot(data_stellar3[:,0].reshape(2048,),(intensity_steller3_all[:,-1].reshape(2048,)-avg_data_stellar3_bkg.reshape(2048,)), pen='g')
-                self.plot_graph_7.plot(data_stellar4[:,0].reshape(2048,),(intensity_steller4_all[:,-1].reshape(2048,)-avg_data_stellar4_bkg.reshape(2048,)), pen='m')
-                self.plot_graph_7.plot(data_stellar5[:,0].reshape(2048,),(intensity_steller5_all[:,-1].reshape(2048,)-avg_data_stellar5_bkg.reshape(2048,)), pen='r')
+                self.plot_graph_7.plot(wav0,(intensity_steller0_all[:,-1].reshape(2048,)-avg_data_stellar0_bkg.reshape(2048,)), pen='k')
+                self.plot_graph_7.plot(wav1,(intensity_steller1_all[:,-1].reshape(2048,)-avg_data_stellar1_bkg.reshape(2048,)), pen='c')
+                self.plot_graph_7.plot(wav2,(intensity_steller2_all[:,-1].reshape(2048,)-avg_data_stellar2_bkg.reshape(2048,)), pen='b')
+                self.plot_graph_7.plot(wav3,(intensity_steller3_all[:,-1].reshape(2048,)-avg_data_stellar3_bkg.reshape(2048,)), pen='g')
+                self.plot_graph_7.plot(wav4,(intensity_steller4_all[:,-1].reshape(2048,)-avg_data_stellar4_bkg.reshape(2048,)), pen='m')
+                self.plot_graph_7.plot(wav5,(intensity_steller5_all[:,-1].reshape(2048,)-avg_data_stellar5_bkg.reshape(2048,)), pen='r')
     
                 self.plot_graph_8.clear()
-                self.plot_graph_8.plot(data_stellar0[:,0].reshape(2048,),(intensity_steller0_all[:,-2].reshape(2048,)-avg_data_stellar0_bkg.reshape(2048,)), pen='y')
-                self.plot_graph_8.plot(data_stellar1[:,0].reshape(2048,),(intensity_steller1_all[:,-2].reshape(2048,)-avg_data_stellar1_bkg.reshape(2048,)), pen='c')
-                self.plot_graph_8.plot(data_stellar2[:,0].reshape(2048,),(intensity_steller2_all[:,-2].reshape(2048,)-avg_data_stellar2_bkg.reshape(2048,)), pen='b')
-                self.plot_graph_8.plot(data_stellar3[:,0].reshape(2048,),(intensity_steller3_all[:,-2].reshape(2048,)-avg_data_stellar3_bkg.reshape(2048,)), pen='g')
-                self.plot_graph_8.plot(data_stellar4[:,0].reshape(2048,),(intensity_steller4_all[:,-2].reshape(2048,)-avg_data_stellar4_bkg.reshape(2048,)), pen='m')
-                self.plot_graph_8.plot(data_stellar5[:,0].reshape(2048,),(intensity_steller5_all[:,-2].reshape(2048,)-avg_data_stellar5_bkg.reshape(2048,)), pen='r')
+                self.plot_graph_8.plot(wav0,(intensity_steller0_all[:,-2].reshape(2048,)-avg_data_stellar0_bkg.reshape(2048,)), pen='k')
+                self.plot_graph_8.plot(wav1,(intensity_steller1_all[:,-2].reshape(2048,)-avg_data_stellar1_bkg.reshape(2048,)), pen='c')
+                self.plot_graph_8.plot(wav2,(intensity_steller2_all[:,-2].reshape(2048,)-avg_data_stellar2_bkg.reshape(2048,)), pen='b')
+                self.plot_graph_8.plot(wav3,(intensity_steller3_all[:,-2].reshape(2048,)-avg_data_stellar3_bkg.reshape(2048,)), pen='g')
+                self.plot_graph_8.plot(wav4,(intensity_steller4_all[:,-2].reshape(2048,)-avg_data_stellar4_bkg.reshape(2048,)), pen='m')
+                self.plot_graph_8.plot(wav5,(intensity_steller5_all[:,-2].reshape(2048,)-avg_data_stellar5_bkg.reshape(2048,)), pen='r')
     
                 self.plot_graph_9.clear()
-                self.plot_graph_9.plot(data_stellar0[:,0].reshape(2048,),(intensity_steller0_all[:,-3].reshape(2048,)-avg_data_stellar0_bkg.reshape(2048,)), pen='y')
-                self.plot_graph_9.plot(data_stellar1[:,0].reshape(2048,),(intensity_steller1_all[:,-3].reshape(2048,)-avg_data_stellar1_bkg.reshape(2048,)), pen='c')
-                self.plot_graph_9.plot(data_stellar2[:,0].reshape(2048,),(intensity_steller2_all[:,-3].reshape(2048,)-avg_data_stellar2_bkg.reshape(2048,)), pen='b')
-                self.plot_graph_9.plot(data_stellar3[:,0].reshape(2048,),(intensity_steller3_all[:,-3].reshape(2048,)-avg_data_stellar3_bkg.reshape(2048,)), pen='g')
-                self.plot_graph_9.plot(data_stellar4[:,0].reshape(2048,),(intensity_steller4_all[:,-3].reshape(2048,)-avg_data_stellar4_bkg.reshape(2048,)), pen='m')
-                self.plot_graph_9.plot(data_stellar5[:,0].reshape(2048,),(intensity_steller5_all[:,-3].reshape(2048,)-avg_data_stellar5_bkg.reshape(2048,)), pen='r')
+                self.plot_graph_9.plot(wav0,(intensity_steller0_all[:,-3].reshape(2048,)-avg_data_stellar0_bkg.reshape(2048,)), pen='k')
+                self.plot_graph_9.plot(wav1,(intensity_steller1_all[:,-3].reshape(2048,)-avg_data_stellar1_bkg.reshape(2048,)), pen='c')
+                self.plot_graph_9.plot(wav2,(intensity_steller2_all[:,-3].reshape(2048,)-avg_data_stellar2_bkg.reshape(2048,)), pen='b')
+                self.plot_graph_9.plot(wav3,(intensity_steller3_all[:,-3].reshape(2048,)-avg_data_stellar3_bkg.reshape(2048,)), pen='g')
+                self.plot_graph_9.plot(wav4,(intensity_steller4_all[:,-3].reshape(2048,)-avg_data_stellar4_bkg.reshape(2048,)), pen='m')
+                self.plot_graph_9.plot(wav5,(intensity_steller5_all[:,-3].reshape(2048,)-avg_data_stellar5_bkg.reshape(2048,)), pen='r')
             
         else:
             self.plot_graph_7.clear()
-            self.plot_graph_7.plot(data_stellar0[:,0],intensity_steller0_all[:,-1], pen='y')
-            self.plot_graph_7.plot(data_stellar1[:,0],intensity_steller1_all[:,-1], pen='c')
-            self.plot_graph_7.plot(data_stellar2[:,0],intensity_steller2_all[:,-1], pen='b')
-            self.plot_graph_7.plot(data_stellar3[:,0],intensity_steller3_all[:,-1], pen='g')
-            self.plot_graph_7.plot(data_stellar4[:,0],intensity_steller4_all[:,-1], pen='m')
-            self.plot_graph_7.plot(data_stellar5[:,0],intensity_steller5_all[:,-1], pen='r')
+            self.plot_graph_7.plot(wav0,intensity_steller0_all[:,-1], pen='k')
+            self.plot_graph_7.plot(wav1,intensity_steller1_all[:,-1], pen='c')
+            self.plot_graph_7.plot(wav2,intensity_steller2_all[:,-1], pen='b')
+            self.plot_graph_7.plot(wav3,intensity_steller3_all[:,-1], pen='g')
+            self.plot_graph_7.plot(wav4,intensity_steller4_all[:,-1], pen='m')
+            self.plot_graph_7.plot(wav5,intensity_steller5_all[:,-1], pen='r')
     
             self.plot_graph_8.clear()
-            self.plot_graph_8.plot(data_stellar0[:,0],intensity_steller0_all[:,-2], pen='y')
-            self.plot_graph_8.plot(data_stellar1[:,0],intensity_steller1_all[:,-2], pen='c')
-            self.plot_graph_8.plot(data_stellar2[:,0],intensity_steller2_all[:,-2], pen='b')
-            self.plot_graph_8.plot(data_stellar3[:,0],intensity_steller3_all[:,-2], pen='g')
-            self.plot_graph_8.plot(data_stellar4[:,0],intensity_steller4_all[:,-2], pen='m')
-            self.plot_graph_8.plot(data_stellar5[:,0],intensity_steller5_all[:,-2], pen='r')
+            self.plot_graph_8.plot(wav0,intensity_steller0_all[:,-2], pen='k')
+            self.plot_graph_8.plot(wav1,intensity_steller1_all[:,-2], pen='c')
+            self.plot_graph_8.plot(wav2,intensity_steller2_all[:,-2], pen='b')
+            self.plot_graph_8.plot(wav3,intensity_steller3_all[:,-2], pen='g')
+            self.plot_graph_8.plot(wav4,intensity_steller4_all[:,-2], pen='m')
+            self.plot_graph_8.plot(wav5,intensity_steller5_all[:,-2], pen='r')
     
             self.plot_graph_9.clear()
-            self.plot_graph_9.plot(data_stellar0[:,0],intensity_steller0_all[:,-3], pen='y')
-            self.plot_graph_9.plot(data_stellar1[:,0],intensity_steller1_all[:,-3], pen='c')
-            self.plot_graph_9.plot(data_stellar2[:,0],intensity_steller2_all[:,-3], pen='b')
-            self.plot_graph_9.plot(data_stellar3[:,0],intensity_steller3_all[:,-3], pen='g')
-            self.plot_graph_9.plot(data_stellar4[:,0],intensity_steller4_all[:,-3], pen='m')
-            self.plot_graph_9.plot(data_stellar5[:,0],intensity_steller5_all[:,-3], pen='r')
+            self.plot_graph_9.plot(wav0,intensity_steller0_all[:,-3], pen='k')
+            self.plot_graph_9.plot(wav1,intensity_steller1_all[:,-3], pen='c')
+            self.plot_graph_9.plot(wav2,intensity_steller2_all[:,-3], pen='b')
+            self.plot_graph_9.plot(wav3,intensity_steller3_all[:,-3], pen='g')
+            self.plot_graph_9.plot(wav4,intensity_steller4_all[:,-3], pen='m')
+            self.plot_graph_9.plot(wav5,intensity_steller5_all[:,-3], pen='r')
         
         # Deleting 4th shot data for memory efficiency
         intensity_steller0_all = np.delete(intensity_steller0_all, 0, 1)
@@ -843,7 +776,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
         #Save Data
         txtnum = self.file_num
         path_SaveData = self.SaveData_dir.toPlainText()
-        hdf = h5py.File (path_SaveData + '/'  + time.strftime("%Y%m%d")+'_LIBS_Spectrum_{}.h5'.format(txtnum), 'w')
+        hdf = h5py.File (path_SaveData + '/'  + time.strftime("%Y%m%d")+'_LIBS_Spectrum_{:05d}.h5'.format(txtnum), 'w')
         StellarNetSpectrum_400_500nm = hdf.create_dataset('StellarNetSpectrum_400_500nm', data=data_stellar0)
         StellarNetSpectrum_300_400nm = hdf.create_dataset('StellarNetSpectrum_300_400nm', data=data_stellar1)
         StellarNetSpectrum_190_300nm = hdf.create_dataset('StellarNetSpectrum_190_300nm', data=data_stellar2)
@@ -892,8 +825,9 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
         else:
             self.same_loc_shot +=1
 #---------------------------------------------------------------------------------------
+        print(start_time-time.time())
     def reset(self, spectrometer):
-        spectrometer['device'].__del__()
+        spectrometer.__del__()
     
     def DisconnectAll(self):
         ins.sendcmd('IFRS 0') #close dg 645
