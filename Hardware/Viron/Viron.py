@@ -127,7 +127,7 @@ class VironLaser():
         rate = int(rate)
         self.tngui_print("Setting Rep Rate to: " + str(rate))
         if rate in range(1, 21): 
-            result = self.send_command(f'$DFREQ {rate}')  # Set the repetition rate
+            result = self.send_command(f'$QSDIVBY {int(20 / rate)}')  # Set the repetition rate
             self.tngui_print(result)
         else:
             self.tngui_print('Invalid repetition rate')

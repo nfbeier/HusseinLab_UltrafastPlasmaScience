@@ -17,6 +17,7 @@ class LaserControlGUI(QMainWindow):
         self.currentstate = None
         self.connected = False
         self.states = ['standby', 'stop', 'fire', 'single_shot']
+        self.laser_simple_status = {"isReady" : 'Disconnected'}
         self.laser = VironLaser(self.host, self.port, self.password, telnetgui=self.tngui)
         self.tngui.set_laser(self.laser)
         
@@ -79,7 +80,8 @@ class LaserControlGUI(QMainWindow):
         status_text += f"  Laser Temp: {temps['Laser Temp']} C\n"
         status_text += f"  Diode Temp: {temps['Diode Temp']} C\n"
         self.critical_status_label.setText(status_text)
-        
+        self.laser_status_label.setText(self.laser_simple_status['isReady'])
+
     def handle_set_qs_delay(self):
         '''
         Handles the action when the "Set Q-Switch Delay" button is clicked.
@@ -180,6 +182,14 @@ class LaserControlGUI(QMainWindow):
         status['NLO Oven 1 over temp, oven 1 off'] = 'OK' if binary_string[46] == '0' else 'Warning'
         status['NLO Oven 1 open sensor, oven 1 off'] = 'OK' if binary_string[47] == '0' else 'Warning'
 
+        # warming / rtf / fault
+        if binary_string[16:47] == str('0'*31):
+            self.laser_simple_status['isReady'] = 'Ready'
+        elif binary_string[16:47] == str('0'*23 + '10000100') or str('0'*23 + '00000100'):
+            self.laser_simple_status['isReady'] = 'Warming'
+        else:
+            self.laser_simple_status['isReady'] = 'Fault'      
+
         return status
 
     def _print_status(self, status):
@@ -210,10 +220,9 @@ class LaserControlGUI(QMainWindow):
         Returns:
             None
         """
-        # rate = self.rep_rate_layout.get_value()
-        # if rate.isdigit():
-        #     self.laser.set_rep_rate(int(rate))
-        pass
+        rate = self.rep_rate_layout.get_value()
+        if rate.isdigit():
+            self.laser.set_rep_rate(int(rate))
 
     def handle_get_status(self, status_hex=None):
         """
@@ -262,7 +271,7 @@ class LaserControlGUI(QMainWindow):
         self.stop_var.setChecked(False)
         self.single_shot_var.setChecked(False)
         self.standby_var.setChecked(False)
-        self.set_alignment_button.setStyleSheet("background-color: lightgreen")
+        # self.set_alignment_button.setStyleSheet("background-color: lightgreen")
         self.single_shot_var.setStyleSheet("background-color : lightgrey")
         self.standby_var.setStyleSheet("background-color : lightgrey")
         self.stop_var.setStyleSheet("background-color : lightgrey")
@@ -287,7 +296,7 @@ class LaserControlGUI(QMainWindow):
             self.standby_var.setStyleSheet("background-color : lightgreen")
             self.stop_var.setStyleSheet("background-color : lightgrey")
             self.start_var.setStyleSheet("background-color : lightgrey")
-            self.set_alignment_button.setStyleSheet("background-color: lightgrey")
+            # self.set_alignment_button.setStyleSheet("background-color: lightgrey")
             return True
         print("Failed to set laser to standby")
         return False
@@ -314,7 +323,7 @@ class LaserControlGUI(QMainWindow):
             self.standby_var.setStyleSheet("background-color : lightgrey")
             self.stop_var.setStyleSheet("background-color : lightgreen")
             self.start_var.setStyleSheet("background-color : lightgrey")
-            self.set_alignment_button.setStyleSheet("background-color: lightgrey")
+            # self.set_alignment_button.setStyleSheet("background-color: lightgrey")
             return True
         else:
             print("failed to set stop")
@@ -332,6 +341,8 @@ class LaserControlGUI(QMainWindow):
         if self.currentstate != 'fire':
             # set to internal trigger
             self.laser.send_command("$QSON 1")
+            self.laser.send_command("$TRIG II")
+
             
         if self.laser.set_fire():
             self.currentstate = 'fire'
@@ -346,7 +357,7 @@ class LaserControlGUI(QMainWindow):
         self.standby_var.setStyleSheet("background-color : lightgrey")
         self.stop_var.setStyleSheet("background-color : lightgrey")
         self.start_var.setStyleSheet("background-color : red")
-        self.set_alignment_button.setStyleSheet("background-color: lightgrey")
+        # self.set_alignment_button.setStyleSheet("background-color: lightgrey")
 
     def handle_set_single_shot(self):
         """
@@ -370,7 +381,7 @@ class LaserControlGUI(QMainWindow):
             self.stop_var.setStyleSheet("background-color : lightgrey")
             self.start_var.setStyleSheet("background-color : lightgrey")
             self.single_shot_var.setStyleSheet("background-color : red")
-            self.set_alignment_button.setStyleSheet("background-color: lightgrey")
+            # self.set_alignment_button.setStyleSheet("background-color: lightgrey")
             
         if self.laser.fire_single_shot():
             print("fired mah lazor")
@@ -401,23 +412,17 @@ class LaserControlGUI(QMainWindow):
             print("Diode Pulse Width Not Set")
     
     def _get_values(self):
-        diode_current = self.laser.send_command('$DCURR ?', response=True)
-        diode_pulse_width = self.laser.send_command('$DPW ?', response=True)
         qs_delay = self.laser.send_command('$QSDELAY ?', response=True)
         qs_pre = self.laser.send_command('$QSPRE ?', response=True)
-        # reprate = self.laser.send_command('$DFREQ ?', response=True)
+        qsdivby = self.laser.send_command('$QSDIVBY ?', response=True)
         
-        if diode_current:
-            self.diode_current_layout.set_value(str(diode_current.split()[1]))
-        if diode_pulse_width:
-            self.diode_pulse_width_layout.set_value(str(diode_pulse_width.split()[1]))
+       
         if qs_delay:
             self.qs_delay_layout.set_value(str(qs_delay.split()[1]))
         if qs_pre:
             self.qswitch_pre_layout.set_value(str(qs_pre).split()[1])
-        # if reprate:
-            # self.rep_rate_layout.set_value(str(reprate).split()[1])
-            pass
+        if qsdivby:
+            self.rep_rate_layout.set_value(str(20 / int(str(qsdivby).split()[1])))  
         
     def on_close(self):
         res = self.laser.close()
@@ -483,15 +488,15 @@ class LaserControlGUI(QMainWindow):
         self.stop_var.setStyleSheet("background-color : lightgrey")
         buttons_layout.addWidget(self.stop_var)
 
-        self.start_var = QPushButton("Auto Fire (deprecated)")
-        # self.start_var.clicked.connect(self.toggle_auto_fire)
+        self.start_var = QPushButton("Auto Fire")
+        self.start_var.clicked.connect(self.toggle_auto_fire)
         self.start_var.setStyleSheet("background-color : lightgrey")
         self.start_var.setChecked(False)  # Set the default value
         self.start_var.setCheckable(True)
         buttons_layout.addWidget(self.start_var)
 
-        self.single_shot_var = QPushButton("Single Fire (deprecated)")
-        # self.single_shot_var.clicked.connect(self.handle_set_single_shot)
+        self.single_shot_var = QPushButton("Single Fire")
+        self.single_shot_var.clicked.connect(self.handle_set_single_shot)
         self.single_shot_var.setStyleSheet("background-color : lightgrey")
         self.single_shot_var.setChecked(False)  # Set the default value
         self.single_shot_var.setCheckable(True)
@@ -507,13 +512,13 @@ class LaserControlGUI(QMainWindow):
         first_tab_layout.addLayout(buttons_layout)
 
 
-        # # self.rep_rate_layout = InputLayout("Repetition Rate (DONT CHANGE)(Hz)", func=self.handle_set_rep_rate)
-        # first_tab_layout.addLayout(# self.rep_rate_layout)
+        self.rep_rate_layout = InputLayout("Repetition Rate (Hz)", func=self.handle_set_rep_rate)
+        first_tab_layout.addLayout(self.rep_rate_layout)
         
         self.qs_delay_layout = InputLayout("Q-Switch Delay (us)", func=self.handle_set_qs_delay)
-        self.set_alignment_button = QPushButton("Set Alignment (Not Implemented)")
-        self.set_alignment_button.clicked.connect(self.handle_alignment_mode)
-        self.qs_delay_layout.addWidget(self.set_alignment_button)
+        # # self.set_alignment_button = QPushButton("Set Alignment (Not Implemented)")
+        # # self.set_alignment_button.clicked.connect(self.handle_alignment_mode)
+        # self.qs_delay_layout.addWidget(# self.set_alignment_button)
         first_tab_layout.addLayout(self.qs_delay_layout)
 
         self.qswitch_pre_layout = InputLayout("Q-Switch PrePulse (us)", func=self.handle_set_qs_pre)
@@ -523,10 +528,15 @@ class LaserControlGUI(QMainWindow):
         
         # critical status layout text box
         critical_status_layout = QHBoxLayout()
+        self.laser_status_label = QLabel(self.laser_simple_status['isReady'])
+        self.laser_status_label.setAlignment(Qt.AlignVCenter)
+        self.laser_status_label.setAlignment(Qt.AlignHCenter)
+        
         critical_status_label = QLabel("Status:")
         critical_status_label.setAlignment(Qt.AlignVCenter)
         critical_status_label.setAlignment(Qt.AlignRight)
         self.critical_status_label = QLabel()
+        critical_status_layout.addWidget(self.laser_status_label)
         critical_status_layout.addWidget(critical_status_label)
         critical_status_layout.addWidget(self.critical_status_label)
         # get status button for first page
@@ -560,30 +570,13 @@ class LaserControlGUI(QMainWindow):
         get_status_button = QPushButton("Get Status")
         get_status_button.clicked.connect(lambda: self.handle_get_status())
         status_layout.addWidget(get_status_button)
-
+        
         self.handle_get_status("0x000000000000")
 
         second_tab_layout.addLayout(status_layout)
 
         # Add the second tab to the tab widget
         tab_widget.addTab(second_tab, "Status")
-        
-        
-        # third tab for testing
-        third_tab = QWidget()
-        third_tab_layout = QVBoxLayout(third_tab)
-        
-        
-        self.diode_current_layout = InputLayout("Diode Current", func=self.handle_set_diode_current)
-        self.diode_pulse_width_layout = InputLayout("Diode Pulse Width", func=self.handle_set_diode_current)
-        get_values_button = QPushButton("Get Values")
-        get_values_button.clicked.connect(self._get_values)
-        third_tab_layout.addWidget(get_values_button)
-        
-        third_tab_layout.addLayout(self.diode_current_layout)
-        third_tab_layout.addLayout(self.diode_pulse_width_layout)
-
-        tab_widget.addTab(third_tab, "Test")
 
 
         fourth_tab = QWidget()
