@@ -10,7 +10,7 @@ Currently three projects are in active development
 
 Development of communication protocal to control the Quantel Viron Laser System for Portable LIBS.
 
--- Developed by Nick Beier, Shubho Mohajan and Liam Droog
+-- Developed by Liam Droog and Shubho Mohajan 
 
 # LIBS
 
@@ -22,7 +22,7 @@ Controls for automated laser-induced breakdown spectroscopy (LIBS) experiments. 
 
 Development of linear translation stations controlled by the Newport XPS D4 system.
 
--- Developed by Shubho Mohajan and Ying Wan
+-- Developed by Nick Beier
 
 # pyFROG  
 
@@ -35,3 +35,6 @@ Development of ultrafast pulse measurement Frequency Resolved Optical Gating (FR
 Development of real-time data acquisition and analysis scripts. Currently fielded at the ALLS facility in Quebec. Watchdog scripts are used to pull data from remote desktops before being combined into a single file system.
 
 --Developed by Nick Beier
+
+# Tektronix TBS2000B Oscilloscope
+Communication with a TBS2000B oscilloscope to read out nanosecond pulse pulse shape and energy information from a photodiode during experiments
