@@ -8,7 +8,6 @@ from scipy.signal import find_peaks, peak_widths
 
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from PyQt5 import QtCore, QtGui, QtWidgets
-import qdarktheme
 
 cwd = os.getcwd()
 # Check if 'HusseinLab_UltrafastPlasmaScience' is in the components
@@ -19,8 +18,6 @@ if 'HusseinLab_UltrafastPlasmaScience' not in cwd.split(os.path.sep):
 cwd = os.path.sep.join(cwd.split(os.path.sep)[:cwd.split(os.path.sep).index('HusseinLab_UltrafastPlasmaScience') + 1])
 
 sys.path.insert(0,cwd)
-
-#from devices.XGS600 import XGS600
 
 from pyvisa import ResourceManager
 from instrumental import instrument, list_instruments
