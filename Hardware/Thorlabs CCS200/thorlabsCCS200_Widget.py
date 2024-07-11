@@ -137,6 +137,8 @@ class thorlabsWidget(QtWidgets.QMainWindow):
         self.ui.setupUi(self)
 
         self.ThorlabsThread = None
+        self.waiting = False
+        self.num_spectra_avg = 1
 
         self.navi_toolbar = NavigationToolbar(self.ui.spectrumPlot, self)
         self.ui.verticalLayout.insertWidget(0,self.navi_toolbar)
@@ -144,6 +146,7 @@ class thorlabsWidget(QtWidgets.QMainWindow):
 
         self.ui.ConnectThorlabs.clicked.connect(self._initThorlabs)
         self.ui.in_specexposure.textChanged.connect(lambda: self.ThorlabsThread.updateThorlabsParameters(self.ui.in_specexposure.text(),param ="integrationTime"))
+        self.ui.in_numberaverage.valueChanged.connect(self.updateNumSpectra)
 
     def _initThorlabs(self):
         if self.ThorlabsThread:
@@ -154,7 +157,7 @@ class thorlabsWidget(QtWidgets.QMainWindow):
             self.wave = self.ThorlabsThread.getWavelength()
             self.intensity = self.ThorlabsThread.getIntensity()
             self.ui.spectrumPlot.axes.cla()
-            self.alignPlot, = self.ui.spectrumPlot.axes.plot(self.wave,self.intensity)
+            self.plot, = self.ui.spectrumPlot.axes.plot(self.wave,self.intensity)
             self.ui.spectrumPlot.axes.set_xlabel("Wavelength [nm]")
             self.ui.spectrumPlot.axes.set_ylabel("Intensity [a.u.]")
             self.ui.spectrumPlot.axes.set_ylim([0,1])
@@ -162,12 +165,24 @@ class thorlabsWidget(QtWidgets.QMainWindow):
             self.ThorlabsThread.acquired.connect(self.updateIntensity)
             self.ThorlabsThread.start()     
 
+    def updateNumSpectra(self):
+        self.num_spectra_avg = self.ui.in_numberaverage.value()
+
     def updateAlignmentPlot(self):
-        self.alignPlot.set_ydata(self.intensity)
+        self.plot.set_ydata(self.intensity)
         self.ui.spectrumPlot.fig.canvas.draw()
 
     def updateIntensity(self,intensity):
-        self.intensity = intensity
+        self.waiting = True
+        intTotal = []
+        for num in range(self.num_spectra_avg): 
+            print("Here")
+            while self.waiting:
+                time.sleep(0.001)
+            intTotal.append(intensity)
+            self.waiting = True
+        self.intensity = np.average(intTotal)
+        #self.intensity = intensity
         self.updateAlignmentPlot()
 
     def stopBtn(self):
