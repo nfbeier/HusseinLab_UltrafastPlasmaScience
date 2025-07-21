@@ -15,10 +15,10 @@ rm = pyvisa.ResourceManager()
 print(rm.list_resources())
 
 # %%
-scope = rm.open_resource('USB0::0x0699::0x03C7::C020817::INSTR')
+scope = rm.open_resource('USB0::0x0699::0x03C7::C023035::INSTR')
 
 # GUI Design file importing here (qt design file)
-qtcreator_file = "Ocilloscope.ui"  # Enter file here.
+qtcreator_file = r"C:\Users\R2D2\Documents\CODE\Github\HusseinLab_UltrafastPlasmaScience\Hardware\Tektronix TBS2000B Oscilloscope\Ocilloscope.ui"  # Enter file here.
 Ui_MainWindow, QtBaseClass = uic.loadUiType(qtcreator_file)
 
 

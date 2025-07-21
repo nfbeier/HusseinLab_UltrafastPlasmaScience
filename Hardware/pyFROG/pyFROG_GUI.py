@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'pyFROG_GUI_v2.ui'
+# Form implementation generated from reading ui file 'pyFROG_GUI.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.7
 #
@@ -366,7 +366,7 @@ class Ui_MainWindow(object):
 " Back"))
         self.p_actlargeforward.setText(_translate("MainWindow", "Large Step\n"
 "Forward"))
-        self.in_actabsmove.setText(_translate("MainWindow", "13.980"))
+        self.in_actabsmove.setText(_translate("MainWindow", "22.058"))
         self.p_actabsmove.setText(_translate("MainWindow", "Absolute\n"
 "Move"))
         self.label_9.setText(_translate("MainWindow", "Large\n"
@@ -410,7 +410,7 @@ class Ui_MainWindow(object):
         self.label_42.setText(_translate("MainWindow", "Group Name"))
         self.in_groupname.setItemText(0, _translate("MainWindow", "FROG"))
         self.label_43.setText(_translate("MainWindow", "IP Address"))
-        self.in_actip.setText(_translate("MainWindow", "192.168.0.79"))
+        self.in_actip.setText(_translate("MainWindow", "192.168.0.254"))
         self.label_44.setText(_translate("MainWindow", "Status"))
         self.label_45.setText(_translate("MainWindow", "Maximum Travel (mm)"))
         self.in_actmaxlim.setText(_translate("MainWindow", "25"))

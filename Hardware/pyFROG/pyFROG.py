@@ -4,7 +4,7 @@ import time, sys
 import pyqtgraph as pg
 import numpy as np
 from scipy import constants
-from scipy.signal import find_peaks, peak_widths
+from scipy.optimize import curve_fit
 
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from PyQt5 import QtCore, QtGui, QtWidgets
@@ -51,7 +51,7 @@ class ThorlabsSpecThread(QtCore.QThread):
                     self.acquired.emit(self.intensity)
                     time.sleep(0.001)
             while self.is_paused:
-                time.sleep(0.01)
+                time.sleep(0.001)
         self.spec.stop_and_clear()
 
     def stop(self):
@@ -457,13 +457,19 @@ class pyFROG_App(QtWidgets.QMainWindow):
     def completeFROG(self):
         print("FROG is done")
         self.FROGTraceThread.wait()
-        peaks,_ = find_peaks(self.autocorr,distance=len(self.delay))
-        results_half = peak_widths(self.autocorr,peaks,rel_height=0.5)[0]
-        autocorr_val = results_half[0]*(self.delay[1]-self.delay[0])
-        tempFWHM = autocorr_val/np.sqrt(2)
 
-        self.ui.frogTracePlot.axTrace.text(1.05, 1.49, f'Autocorrelation: {autocorr_val:.1f} fs\nTemporal FWHM: {tempFWHM:.1f} fs', transform=self.ui.frogTracePlot.axTrace.transAxes, fontsize=10,
-                verticalalignment='top')
+        def gauss(x, amp , mu,std,b):
+            return amp/(std*np.sqrt(2*np.pi))*np.exp(-(x-mu)**2/(2*std**2))+b
+
+        parameters, covariance = curve_fit(gauss, self.delay, self.autocorr,p0 = (1000,0,20,1))
+        print(parameters)
+        fit_amp,fit_mu, fit_stdev,fit_b = parameters
+        self.ui.frogTracePlot.ax_autocorr.plot(self.delay,gauss(self.delay,*parameters), "r--")
+        autocorr_FWHM = 2*np.sqrt(2*np.log(2))*fit_stdev
+        tempFWHM = autocorr_FWHM/np.sqrt(2)
+
+        self.ui.frogTracePlot.axTrace.text(1.05, 1.49, f'Autocorrelation: {autocorr_FWHM:.1f} fs\nTemporal FWHM: {tempFWHM:.1f} fs', \
+                transform=self.ui.frogTracePlot.axTrace.transAxes, fontsize=10,verticalalignment='top')
         self.ui.frogTracePlot.fig.canvas.draw()
 
         if self.ui.c_scanautosave.isChecked():
@@ -496,7 +502,6 @@ class pyFROG_App(QtWidgets.QMainWindow):
         sys.exit(0)
 
 if __name__ == "__main__":
-    #from ResultsWindow import Results
     app = QtWidgets.QApplication(sys.argv)
     #qdarktheme.setup_theme()
     application = pyFROG_App()
