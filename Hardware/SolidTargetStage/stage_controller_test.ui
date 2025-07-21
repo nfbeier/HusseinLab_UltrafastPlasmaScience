@@ -149,12 +149,12 @@
     </property>
     <item>
      <property name="text">
-      <string>ShiftStageX</string>
+      <string>TargetStageX</string>
      </property>
     </item>
     <item>
      <property name="text">
-      <string>TargetFocusZ</string>
+      <string>TargetStageZ</string>
      </property>
     </item>
    </widget>
@@ -167,14 +167,17 @@
       <height>31</height>
      </rect>
     </property>
+    <property name="currentIndex">
+     <number>1</number>
+    </property>
     <item>
      <property name="text">
-      <string>ShiftStageX</string>
+      <string>TargetStageX</string>
      </property>
     </item>
     <item>
      <property name="text">
-      <string>TargetFocusZ</string>
+      <string>TargetStageZ</string>
      </property>
     </item>
    </widget>

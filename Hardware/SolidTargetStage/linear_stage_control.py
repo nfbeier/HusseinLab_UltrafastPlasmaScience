@@ -11,10 +11,10 @@ from scipy import constants
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 # When editing locally
-sys.path.insert(0,'/Users/christina/Desktop/Hard X-ray Exp/Hardware/')
+#sys.path.insert(0,'/Users/christina/Desktop/Hard X-ray Exp/Hardware/') #change to local computer git
 
 # When working on lab computer
-# sys.path.append('C:/Users/R2D2/Documents/CODE/Github/HusseinLab_UltrafastPlasmaScience/Hardware')
+sys.path.append('C:/Users/R2D2/Documents/CODE/Github/HusseinLab_UltrafastPlasmaScience/Hardware')
 # sys.path.append('C:/Users/nfbei/Documents/Research/Code/Github/HusseinLab_UltrafastPlasmaScience/Hardware')
 
 from stage_controller_test_GUI import Ui_MainWindow
@@ -291,7 +291,6 @@ class MainWindow(QtWidgets.QMainWindow):
         QtWidgets.QApplication.quit()
         sys.exit(0)
        
-
 
 if __name__ == "__main__":
     #from ResultsWindow import Results
