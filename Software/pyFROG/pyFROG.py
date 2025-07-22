@@ -1,6 +1,6 @@
 import pandas as pd
 import h5py as h5
-import time, sys
+import time, sys, os
 import pyqtgraph as pg
 import numpy as np
 from scipy import constants
@@ -8,15 +8,21 @@ from scipy.optimize import curve_fit
 
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from PyQt5 import QtCore, QtGui, QtWidgets
-import qdarktheme
 
-sys.path.append('C:/Users/R2D2/Documents/CODE/Github/HusseinLab_UltrafastPlasmaScience/Hardware')
-sys.path.append('C:/Users/nfbei/Documents/Research/Code/Github/HusseinLab_UltrafastPlasmaScience/Hardware')
+cwd = os.getcwd()
+# Check if 'HusseinLab_UltrafastPlasmaScience' is in the components
+if 'HusseinLab_UltrafastPlasmaScience' not in cwd.split(os.path.sep):
+    raise ValueError("The directory does not contain 'HusseinLab_UltrafastPlasmaScience' folder.")
+
+# Rebuild the directory string up to and including 'HusseinLab_UltrafastPlasmaScience', prevent import errors
+cwd = os.path.sep.join(cwd.split(os.path.sep)[:cwd.split(os.path.sep).index('HusseinLab_UltrafastPlasmaScience') + 1])
+
+sys.path.insert(0,cwd)
 
 from pyvisa import ResourceManager
 from instrumental import instrument, list_instruments
 from pyFROG_GUI import Ui_MainWindow
-from XPS.XPS import XPS
+from Hardware.XPS.XPS import XPS
 
 class ThorlabsSpecThread(QtCore.QThread):
     acquired=QtCore.pyqtSignal(object)
