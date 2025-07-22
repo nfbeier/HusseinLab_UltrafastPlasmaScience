@@ -501,7 +501,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
             if isinstance(widget, QtWidgets.QLineEdit):
                 inputs[str(widget.objectName())] = widget.text()
     
-        with open("gui_inputs.json", "w") as write_file:
+        with open("Hardware\LIBS\LIBS Code\gui_inputs.json", "w") as write_file:
             json.dump(inputs, write_file) 
             
     def MetaData(self):
