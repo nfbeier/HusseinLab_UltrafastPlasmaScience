@@ -41,7 +41,7 @@ def wavelengthCalibration(coeffs):
 #sn.installDeviceDriver()
 
 #GUI Design file importing here (qt design file)
-qtcreator_file  = "Hardware\LIBS\LIBS Code\LIBS_GUI_190_800nm-XPS-Oci\\LIBS_GUI_Multiple_Spectromters_with_XPS_Oci.ui" # Enter file here.
+qtcreator_file  = "Hardware\LIBS\LIBS Code\LIBS_GUI_Multiple_Spectromters_with_XPS_Oci.ui" # Enter file here.
 Ui_MainWindow, QtBaseClass = uic.loadUiType(qtcreator_file)
 
 #Connecting all hardwares
@@ -431,7 +431,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
         '''
         Reads the .json file and auto-fills the GUI with inputs from last use.
         '''
-        with open("Hardware\LIBS\LIBS Code\LIBS_GUI_190_800nm-XPS-Oci\gui_inputs2.json", "r") as read_file:
+        with open("Hardware\LIBS\LIBS Code\gui_inputs.json", "r") as read_file:
             inputs = json.load(read_file)
 
         for widget in self.spectrometers.children():
@@ -482,7 +482,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
         '''
         Writes gui inputs to .json file to load for next use.
         '''
-        with open("Hardware\LIBS\LIBS Code\LIBS_GUI_190_800nm-XPS-Oci\gui_inputs2.json", "r") as read_file:
+        with open("Hardware\LIBS\LIBS Code\gui_inputs.json", "r") as read_file:
             inputs = json.load(read_file)
     
         for widget in self.spectrometers.children():
@@ -501,7 +501,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
             if isinstance(widget, QtWidgets.QLineEdit):
                 inputs[str(widget.objectName())] = widget.text()
     
-        with open("gui_inputs2.json", "w") as write_file:
+        with open("gui_inputs.json", "w") as write_file:
             json.dump(inputs, write_file) 
             
     def MetaData(self):
@@ -1142,8 +1142,9 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
         '''
         Kills raster timer and resets values.
         '''
-        self.rast_timer.stop()
-        del self.rast_timer
+        if self.rast_timer:
+            self.rast_timer.stop()
+            del self.rast_timer
         
         self.rows = 0
         self.step_count = 1
@@ -1192,8 +1193,9 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
         del self.print_timer
         
         try:
-            self.rast_timer.stop()
-            del self.rast_timer
+            if self.rast_timer:
+                self.rast_timer.stop()
+                del self.rast_timer
         except:
             pass
         
