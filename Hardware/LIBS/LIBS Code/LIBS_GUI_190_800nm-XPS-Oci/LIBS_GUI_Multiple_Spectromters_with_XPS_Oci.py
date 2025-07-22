@@ -5,31 +5,31 @@
 from PyQt5 import QtWidgets, uic, QtGui, QtCore
 import sys, threading, h5py
 from fractions import Fraction
-from XPS import XPS
 import json
 import pyvisa as visa
+import time, logging
+import numpy as np
+import matplotlib.pyplot as plt
+from math import floor
+# import manipulate_json
+#importing resources for DG645
+import instruments as ik
+import quantities as pq
 
 from pyqtgraph import PlotWidget
 import pyqtgraph as pg
 pg.setConfigOption('background', 'w')
 pg.setConfigOption('foreground', 'k') 
 
-from math import floor
-# import manipulate_json
+sys.path.append(r'C:\Users\C3PO\Documents\CODE\HusseinLab_UltrafastPlasmaScience\Hardware')
 
-
-#importing resources for DG645
-import instruments as ik
-import quantities as pq
-      
+from XPS.XPS import XPS
 
 #importing resources for stellerNet
-import time, logging
-import numpy as np
 # import the usb driver
 # import stellarnet_driver3 as sn
 import stellarnet_driver3 as sn
-import matplotlib.pyplot as plt
+
 logging.basicConfig(format='%(asctime)s %(message)s')
 
 def wavelengthCalibration(coeffs):
@@ -41,7 +41,7 @@ def wavelengthCalibration(coeffs):
 #sn.installDeviceDriver()
 
 #GUI Design file importing here (qt design file)
-qtcreator_file  = "LIBS_GUI_Multiple_Spectromters_with_XPS_Oci.ui" # Enter file here.
+qtcreator_file  = "Hardware\LIBS\LIBS Code\LIBS_GUI_190_800nm-XPS-Oci\\LIBS_GUI_Multiple_Spectromters_with_XPS_Oci.ui" # Enter file here.
 Ui_MainWindow, QtBaseClass = uic.loadUiType(qtcreator_file)
 
 #Connecting all hardwares
@@ -261,8 +261,8 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
         
         # STAGE CONTROL ----------------------------------------------------------------------        
         # self.setupUi(self)
-        self.x_xps = XPS()
-        self.y_xps = XPS()
+        self.x_xps = XPS(ipAddress = '192.168.0.254')
+        self.y_xps = XPS(ipAddress = '192.168.0.254')
         
         self.abs_min = [0, 0]
         self.abs_max = [50, 50]
@@ -431,7 +431,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
         '''
         Reads the .json file and auto-fills the GUI with inputs from last use.
         '''
-        with open("gui_inputs2.json", "r") as read_file:
+        with open("Hardware\LIBS\LIBS Code\LIBS_GUI_190_800nm-XPS-Oci\gui_inputs2.json", "r") as read_file:
             inputs = json.load(read_file)
 
         for widget in self.spectrometers.children():
@@ -482,7 +482,7 @@ class MyApp(QtWidgets.QMainWindow, Ui_MainWindow):
         '''
         Writes gui inputs to .json file to load for next use.
         '''
-        with open("gui_inputs2.json", "r") as read_file:
+        with open("Hardware\LIBS\LIBS Code\LIBS_GUI_190_800nm-XPS-Oci\gui_inputs2.json", "r") as read_file:
             inputs = json.load(read_file)
     
         for widget in self.spectrometers.children():
