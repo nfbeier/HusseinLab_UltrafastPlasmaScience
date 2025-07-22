@@ -1,0 +1,166 @@
+import sys
+import os
+import time
+import logging
+import numpy as np
+import h5py
+import threading
+import stellarnet_driver3 as sn
+from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QFileDialog
+from PyQt5.QtCore import QTimer
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+import matplotlib.pyplot as plt
+from PyQt5 import uic
+
+logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
+
+class SpectrometerGUI(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        uic.loadUi("spectrometer8.ui", self)
+
+        self.spectrometers = []
+        self.wavelengths = []
+        self.save_directory = ""
+        self.file_num = 1
+        self.colors = ['b', 'g', 'r', 'c', 'm', 'y']
+
+        # Initialize Spectrometers
+        for i in range(6):
+            try:
+                spec, wl = sn.array_get_spec(i)
+                self.spectrometers.append(spec)
+                self.wavelengths.append(wl)
+                logging.info(f"Spectrometer {i} initialized successfully.")
+            except Exception as e:
+                logging.error(f"Error initializing spectrometer {i}: {e}")
+                self.spectrometers.append(None)
+                self.wavelengths.append(np.array([]))
+
+        # Setup Matplotlib
+        self.figure, self.ax = plt.subplots()
+        self.canvas = FigureCanvas(self.figure)
+        self.plot_layout = QVBoxLayout(self.plot_graph)
+        self.plot_layout.addWidget(self.canvas)
+        self.lines = [self.ax.plot([], [], color=self.colors[i % len(self.colors)])[0] for i in range(6)]
+
+        # Connect buttons
+        self.startButton.clicked.connect(self.capture_spectrum)
+        self.stopButton.clicked.connect(self.stop_acquisition)
+        self.browseButton.clicked.connect(self.browse_directory)
+        self.extTriggerCheckBox.stateChanged.connect(self.toggle_external_trigger)
+
+        # Timer
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.update_plot)
+
+    def toggle_external_trigger(self):
+        enabled = self.extTriggerCheckBox.isChecked()
+        for spec in self.spectrometers:
+            if spec:
+                try:
+                    sn.ext_trig(spec, enabled)
+                    logging.info(f"External Trigger {'Enabled' if enabled else 'Disabled'}")
+                except Exception as e:
+                    logging.error(f"Trigger Error: {e}")
+
+    def browse_directory(self):
+        dir_path = QFileDialog.getExistingDirectory(self, "Choose Directory", "./")
+        if dir_path:
+            self.save_directory = dir_path
+            self.SaveData_dir.setText(dir_path)
+            logging.info(f"Save directory set to: {dir_path}")
+
+    def capture_spectrum(self):
+        if self.spectrometers:
+            self.set_parameters()
+            self.timer.start(500)
+        else:
+            logging.error("No spectrometer initialized!")
+
+    def stop_acquisition(self):
+        self.timer.stop()
+        logging.info("Spectrum acquisition stopped.")
+
+    def update_plot(self):
+        t0 = time.time()
+        all_data = []
+
+        for i, spec in enumerate(self.spectrometers):
+            if spec is not None:
+                data = self.get_spectrum(i)
+                all_data.append(data)
+                self.lines[i].set_data(data[:, 0], data[:, 1])
+            else:
+                all_data.append(np.zeros((1, 2)))
+
+        self.ax.relim()
+        self.ax.autoscale_view()
+        self.canvas.draw()
+
+        self.save_spectrum_async(all_data)
+
+        print(f"Update time: {time.time() - t0:.3f} s")
+        # start_time = time.time()
+        # all_data = []
+
+        # for i, spec in enumerate(self.spectrometers):
+        #     if spec:
+        #         try:
+        #             # Check if data is ready, if API supports it
+        #             while not sn.is_data_ready(spec):  # Hypothetical function
+        #                time.sleep(0.001)  # Short wait, non-blocking
+
+        #             data = sn.array_spectrum(spec, self.wavelengths[i])
+        #             all_data.append(data)
+        #             self.lines[i].set_data(data[:, 0], data[:, 1])
+        #         except Exception as e:
+        #             logging.error(f"Trigger wait or acquisition failed: {e}")
+        #             all_data.append(np.zeros((1, 2)))
+        # self.ax.relim()
+        # self.ax.autoscale_view()
+        # self.canvas.draw()
+        # self.save_spectrum_async(all_data)
+
+        # print(f"Update time: {time.time() - start_time:.3f} s")
+
+    def get_spectrum(self, index):
+        try:
+            return sn.array_spectrum(self.spectrometers[index], self.wavelengths[index])
+        except Exception as e:
+            logging.error(f"Error retrieving spectrum {index}: {e}")
+            return np.zeros((len(self.wavelengths[index]), 2))
+
+    def set_parameters(self):
+        try:
+            int_time = int(self.intTimeInput.text())
+            for spec in self.spectrometers:
+                if spec:
+                    spec['device'].set_config(int_time=int_time, scans_to_avg=1, x_smooth=0, x_timing=3)
+            logging.info(f"Integration Time set to {int_time} ms.")
+        except ValueError:
+            logging.error("Invalid integration time input.")
+
+    def save_spectrum_async(self, all_data):
+        if not self.save_directory:
+            logging.warning("Save directory not set. Spectrum not saved.")
+            return
+
+        filename = os.path.join(self.save_directory, f"{time.strftime('%Y%m%d')}_LIBS_Spectrum_{self.file_num:05d}.h5")
+        self.file_num += 1
+        threading.Thread(target=self._save_hdf5, args=(all_data, filename), daemon=True).start()
+
+    def _save_hdf5(self, all_data, filename):
+        try:
+            with h5py.File(filename, 'w') as hdf:
+                for i, data in enumerate(all_data):
+                    hdf.create_dataset(f"StellarNetSpectrum_{i}", data=data)
+            logging.info(f"Spectrum saved to {filename}")
+        except Exception as e:
+            logging.error(f"Error saving spectrum: {e}")
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    window = SpectrometerGUI()
+    window.show()
+    sys.exit(app.exec_())
