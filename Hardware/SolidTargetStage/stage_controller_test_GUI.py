@@ -232,7 +232,7 @@ class Ui_Dialog(object):
         self.label_4.setText(_translate("Dialog", "Minimum Travel (mm)"))
         self.label_7.setText(_translate("Dialog", "Maximum Travel (mm)"))
         self.label_3.setText(_translate("Dialog", "IP address"))
-        self.ip_address_ip.setText(_translate("Dialog", "192.168.0.254"))
+        self.ip_address_ip.setText(_translate("Dialog", "192.168.0.79"))
         self.label_8.setText(_translate("Dialog", "Status"))
         self.connect_xps_bt.setText(_translate("Dialog", "Connect XPS"))
         self.init_xps_bt.setText(_translate("Dialog", "Initialize"))

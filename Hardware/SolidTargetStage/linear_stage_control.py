@@ -17,53 +17,45 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 sys.path.append('C:/Users/R2D2/Documents/CODE/Github/HusseinLab_UltrafastPlasmaScience/Hardware')
 # sys.path.append('C:/Users/nfbei/Documents/Research/Code/Github/HusseinLab_UltrafastPlasmaScience/Hardware')
 
-from stage_controller_test_GUI import Ui_MainWindow
+from stage_controller_test_GUI import Ui_Dialog
 from XPS.XPS import XPS
+
 
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super(MainWindow,self).__init__()
-        self.ui = Ui_MainWindow()
+        self.ui = Ui_Dialog()
         self.ui.setupUi(self)
+        self.xps = None
+        self.xpsAxes = [None, None]
         
         # Defines the two xps controllers that are used
-        self.xpsAxes = [str(self.ui.x_stage_select.currentText()),str(self.ui.z_stage_select.currentText())]
-        
-        # gets the ip address
-        xps_ipaddress = str(self.ui.ip_address_ip.text())
-        
-        #Initalizing the xps
-        self.xps = XPS(xps_ipaddress)
-        self.xpsGroupNames = self.xps.getXPSStatus()
-        self.ui.x_stage_select.clear()
-        self.ui.z_stage_select.clear()
-        self.ui.x_stage_select.addItems(list(self.xpsGroupNames.keys()))
-        self.ui.z_stage_select.addItems(list(self.xpsGroupNames.keys()))
-        self.xps.setGroup(self.xpsAxes[0])
-        self.xps.setGroup(self.xpsAxes[1])
-        self.xpsStageStatus = [self.xps.getStageStatus(axis) for axis in self.xpsAxes]
-
+        #self.xpsAxes = [str(self.ui.x_stage_select.currentText()),str(self.ui.z_stage_select.currentText())]
+        #print(self.xpsAxes)
 
         #GUI Interactions
         self.ui.x_min_trav_ip.setText('0')
-        self.ui.x_max_trav_ip.setText('25')
+        self.ui.x_max_trav_ip.setText('20')
         
         self.ui.z_min_trav_ip.setText('0')
-        self.ui.z_max_trav_ip.setText('25')
+        self.ui.z_max_trav_ip.setText('20')
         
-        #Connecting the XPS controllers
-        self.ui.connect_xps_bt.clicked.connect(self._initXPS)
+        self.ui.x_abs_mv_ip.setText('0')
+        self.ui.z_abs_mv_ip.setText('0')
+        
+        self.ui.x_step_ip.setText('0')
+        self.ui.z_step_ip.setText('0')
         
         #XPS Commands
+        
+        #Connect Command
+        self.ui.connect_xps_bt.clicked.connect(self._initXPS)
+        
         #Initialize, home, enable disable commands
         self.ui.init_xps_bt.clicked.connect(lambda: self.xpsStatusBtn("Initialize"))
         self.ui.home_xps_bt.clicked.connect(lambda: self.xpsStatusBtn("Home"))
         self.ui.enable_dis_xps_bt.clicked.connect(lambda: self.xpsStatusBtn("EnableDisable"))
-        
-        #Selecting the different stages
-        self.ui.x_stage_select.currentIndexChanged.connect(lambda: self.updateGroup(0))
-        self.ui.z_stage_select.currentIndexChanged.connect(lambda: self.updateGroup(1))
         
         #Adjusting the minimum and maximum travel limits for the two stages
         self.ui.x_min_trav_ip.textChanged.connect(lambda: self.updateTravelLimits("minXPSX"))
@@ -84,40 +76,47 @@ class MainWindow(QtWidgets.QMainWindow):
         #Stop Button
         self.ui.stop_bt.clicked.connect(self.stopBtn)
         
-        #GUI Interface
-        self.updateGUIStatus()
         
-    #Initialize XPS
+    # Function to update the x and y info 
     def _initXPS(self):
-        # gets the ip address
-        xps_ipaddress = str(self.ui.ip_address_ip.text())
+        #Initalizing the xps
+        #Initialize XPS
         try:
-            self.xps = XPS(xps_ipaddress)
+            self.xps_ipaddress = str(self.ui.ip_address_ip.text())
+            self.xps = XPS(self.xps_ipaddress)
             self.xpsGroupNames = self.xps.getXPSStatus()
             self.ui.x_stage_select.clear()
             self.ui.z_stage_select.clear()
             self.ui.x_stage_select.addItems(list(self.xpsGroupNames.keys()))
             self.ui.z_stage_select.addItems(list(self.xpsGroupNames.keys()))
+            self.ui.z_stage_select.setCurrentIndex(1)
+            self.xpsAxes = [str(self.ui.x_stage_select.currentText()),str(self.ui.z_stage_select.currentText())]
+            
             self.xps.setGroup(self.xpsAxes[0])
             self.xps.setGroup(self.xpsAxes[1])
             self.xpsStageStatus = [self.xps.getStageStatus(axis) for axis in self.xpsAxes]
             
-            #Enabling the other actions if enabled 
-            self.ui.init_xps_bt.setEnabled(True)
-            self.ui.enable_dis_xps_bt.setEnabled(True)
             self.ui.home_xps_bt.setEnabled(True)
+            self.ui.enable_dis_xps_bt.setEnabled(True)
+            self.ui.init_xps_bt.setEnabled(True)
             self.ui.stop_bt.setEnabled(True)
+            
+            #Selecting the different stages
+            self.ui.x_stage_select.currentIndexChanged.connect(lambda: self.updateGroup(0))
+            self.ui.z_stage_select.currentIndexChanged.connect(lambda: self.updateGroup(1))
+            
         except AttributeError:
             self.xps = None
-            
+        #GUI Interface
+        self.updateGUIStatus()
             
     # Function to update the x and y info 
     def updateGroup(self, axis):
         if axis == 0:
-            self.xpsAxes[0] = str(self.ui.XPSGroupName.currentText())
+            self.xpsAxes[0] = str(self.ui.x_stage_select.currentText())
             self.xps.setGroup(self.xpsAxes[0])
-        else:
-            self.xpsAxes[1] = str(self.ui.XPSGroupName_2.currentText())
+        if axis == 1:
+            self.xpsAxes[1] = str(self.ui.z_stage_select.currentText())
             self.xps.setGroup(self.xpsAxes[1])
         
         self.xpsStageStatus = [self.xps.getStageStatus(axis) for axis in self.xpsAxes]
@@ -142,30 +141,68 @@ class MainWindow(QtWidgets.QMainWindow):
         self.updateGUIStatus()
 
     def xpsMotionBtn(self, btn):
+        posX_current = float(self.xps.getStagePosition(self.xpsAxes[0]))
+        posZ_current = float(self.xps.getStagePosition(self.xpsAxes[1]))
+        
         posX_abs = float(self.ui.x_abs_mv_ip.text())
         posZ_abs = float(self.ui.z_abs_mv_ip.text())
         
         posX_rel = float(self.ui.x_step_ip.text())
         posZ_rel = float(self.ui.z_step_ip.text())
         
+        limit_max_x = float(self.ui.x_max_trav_ip.text())
+        limit_min_x = float(self.ui.x_min_trav_ip.text())
+        
+        limit_max_z = float(self.ui.z_max_trav_ip.text())
+        limit_min_z = float(self.ui.z_min_trav_ip.text())
+        
         if self.xpsStageStatus[0][:11].upper() == "Ready state".upper():
             if btn == "AbsoluteX" and self.ui.x_abs_mv_ck.isChecked():
-                self.xps.moveAbsolute(self.xpsAxes[0],posX_abs)
+                if posX_abs < limit_min_x or posX_abs > limit_max_x:
+                    print("Invalid travel input")                  
+                else:
+                    self.xps.moveAbsolute(self.xpsAxes[0],posX_abs)
+                
+                self.updatePosition()
             elif btn == "ForwardX":
-                self.xps.moveRelative(self.xpsAxes[0],posX_rel)
+                if (posX_rel+posX_current) < limit_min_x or (posX_current+posX_rel) > limit_max_x:
+                    print("Invalid travel input")                  
+                else:
+                    self.xps.moveRelative(self.xpsAxes[0],posX_rel)
+                self.updatePosition()
+                
             elif btn == "BackwardX":
-                self.xps.moveRelative(self.xpsAxes[0],-1*posX_rel)
+                if (posX_current-posX_rel) < limit_min_x or (posX_current-posX_rel) > limit_max_x:
+                    print("Invalid travel input")                  
+                else:
+                    self.xps.moveRelative(self.xpsAxes[0],-1*posX_rel)
+                self.updatePosition()
                 
         if self.xpsStageStatus[1][:11].upper() == "Ready state".upper():
             if btn == "AbsoluteZ" and self.ui.z_abs_mv_ck.isChecked():
-                self.xps.moveAbsolute(self.xpsAxes[1],posZ_abs)
+                if posZ_abs < limit_min_z or posZ_abs > limit_max_z:
+                    print("Invalid travel input")                  
+                else:
+                    self.xps.moveAbsolute(self.xpsAxes[1],posZ_abs)
+                self.updatePosition()
             elif btn == "ForwardZ":
-                self.xps.moveRelative(self.xpsAxes[1],posZ_rel)
+                if (posZ_current+posZ_rel) < limit_min_z or (posZ_current+posZ_rel) > limit_max_z:
+                    print("Invalid travel input")                  
+                else:
+                    self.xps.moveRelative(self.xpsAxes[1],posZ_rel)
+                self.updatePosition()
+                
             elif btn == "BackwardZ":
-                self.xps.moveRelative(self.xpsAxes[1],-1*posZ_rel)
+                if (posZ_current-posZ_rel) < limit_min_z or (posZ_current-posZ_rel) > limit_max_z:
+                    print("Invalid travel input")                  
+                else:
+                    self.xps.moveRelative(self.xpsAxes[1],-1*posZ_rel)
+                self.updatePosition()
 
         else:
             print("Stage not ready to move")
+        #GUI Interface
+        self.updateGUIStatus()
     
     
     '''Combined Functions'''
@@ -201,7 +238,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.ui.home_xps_bt.setEnabled(False)
                 self.ui.x_abs_mv_bt.setEnabled(False)
                 self.ui.x_step_f_bt.setEnabled(False)
-                self.ui.x_step_fb_bt.setEnabled(False)
+                self.ui.x_step_b_bt.setEnabled(False)
                 self.ui.z_abs_mv_bt.setEnabled(False)
                 self.ui.z_step_f_bt.setEnabled(False)
                 self.ui.z_step_b_bt.setEnabled(False)
@@ -217,7 +254,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.ui.x_step_b_bt.setEnabled(True)
                 self.ui.z_abs_mv_bt.setEnabled(True)
                 self.ui.z_step_f_bt.setEnabled(True)
-                self.ui.z_step_fb_bt.setEnabled(True)
+                self.ui.z_step_b_bt.setEnabled(True)
                 self.ui.x_status.setText("Enabled")
                 self.ui.z_status.setText("Enabled")
                    
@@ -288,8 +325,11 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.xps.disableGroup(self.xpsAxes[0])
             if self.xpsStageStatus[1][:11].upper() == "Ready state".upper():
                 self.xps.disableGroup(self.xpsAxes[1])
-        QtWidgets.QApplication.quit()
-        sys.exit(0)
+            self.updateGUIStatus()
+            QtWidgets.QApplication.quit()
+            
+            
+        
        
 
 if __name__ == "__main__":
