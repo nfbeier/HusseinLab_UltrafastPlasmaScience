@@ -1,9 +1,9 @@
-import visa
+import pyvisa
 import numpy as np
 import matplotlib.pyplot as plt
 
 # Connect to the oscilloscope
-rm = visa.ResourceManager()
+rm = pyvisa.ResourceManager()
 scope = rm.open_resource('USB0::0x0699::0x03C7::C020817::INSTR')
 
 # Set up acquisition parameters

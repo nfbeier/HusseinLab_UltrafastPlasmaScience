@@ -35,7 +35,7 @@ class frogTraceCanvas(FigureCanvas):
         self.ax_autocorr.set_title("Autocorrelation")
         
         #Load old data as reference
-        file = r'Hardware\pyFROG\Old Examples\data\frg_trace_1580511001.pkl'
+        '''file = r'Hardware\pyFROG\Old Examples\data\frg_trace_1580511001.pkl'
         data = pd.read_pickle(file)
         self.wave = data['wave'][0]
         trace = data['trace'][0]
@@ -45,7 +45,7 @@ class frogTraceCanvas(FigureCanvas):
         autocorr = np.sum(trace,axis = 1)
         autoconv = np.sum(trace,axis = 0)
         self.ax_autoconv.plot(autoconv,self.wave)
-        self.ax_autocorr.plot(delay, autocorr)
+        self.ax_autocorr.plot(delay, autocorr)'''
 
         #peaks,_ = find_peaks(autocorr,distance=100)
         #results_half = peak_widths(autocorr,peaks,rel_height=0.5)[0]
