@@ -2,6 +2,8 @@
 __pycache__/
 *.py[cod]
 *$py.class
+lextab.py
+yacctab.py
 
 # C extensions
 *.so
