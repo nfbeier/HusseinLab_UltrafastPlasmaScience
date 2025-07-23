@@ -7,24 +7,25 @@ Created on Tue Jul 22 16:21:51 2025
 """
 
 from PyQt5 import QtWidgets, uic, QtGui, QtCore
-#import instruments as ik
+import instruments as ik
 import quantities as pq
 import json
 import time, sys
 from time import sleep
-
+import pyvisa
 from delay_gen_gui import Ui_MainWindow
 
 # When editing locally
-sys.path.insert(0,'/Users/christina/Documents/github/HusseinLab_UltrafastPlasmaScience/Software/SolidTargetStage/SolidTargetDelayGenerator') 
+#sys.path.insert(0,'/Users/christina/Documents/github/HusseinLab_UltrafastPlasmaScience/Software/SolidTargetStage/SolidTargetDelayGenerator') 
 
 class delay_gen_app(QtWidgets.QMainWindow):
     def __init__(self):
         super(delay_gen_app,self).__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+    
         
-        #self.ins = ik.srs.SRSDG645.open_serial("COM12", 9600) # dg645
+        self.ins = ik.srs.SRSDG645.open_serial("COM3", 9600) # dg645
         
         # Reads in previous input for different channel levels 
         self.read_json()
@@ -42,21 +43,21 @@ class delay_gen_app(QtWidgets.QMainWindow):
         self.ui.amplitude_v.textChanged.connect(lambda: self.updateVoltvals("Amp_Val"))
         
         # #Buttons to fire and shutdown
-        # self.ui.stop_dg_bt.clicked.connect(self.DisconnectBtn)
+        self.ui.stop_dg_bt.clicked.connect(self.DisconnectBtn)
         
         self.ui.start_dg_bt.clicked.connect(self.FireBtn)
         
         # #Buttons for displaying on the delay generator
-        # self.ui.T0_bt.clicked.connect(lambda: self.change_display("T0"))
-        # self.ui.T1_bt.clicked.connect(lambda: self.change_display("T1"))
-        # self.ui.A_bt.clicked.connect(lambda: self.change_display("A"))
-        # self.ui.B_bt.clicked.connect(lambda: self.change_display("B"))
-        # self.ui.C_bt.clicked.connect(lambda: self.change_display("C"))
-        # self.ui.D_bt.clicked.connect(lambda: self.change_display("D"))
-        # self.ui.E_bt.clicked.connect(lambda: self.change_display("E"))
-        # self.ui.F_bt.clicked.connect(lambda: self.change_display("F"))
-        # self.ui.G_bt.clicked.connect(lambda: self.change_display("G"))
-        # self.ui.H_bt.clicked.connect(lambda: self.change_display("H"))
+        self.ui.T0_bt.clicked.connect(lambda: self.change_display("T0"))
+        self.ui.T1_bt.clicked.connect(lambda: self.change_display("T1"))
+        self.ui.A_bt.clicked.connect(lambda: self.change_display("A"))
+        self.ui.B_bt.clicked.connect(lambda: self.change_display("B"))
+        self.ui.C_bt.clicked.connect(lambda: self.change_display("C"))
+        self.ui.D_bt.clicked.connect(lambda: self.change_display("D"))
+        self.ui.E_bt.clicked.connect(lambda: self.change_display("E"))
+        self.ui.F_bt.clicked.connect(lambda: self.change_display("F"))
+        self.ui.G_bt.clicked.connect(lambda: self.change_display("G"))
+        self.ui.H_bt.clicked.connect(lambda: self.change_display("H"))
         
         
     # Reads in the jason file
@@ -84,7 +85,7 @@ class delay_gen_app(QtWidgets.QMainWindow):
             self.ui.channel_disp.setText(self.dg_values[channel][0])
             self.ui.delay_disp.setText(str(self.dg_values[channel][1]))   
             self.ui.unit_disp.setText(self.dg_values[channel][2])
-            #self.set_delay()
+            self.set_delay()
             
             
         elif widget == "voltage":
@@ -92,7 +93,7 @@ class delay_gen_app(QtWidgets.QMainWindow):
             self.ui.offset_v.setText(str(self.dg_values[channel][0]))
             self.ui.amplitude_v.setText(str(self.dg_values[channel][1]))
             
-            #self.set_voltage()
+            self.set_voltage()
     
     
     def updateDelayvals(self, widget):
@@ -105,8 +106,8 @@ class delay_gen_app(QtWidgets.QMainWindow):
             delay_units = str(self.ui.unit_disp.text())
             self.dg_values[channel][2] = delay_units
          
-        #if self.ui.channel_disp.text() != "" and self.ui.delay_disp.text() != "" and self.ui.unit_disp.text() != "":
-            #self.set_delay()
+        if self.ui.channel_disp.text() != "" and self.ui.delay_disp.text() != "" and self.ui.unit_disp.text() != "":
+            self.set_delay()
     
     def updateVoltvals(self, widget):
         channel = self.ui.voltage_select.currentText()
@@ -117,8 +118,8 @@ class delay_gen_app(QtWidgets.QMainWindow):
             amp_val = float(self.ui.amplitude_v.text())
             self.dg_values[channel][1] = amp_val
         
-        # if self.ui.offset_v.text() != "" and self.ui.amplitude_v.text() != "":
-        #     self.set_voltage()
+        if self.ui.offset_v.text() != "" and self.ui.amplitude_v.text() != "":
+            self.set_voltage()
    
     
     def set_delay(self):
@@ -135,47 +136,45 @@ class delay_gen_app(QtWidgets.QMainWindow):
             print("ERROR: check channel voltage inputs")
    
    
-    # def change_display(self, btn):
-        # cmd = {
-        #     "T0" : "DISP 11,0",
-        #     "T1" : "DISP 11,1",
-        #     "A" : "DISP 11,2",
-        #     "B" : "DISP 11,3",
-        #     "C" : "DISP 11,4",
-        #     "D" : "DISP 11,5",
-        #     "E" : "DISP 11,6",
-        #     "F" : "DISP 11,7",
-        #     "G" : "DISP 11,8",
-        #     "H" : "DISP 11,9"
-    #        }
-    #     self.ins.sendcmd(cmd[btn])
+    def change_display(self, btn):
+        cmd = {
+            "T0" : "DISP 11,0",
+            "T1" : "DISP 11,1",
+            "A" : "DISP 11,2",
+            "B" : "DISP 11,3",
+            "C" : "DISP 11,4",
+            "D" : "DISP 11,5",
+            "E" : "DISP 11,6",
+            "F" : "DISP 11,7",
+            "G" : "DISP 11,8",
+            "H" : "DISP 11,9"
+            }
+        self.ins.sendcmd(cmd[btn])
               
-    # def DisconnectBtn(self):
-    #     # First writing the json file to save current settings
-    #     with open("delay_gen_gui_inputs.json", "r+") as write_file:
-    #         inputs = json.load(write_file)
+    def DisconnectBtn(self):
+        # First writing the json file to save current settings
+        with open("delay_gen_gui_inputs.json", "r+") as write_file:
+            inputs = json.load(write_file)
             
-    #         for i in ["A", "B", "C", "D", "E", "F", "G", "H"]:
-    #             inputs[i+"_ch"] = self.dg_values[i][0]
-    #             inputs[i+"_delay"] = self.dg_values[i][1]
-    #             inputs[i+"_delay_unit"] = self.dg_values[i][2]
-    #         for i in ["AB", "CD", "EF", "GH"]:
-    #             inputs[i+"_offset"] = self.dg_values[i][0]
-    #             inputs[i+"_Amp"] = self.dg_values[i][1]
+            for i in ["A", "B", "C", "D", "E", "F", "G", "H"]:
+                inputs[i+"_ch"] = self.dg_values[i][0]
+                inputs[i+"_delay"] = self.dg_values[i][1]
+                inputs[i+"_delay_unit"] = self.dg_values[i][2]
+            for i in ["AB", "CD", "EF", "GH"]:
+                inputs[i+"_offset"] = self.dg_values[i][0]
+                inputs[i+"_Amp"] = self.dg_values[i][1]
                 
-    #         write_file.seek(0)
-    #         json.dump(inputs, write_file)
-    #         write_file.truncate()
-    #     # Disconnecting the device now
-    #     self.ins.sendcmd("IFRS 0")
+            write_file.seek(0)
+            json.dump(inputs, write_file)
+            write_file.truncate()
+        # Disconnecting the device now
+        self.ins.sendcmd("IFRS 0")
     
     def FireBtn(self):
-        print("I need 2 learn")
-        ins.sendcmd('TSRC 5')
-        ins.sendcmd('*TRG')
+        self.ins.sendcmd('TSRC 5')
+        self.ins.sendcmd('*TRG')
     
-    # def send_command(self, cmd):
-    #     self.ins.sendcmd(cmd)
+
        
   
             
