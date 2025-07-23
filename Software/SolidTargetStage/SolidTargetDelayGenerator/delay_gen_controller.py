@@ -47,16 +47,16 @@ class delay_gen_app(QtWidgets.QMainWindow):
         self.ui.start_dg_bt.clicked.connect(self.FireBtn)
         
         # #Buttons for displaying on the delay generator
-        # self.ui.T0_bt.clicked.connect(lambda: self.change_display(0))
-        # self.ui.T1_bt.clicked.connect(lambda: self.change_display(1))
-        # self.ui.A_bt.clicked.connect(lambda: self.change_display(2))
-        # self.ui.B_bt.clicked.connect(lambda: self.change_display(3))
-        # self.ui.C_bt.clicked.connect(lambda: self.change_display(4))
-        # self.ui.D_bt.clicked.connect(lambda: self.change_display(5))
-        # self.ui.E_bt.clicked.connect(lambda: self.change_display(6))
-        # self.ui.F_bt.clicked.connect(lambda: self.change_display(7))
-        # self.ui.G_bt.clicked.connect(lambda: self.change_display(8))
-        # self.ui.H_bt.clicked.connect(lambda: self.change_display(9))
+        # self.ui.T0_bt.clicked.connect(lambda: self.change_display("T0"))
+        # self.ui.T1_bt.clicked.connect(lambda: self.change_display("T1"))
+        # self.ui.A_bt.clicked.connect(lambda: self.change_display("A"))
+        # self.ui.B_bt.clicked.connect(lambda: self.change_display("B"))
+        # self.ui.C_bt.clicked.connect(lambda: self.change_display("C"))
+        # self.ui.D_bt.clicked.connect(lambda: self.change_display("D"))
+        # self.ui.E_bt.clicked.connect(lambda: self.change_display("E"))
+        # self.ui.F_bt.clicked.connect(lambda: self.change_display("F"))
+        # self.ui.G_bt.clicked.connect(lambda: self.change_display("G"))
+        # self.ui.H_bt.clicked.connect(lambda: self.change_display("H"))
         
         
     # Reads in the jason file
@@ -136,18 +136,18 @@ class delay_gen_app(QtWidgets.QMainWindow):
    
    
     # def change_display(self, btn):
-    #     cmd = {
-    #         "T0" : "DISP 11,0",
-    #         "T1" : "DISP 11,1",
-    #         "A" : "DISP 11,2",
-    #         "B" : "DISP 11,3",
-    #         "C" : "DISP 11,4",
-    #         "D" : "DISP 11,5",
-    #         "E" : "DISP 11,6",
-    #         "F" : "DISP 11,7",
-    #         "G" : "DISP 11,8",
-    #         "H" : "DISP 11,9"
-    #         }
+        # cmd = {
+        #     "T0" : "DISP 11,0",
+        #     "T1" : "DISP 11,1",
+        #     "A" : "DISP 11,2",
+        #     "B" : "DISP 11,3",
+        #     "C" : "DISP 11,4",
+        #     "D" : "DISP 11,5",
+        #     "E" : "DISP 11,6",
+        #     "F" : "DISP 11,7",
+        #     "G" : "DISP 11,8",
+        #     "H" : "DISP 11,9"
+    #        }
     #     self.ins.sendcmd(cmd[btn])
               
     # def DisconnectBtn(self):
@@ -171,6 +171,8 @@ class delay_gen_app(QtWidgets.QMainWindow):
     
     def FireBtn(self):
         print("I need 2 learn")
+        ins.sendcmd('TSRC 5')
+        ins.sendcmd('*TRG')
     
     # def send_command(self, cmd):
     #     self.ins.sendcmd(cmd)
