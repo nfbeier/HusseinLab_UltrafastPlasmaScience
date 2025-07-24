@@ -7,22 +7,23 @@ Created on Tue Jul 22 16:21:51 2025
 """
 
 from PyQt5 import QtWidgets, uic, QtGui, QtCore
-#import instruments as ik
+import instruments as ik
 import quantities as pq
 import json
 import time, sys
 from time import sleep
-#import pyvisa
+import pyvisa
 from delay_gen_gui import Ui_MainWindow
 
 # When editing locally
-sys.path.insert(0,'/Users/christina/Documents/github/HusseinLab_UltrafastPlasmaScience/Hardware/Delay Generator DG645') 
+#sys.path.insert(0,'/Users/christina/Documents/github/HusseinLab_UltrafastPlasmaScience/Hardware/Delay Generator DG645') 
 
 # When it's on the lab computer
 # sys.path.append('C:/Users/R2D2/Documents/CODE/Github/HusseinLab_UltrafastPlasmaScience/Hardware/Delay Generator DG645')
-
+sys.path.append(r'C:\Users\C3PO\Documents\CODE\HusseinLab_UltrafastPlasmaScience\Hardware\Delay Generator DG645')
 from dg645_controll import DelayGen
 
+#%%
 class delay_gen_app(QtWidgets.QMainWindow):
     def __init__(self):
         super(delay_gen_app,self).__init__()
