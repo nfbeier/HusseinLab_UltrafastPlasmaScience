@@ -7,21 +7,26 @@ Created on Tue Jul 22 16:21:51 2025
 """
 
 from PyQt5 import QtWidgets, uic, QtGui, QtCore
-# import instruments as ik
+import instruments as ik
 import quantities as pq
 import json
 import time, sys
 from time import sleep
-# import pyvisa
+import pyvisa
 from delay_gen_gui import Ui_MainWindow
+import os
 
-# When editing locally
-sys.path.insert(0,'/Users/christina/Documents/github/HusseinLab_UltrafastPlasmaScience/Hardware/Delay Generator DG645') 
+# Makes sure you are in the right path!
+cwd = os.getcwd()
+if "HusseinLab_UltrafastPlasmaScience" not in cwd.split(os.path.sep):
+    raise ValueError("The directory does not contain 'HusseinLab_UltrafastPlasmaScience' folder.")
+# Rebuild the directory string up to and including 'HusseinLab_UltrafastPlasmaScience', prevent import errors
+cwd = os.path.sep.join(
+    cwd.split(os.path.sep)[: cwd.split(os.path.sep).index("HusseinLab_UltrafastPlasmaScience") + 1]
+)
+sys.path.insert(0, cwd)
 
-# When it's on the lab computer
-# sys.path.append('C:/Users/R2D2/Documents/CODE/Github/HusseinLab_UltrafastPlasmaScience/Hardware/Delay Generator DG645')
-#sys.path.append(r'C:\Users\C3PO\Documents\CODE\HusseinLab_UltrafastPlasmaScience\Hardware')
-# from DG645.dg645 import DelayGen
+from DG645.dg645 import DelayGen
 
 #%%
 class delay_gen_app(QtWidgets.QMainWindow):
