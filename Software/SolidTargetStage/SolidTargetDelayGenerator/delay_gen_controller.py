@@ -7,21 +7,21 @@ Created on Tue Jul 22 16:21:51 2025
 """
 
 from PyQt5 import QtWidgets, uic, QtGui, QtCore
-import instruments as ik
+# import instruments as ik
 import quantities as pq
 import json
 import time, sys
 from time import sleep
-import pyvisa
+# import pyvisa
 from delay_gen_gui import Ui_MainWindow
 
 # When editing locally
-#sys.path.insert(0,'/Users/christina/Documents/github/HusseinLab_UltrafastPlasmaScience/Hardware/Delay Generator DG645') 
+sys.path.insert(0,'/Users/christina/Documents/github/HusseinLab_UltrafastPlasmaScience/Hardware/Delay Generator DG645') 
 
 # When it's on the lab computer
 # sys.path.append('C:/Users/R2D2/Documents/CODE/Github/HusseinLab_UltrafastPlasmaScience/Hardware/Delay Generator DG645')
-sys.path.append(r'C:\Users\C3PO\Documents\CODE\HusseinLab_UltrafastPlasmaScience\Hardware')
-from DG645.dg645 import DelayGen
+#sys.path.append(r'C:\Users\C3PO\Documents\CODE\HusseinLab_UltrafastPlasmaScience\Hardware')
+# from DG645.dg645 import DelayGen
 
 #%%
 class delay_gen_app(QtWidgets.QMainWindow):
@@ -31,7 +31,7 @@ class delay_gen_app(QtWidgets.QMainWindow):
         self.ui.setupUi(self)
     
         #Connecting the instrument
-        self.ins_dg = DelayGen("COM4", 9600) # dg645
+        #self.ins_dg = DelayGen("COM4", 9600) # dg645
         
         # Reads in previous input for different channel levels 
         self.read_json()
@@ -40,18 +40,24 @@ class delay_gen_app(QtWidgets.QMainWindow):
         self.ui.delay_select.currentIndexChanged.connect(lambda: self.disp_ch("delay"))
         self.ui.voltage_select.currentIndexChanged.connect(lambda: self.disp_ch("voltage"))
          
-        #Adjusting the delay values 
+        #Adjusting and updating the delay values 
         self.ui.delay_disp.textChanged.connect(lambda: self.updateDelayvals("Delay_Val"))
         self.ui.unit_disp.textChanged.connect(lambda: self.updateDelayvals("Delay_Units"))
         
-        #Adjusting the voltage values
+        #Adjusting and updating the voltage values
         self.ui.offset_v.textChanged.connect(lambda: self.updateVoltvals("Offset_Val"))
         self.ui.amplitude_v.textChanged.connect(lambda: self.updateVoltvals("Amp_Val"))
         
-        # #Buttons to fire and shutdown
-        self.ui.stop_dg_bt.clicked.connect(self.DisconnectBtn)
+        # Setting the delay values 
+        self.ui.set_delay_bt.clicked.connect(self.SetDelayBt)
         
-        self.ui.start_dg_bt.clicked.connect(self.FireBtn)
+        # Setting the voltage values 
+        self.ui.set_level_bt.clicked.connect(self.SetVoltageBt)
+        
+        # #Buttons to fire and shutdown
+        #self.ui.stop_dg_bt.clicked.connect(self.DisconnectBtn)
+        
+        #self.ui.start_dg_bt.clicked.connect(self.FireBtn)
         
         # #Buttons for displaying on the delay generator
         self.ui.T0_bt.clicked.connect(lambda: self.change_display_bt("T0"))
@@ -88,29 +94,32 @@ class delay_gen_app(QtWidgets.QMainWindow):
     def disp_ch(self, widget):    
         if widget == "delay":
             channel = self.ui.delay_select.currentText()
-            self.ui.channel_disp.setText(self.dg_values[channel][0])
+            self.ui.channel_link.setText(self.dg_values[channel][0])
             self.ui.delay_disp.setText(str(self.dg_values[channel][1]))   
             self.ui.unit_disp.setText(self.dg_values[channel][2])
+            
             channel_select =  str(self.ui.delay_select.currentText())
-            channel = str(self.ui.channel_disp.text())
+            channel = str(self.ui.channel_link.text())
             delay = float(self.ui.delay_disp.text())
             delay_units = str(self.ui.unit_disp.text())
-            self.ins_dg.set_delay(channel_select, channel, delay, delay_units)
+            self.ins_dg.get_delay(channel_select, channel, delay, delay_units)
+            
             
             
         elif widget == "voltage":
             channel = self.ui.voltage_select.currentText()
             self.ui.offset_v.setText(str(self.dg_values[channel][0]))
             self.ui.amplitude_v.setText(str(self.dg_values[channel][1]))
+            
             voltage_select = str(self.ui.voltage_select.currentText())
             offset_v = float(self.ui.offset_v.text())
             amplitude_v = float(self.ui.amplitude_v.text())
-            self.ins_dg.set_voltage(voltage_select, offset_v, amplitude_v)
+            # self.ins_dg.get_voltage(voltage_select, offset_v, amplitude_v)
     
     
     def updateDelayvals(self, widget):
         channel = self.ui.delay_select.currentText()
-        self.ui.channel_disp.setText(self.dg_values[channel][0])      
+        self.ui.channel_link.setText(self.dg_values[channel][0])      
         if widget == "Delay_Val" and (self.ui.delay_disp.text() != ''):
             delay = float(self.ui.delay_disp.text())
             self.dg_values[channel][1] = delay
@@ -118,12 +127,12 @@ class delay_gen_app(QtWidgets.QMainWindow):
             delay_units = str(self.ui.unit_disp.text())
             self.dg_values[channel][2] = delay_units
          
-        if self.ui.channel_disp.text() != "" and self.ui.delay_disp.text() != "" and self.ui.unit_disp.text() != "":
+        if self.ui.channel_link.text() != "" and self.ui.delay_disp.text() != "" and self.ui.unit_disp.text() != "":
             channel_select =  str(self.ui.delay_select.currentText())
-            channel = str(self.ui.channel_disp.text())
+            channel = str(self.ui.channel_link.text())
             delay = float(self.ui.delay_disp.text())
             delay_units = str(self.ui.unit_disp.text())
-            self.ins_dg.set_delay(channel_select, channel, delay, delay_units)
+            self.ins_dg.get_delay(channel_select, channel, delay, delay_units)
             
             
     def updateVoltvals(self, widget):
@@ -139,14 +148,49 @@ class delay_gen_app(QtWidgets.QMainWindow):
             voltage_select = str(self.ui.voltage_select.currentText())
             offset_v = float(self.ui.offset_v.text())
             amplitude_v = float(self.ui.amplitude_v.text())
-            self.ins_dg.set_voltage(voltage_select, offset_v, amplitude_v)
+            self.ins_dg.get_voltage(voltage_select, offset_v, amplitude_v)
     
 
     
 
    
     def change_display_bt(self, btn):
+        
         self.ins_dg.change_display(btn)
+    
+    
+    def SetDelayBt(self):
+        # Sets the value
+        channel =  str(self.ui.delay_select.currentText())
+        channel_ref = str(self.ui.channel_link.text())
+        
+        #set the new channel link in case there was a change 
+        self.ins_dg. change_delay_link(channel, channel_ref)
+        
+        #Now setting the delay
+        sleep(0.2)
+        if self.ui.channel_link.text() != "" and self.ui.delay_disp.text() != "" and self.ui.unit_disp.text() != "":
+            self.ins_dg.set_delay()
+        
+            #Then displays the change on the delay generator
+            sleep(0.2)      
+            self.ins_dg.change_display(channel)
+        
+        
+    def SetVoltageBt(self):
+        # Sets the value
+        voltage_select = str(self.ui.voltage_select.currentText())
+ 
+        sleep(0.2)
+        if self.ui.offset_v.text() != "" and self.ui.amplitude_v.text() != "":
+            self.ins_dg.set_voltage()
+            #Then displays the change on the delay generator
+            sleep(0.2)      
+            self.ins_dg.display_amplitdue(voltage_select)
+        
+        
+        
+    
               
     def DisconnectBtn(self):
         # First writing the json file to save current settings
@@ -164,17 +208,13 @@ class delay_gen_app(QtWidgets.QMainWindow):
             write_file.seek(0)
             json.dump(inputs, write_file)
             write_file.truncate()
-        # Disconnecting the device now
+        #Disconnecting the device now
         self.ins_dg.disconnect_dg()
+    
     
     def FireBtn(self):
         self.ins_dg.single_shot_fire_dg()
     
-
-       
-  
-            
-            
 
        
 

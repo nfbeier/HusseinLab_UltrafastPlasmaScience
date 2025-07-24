@@ -17,7 +17,7 @@
    <widget class="QPushButton" name="start_dg_bt">
     <property name="geometry">
      <rect>
-      <x>30</x>
+      <x>50</x>
       <y>400</y>
       <width>211</width>
       <height>81</height>
@@ -55,9 +55,9 @@
    <widget class="QGroupBox" name="groupBox_2">
     <property name="geometry">
      <rect>
-      <x>90</x>
+      <x>40</x>
       <y>130</y>
-      <width>351</width>
+      <width>461</width>
       <height>131</height>
      </rect>
     </property>
@@ -74,9 +74,9 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>50</y>
+       <y>60</y>
        <width>61</width>
-       <height>61</height>
+       <height>41</height>
       </rect>
      </property>
      <property name="sizePolicy">
@@ -120,23 +120,18 @@
        <string>G</string>
       </property>
      </item>
-    </widget>
-    <widget class="QLineEdit" name="channel_disp">
-     <property name="geometry">
-      <rect>
-       <x>70</x>
-       <y>60</y>
-       <width>71</width>
-       <height>41</height>
-      </rect>
-     </property>
+     <item>
+      <property name="text">
+       <string>H</string>
+      </property>
+     </item>
     </widget>
     <widget class="QLabel" name="label">
      <property name="geometry">
       <rect>
        <x>70</x>
        <y>40</y>
-       <width>60</width>
+       <width>81</width>
        <height>16</height>
       </rect>
      </property>
@@ -147,7 +142,7 @@
       </font>
      </property>
      <property name="text">
-      <string>Channel</string>
+      <string>Channel Link</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_2">
@@ -166,13 +161,13 @@
       </font>
      </property>
      <property name="text">
-      <string>Select</string>
+      <string>Channel</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_3">
      <property name="geometry">
       <rect>
-       <x>150</x>
+       <x>160</x>
        <y>40</y>
        <width>60</width>
        <height>16</height>
@@ -227,13 +222,36 @@
       </rect>
      </property>
     </widget>
+    <widget class="QPushButton" name="set_delay_bt">
+     <property name="geometry">
+      <rect>
+       <x>350</x>
+       <y>50</y>
+       <width>91</width>
+       <height>51</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Set Delay</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="channel_link">
+     <property name="geometry">
+      <rect>
+       <x>70</x>
+       <y>60</y>
+       <width>71</width>
+       <height>41</height>
+      </rect>
+     </property>
+    </widget>
    </widget>
    <widget class="QGroupBox" name="groupBox_3">
     <property name="geometry">
      <rect>
-      <x>90</x>
+      <x>40</x>
       <y>270</y>
-      <width>351</width>
+      <width>451</width>
       <height>121</height>
      </rect>
     </property>
@@ -323,7 +341,7 @@
     <widget class="QLabel" name="label_11">
      <property name="geometry">
       <rect>
-       <x>210</x>
+       <x>220</x>
        <y>40</y>
        <width>91</width>
        <height>16</height>
@@ -352,11 +370,24 @@
     <widget class="QLineEdit" name="amplitude_v">
      <property name="geometry">
       <rect>
-       <x>210</x>
+       <x>220</x>
        <y>60</y>
        <width>111</width>
        <height>41</height>
       </rect>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="set_level_bt">
+     <property name="geometry">
+      <rect>
+       <x>350</x>
+       <y>50</y>
+       <width>91</width>
+       <height>51</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Set Level</string>
      </property>
     </widget>
    </widget>
