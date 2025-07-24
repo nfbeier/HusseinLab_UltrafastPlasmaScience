@@ -20,8 +20,8 @@ from delay_gen_gui import Ui_MainWindow
 
 # When it's on the lab computer
 # sys.path.append('C:/Users/R2D2/Documents/CODE/Github/HusseinLab_UltrafastPlasmaScience/Hardware/Delay Generator DG645')
-sys.path.append(r'C:\Users\C3PO\Documents\CODE\HusseinLab_UltrafastPlasmaScience\Hardware\Delay Generator DG645')
-from dg645_controll import DelayGen
+sys.path.append(r'C:\Users\C3PO\Documents\CODE\HusseinLab_UltrafastPlasmaScience\Hardware')
+from DG645.dg645 import DelayGen
 
 #%%
 class delay_gen_app(QtWidgets.QMainWindow):
@@ -31,7 +31,7 @@ class delay_gen_app(QtWidgets.QMainWindow):
         self.ui.setupUi(self)
     
         #Connecting the instrument
-        self.ins_dg = DelayGen("COM3", 9600) # dg645
+        self.ins_dg = DelayGen("COM4", 9600) # dg645
         
         # Reads in previous input for different channel levels 
         self.read_json()
@@ -68,7 +68,7 @@ class delay_gen_app(QtWidgets.QMainWindow):
         
     # Reads in the jason file
     def read_json(self):
-        with open("delay_gen_gui_inputs.json", "r") as read_file:
+        with open("Software\SolidTargetStage\SolidTargetDelayGenerator\delay_gen_gui_inputs.json", "r") as read_file:
             inputs = json.load(read_file)
         self.dg_values = {
             "A" : [inputs["A_ch"], inputs["A_delay"], inputs["A_delay_unit"]],
@@ -91,15 +91,21 @@ class delay_gen_app(QtWidgets.QMainWindow):
             self.ui.channel_disp.setText(self.dg_values[channel][0])
             self.ui.delay_disp.setText(str(self.dg_values[channel][1]))   
             self.ui.unit_disp.setText(self.dg_values[channel][2])
-            self.ins_dg.set_delay(self.ui.delay_select.currentText(), self.ui.channel_disp.text(), self.ui.delay_disp.text(), self.ui.unit_disp.text())
+            channel_select =  str(self.ui.delay_select.currentText())
+            channel = str(self.ui.channel_disp.text())
+            delay = float(self.ui.delay_disp.text())
+            delay_units = str(self.ui.unit_disp.text())
+            self.ins_dg.set_delay(channel_select, channel, delay, delay_units)
             
             
         elif widget == "voltage":
             channel = self.ui.voltage_select.currentText()
             self.ui.offset_v.setText(str(self.dg_values[channel][0]))
             self.ui.amplitude_v.setText(str(self.dg_values[channel][1]))
-            
-            self.ins_dg.set_voltage(self.ui.voltage_select.currentText(), self.ui.offset_v.text(), self.ui.amplitude_v.text())
+            voltage_select = str(self.ui.voltage_select.currentText())
+            offset_v = float(self.ui.offset_v.text())
+            amplitude_v = float(self.ui.amplitude_v.text())
+            self.ins_dg.set_voltage(voltage_select, offset_v, amplitude_v)
     
     
     def updateDelayvals(self, widget):
@@ -107,26 +113,33 @@ class delay_gen_app(QtWidgets.QMainWindow):
         self.ui.channel_disp.setText(self.dg_values[channel][0])      
         if widget == "Delay_Val" and (self.ui.delay_disp.text() != ''):
             delay = float(self.ui.delay_disp.text())
-            self.ins_dg.dg_values[channel][1] = delay
+            self.dg_values[channel][1] = delay
         elif widget == "Delay_Units" and (self.ui.unit_disp.text() != ''):
             delay_units = str(self.ui.unit_disp.text())
-            self.ins_dg.dg_values[channel][2] = delay_units
+            self.dg_values[channel][2] = delay_units
          
         if self.ui.channel_disp.text() != "" and self.ui.delay_disp.text() != "" and self.ui.unit_disp.text() != "":
-            self.ins_dg.set_delay(self.ui.delay_select.currentText(), self.ui.channel_disp.text(), self.ui.delay_disp.text(), self.ui.unit_disp.text())
-    
+            channel_select =  str(self.ui.delay_select.currentText())
+            channel = str(self.ui.channel_disp.text())
+            delay = float(self.ui.delay_disp.text())
+            delay_units = str(self.ui.unit_disp.text())
+            self.ins_dg.set_delay(channel_select, channel, delay, delay_units)
+            
+            
     def updateVoltvals(self, widget):
         channel = self.ui.voltage_select.currentText()
         if widget == "Offset_Val" and (self.ui.offset_v.text() != ''):
             offset_val = float(self.ui.offset_v.text())
-            self.ins_dg.dg_values[channel][0] = offset_val
+            self.dg_values[channel][0] = offset_val
         elif widget == "Amp_Val" and (self.ui.amplitude_v.text() != ''):
             amp_val = float(self.ui.amplitude_v.text())
-            self.ins_dg.dg_values[channel][1] = amp_val
+            self.dg_values[channel][1] = amp_val
         
         if self.ui.offset_v.text() != "" and self.ui.amplitude_v.text() != "":
-            self.ins_dg.set_voltage(self.ui.voltage_select.currentText(), self.ui.offset_v.text(), self.ui.amplitude_v.text())
-   
+            voltage_select = str(self.ui.voltage_select.currentText())
+            offset_v = float(self.ui.offset_v.text())
+            amplitude_v = float(self.ui.amplitude_v.text())
+            self.ins_dg.set_voltage(voltage_select, offset_v, amplitude_v)
     
 
     
@@ -137,7 +150,7 @@ class delay_gen_app(QtWidgets.QMainWindow):
               
     def DisconnectBtn(self):
         # First writing the json file to save current settings
-        with open("delay_gen_gui_inputs.json", "r+") as write_file:
+        with open("Software\SolidTargetStage\SolidTargetDelayGenerator\delay_gen_gui_inputs.json", "r+") as write_file:
             inputs = json.load(write_file)
             
             for i in ["A", "B", "C", "D", "E", "F", "G", "H"]:

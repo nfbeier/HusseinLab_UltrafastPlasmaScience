@@ -22,22 +22,25 @@ class DelayGen:
     def __init__(self,com_port = "COM3", baud_rate = 9600):  
         # connects to the delay gen
         try:
-            self.ins = ik.srs.SRSDG645.open_serial(com_port =com_port, baud_rate = baud_rate)
-
+            self.ins = ik.srs.SRSDG645.open_serial(port =com_port, baud = baud_rate)
         except:
             print("DG645 connection cannot be established.")
 
     
     def set_delay(self, channel_select,channel,delay,delay_units):
         # sets the delay for the chanel on the delay gen
-        try:
-            self.ins.channel[channel_select].delay = (self.ins.channel[channel], pq.Quantity(float(delay), delay_units))
-        except:
-            print("ERROR: check channel delay inputs")
+        
+        print(self.ins.channel[channel_select].delay)
+        print(self.ins.channel[channel], pq.Quantity(delay, delay_units))
+        #try:
+        #self.ins.channel[channel_select].delay = (self.ins.channel[channel], pq.Quantity(delay, delay_units))
+            #ins.channel["A"].delay = (ins.channel[self.A_ch.toPlainText()], pq.Quantity(float(self.A_delay.toPlainText()), self.A_delay_unit.toPlainText()))
+        #except:
+        #    print("ERROR: check channel delay inputs")
         
                
     
-    def set_offset(self, voltage_select, offset_v, amplitude_v):
+    def set_voltage(self, voltage_select, offset_v, amplitude_v):
         # Sets the offset on the delay gen
         try:
             self.ins.output[voltage_select].level_offset = pq.Quantity(float(offset_v), "V")
@@ -64,11 +67,11 @@ class DelayGen:
         self.ins.sendcmd(cmd[btn])
 
     
-    def disconnect_dg(self,newGroup):        
+    def disconnect_dg(self):        
         # Disconnects the device
         self.ins.sendcmd("IFRS 0")
         
-    def single_shot_fire_dg(self, group):
+    def single_shot_fire_dg(self):
         # sends a single shot 
         self.ins.sendcmd('TSRC 5')
         self.ins.sendcmd('*TRG')
