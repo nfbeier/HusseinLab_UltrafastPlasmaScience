@@ -26,7 +26,7 @@ cwd = os.path.sep.join(
 )
 sys.path.insert(0, cwd)
 
-from DG645.dg645 import DelayGen
+from Hardware.DG645.dg645 import DelayGen
 
 #%%
 class delay_gen_app(QtWidgets.QMainWindow):
@@ -36,7 +36,7 @@ class delay_gen_app(QtWidgets.QMainWindow):
         self.ui.setupUi(self)
     
         #Connecting the instrument
-        #self.ins_dg = DelayGen("COM4", 9600) # dg645
+        self.ins_dg = DelayGen("COM4", 9600) # dg645
         
         # Reads in previous input for different channel levels 
         self.read_json()
@@ -59,10 +59,10 @@ class delay_gen_app(QtWidgets.QMainWindow):
         # Setting the voltage values 
         self.ui.set_level_bt.clicked.connect(self.SetVoltageBt)
         
-        # #Buttons to fire and shutdown
-        #self.ui.stop_dg_bt.clicked.connect(self.DisconnectBtn)
+        #Buttons to fire and shutdown
+        self.ui.stop_dg_bt.clicked.connect(self.DisconnectBtn)
         
-        #self.ui.start_dg_bt.clicked.connect(self.FireBtn)
+        self.ui.start_dg_bt.clicked.connect(self.FireBtn)
         
         # #Buttons for displaying on the delay generator
         self.ui.T0_bt.clicked.connect(lambda: self.change_display_bt("T0"))

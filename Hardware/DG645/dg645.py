@@ -37,6 +37,7 @@ class DelayGen:
             }
         
         ch_val = {
+            "T0" : "1",
             "A" : "2",
             "B" : "3",
             "C" : "4",
@@ -78,13 +79,13 @@ class DelayGen:
         
         voltage_select = ch_val[voltage_select]
         
-        self.amplitude_cmd = "LAMP "+voltage_select+","+amplitude_v
-        self.offset_cmd = "LOFF "+voltage_select+","+offset_v
+        self.amplitude_cmd = "LAMP "+voltage_select+","+str(amplitude_v)
+        self.offset_cmd = "LOFF "+voltage_select+","+str(offset_v)
         
         
                
     
-    def set_voltage(self, voltage_select, offset_v, amplitude_v):
+    def set_voltage(self):
         # Sets the offset on the delay gen
         try:
             self.ins.sendcmd(self.amplitude_cmd)
@@ -95,6 +96,7 @@ class DelayGen:
 
     def change_delay_link(self,ref,link):
         ch_val = {
+            "T0" : "1",
             "A" : "2",
             "B" : "3",
             "C" : "4",
