@@ -23,7 +23,8 @@ class DelayGen:
         # connects to the delay gen
         try:
             self.ins = ik.srs.SRSDG645.open_serial(port =com_port, baud = baud_rate)
-        except:
+        except Exception as e:
+            print(f"An error occurred: {e}")
             print("DG645 connection cannot be established.")
             
             
@@ -64,9 +65,8 @@ class DelayGen:
         try:
             self.ins.sendcmd(self.delay_cmd)
             
-        except:
-            print("ERROR: check channel delay inputs")
- 
+        except Exception as e:
+           print(f"An error occurred: {e}")
     
     def get_voltage(self, voltage_select, offset_v, amplitude_v):
         # Sets the offset on the delay gen
@@ -90,8 +90,8 @@ class DelayGen:
         try:
             self.ins.sendcmd(self.amplitude_cmd)
             self.ins.sendcmd(self.offset_cmd)
-        except:
-            print("ERROR: check channel voltage inputs")
+        except Exception as e:
+           print(f"An error occurred: {e}")
 
 
     def change_delay_link(self,ref,link):
