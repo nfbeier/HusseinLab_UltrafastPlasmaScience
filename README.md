@@ -1,5 +1,5 @@
 ---
-Repository Description: 'Last Edited: June 21, 2023'
+Repository Description: 'Last Edited: July 22, 2025'
 ---
 
 Github repository for hardware and software interfacing used in the Hussein Ultrafast Plasma Science group at the University of Alberta.
@@ -29,6 +29,12 @@ Development of linear translation stations controlled by the Newport XPS D4 syst
 Development of ultrafast pulse measurement Frequency Resolved Optical Gating (FROG) diagnostic for use with the Spitfire laser system. Currently the software controls the Newport XPS and a Thorlabs CCS200 spectrometer
 
 -- Developed by Nick Beier
+
+# Solid Target Stage
+
+Development of multi-axis target stage for hard X-ray generation with the Spitfire laser system.
+
+-- Developed by Christina Strilets
 
 # DAQ
 

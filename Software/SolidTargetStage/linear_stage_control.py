@@ -9,16 +9,20 @@ import time, sys
 import numpy as np
 from scipy import constants
 from PyQt5 import QtCore, QtGui, QtWidgets
+import os
 
-# When editing locally
-#sys.path.insert(0,'/Users/christina/Desktop/Hard X-ray Exp/Hardware/') #change to local computer git
-
-# When working on lab computer
-sys.path.append('C:/Users/R2D2/Documents/CODE/Github/HusseinLab_UltrafastPlasmaScience/Hardware')
-# sys.path.append('C:/Users/nfbei/Documents/Research/Code/Github/HusseinLab_UltrafastPlasmaScience/Hardware')
+# Makes sure you are in the right path!
+cwd = os.getcwd()
+if "HusseinLab_UltrafastPlasmaScience" not in cwd.split(os.path.sep):
+    raise ValueError("The directory does not contain 'HusseinLab_UltrafastPlasmaScience' folder.")
+# Rebuild the directory string up to and including 'HusseinLab_UltrafastPlasmaScience', prevent import errors
+cwd = os.path.sep.join(
+    cwd.split(os.path.sep)[: cwd.split(os.path.sep).index("HusseinLab_UltrafastPlasmaScience") + 1]
+)
+sys.path.insert(0, cwd)
 
 from stage_controller_test_GUI import Ui_Dialog
-from XPS.XPS import XPS
+from Hardware.XPS.XPS import XPS
 
 
 
