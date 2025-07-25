@@ -7,9 +7,6 @@ Created on Wed Jul 23 15:45:13 2025
 """
 
 import instruments as ik
-import quantities as pq
-import pyvisa
-
 class DelayGen:
     '''
     
@@ -49,15 +46,16 @@ class DelayGen:
             "H" : "9"
             }
         
+        # Selects the appropriate channels for the delay
         channel = ch_val[channel]
         channel_ref = ch_val[channel_ref]
         
+        # Sets up the delay values in a string format the instrument can read
         delay_unit_val = delay_unit_dict[delay_units]
         delay_val = str(delay)+delay_unit_val
         
+        # Writes the delay command
         self.delay_cmd = "DLAY "+channel+","+channel_ref+","+delay_val
-
-        
 
     
     def set_delay(self):
@@ -76,9 +74,11 @@ class DelayGen:
             "EF" : "3",
             "GH" : "4",
             }
-        
+        #Selects the appropriate channel to set the voltage level
         voltage_select = ch_val[voltage_select]
         
+        # Sets up the command lines for the generator to set the amplitude 
+        # and offset 
         self.amplitude_cmd = "LAMP "+voltage_select+","+str(amplitude_v)
         self.offset_cmd = "LOFF "+voltage_select+","+str(offset_v)
         
@@ -106,9 +106,11 @@ class DelayGen:
             "G" : "8",
             "H" : "9"
             }
+        # Selects the apporpriate channels
         ref_channel = ch_val[ref]
         link_channel = ch_val[link]
         
+        # Makes sure you aren't linling a channelt to itsself
         if ref_channel == link_channel:
             print("invalid connection")
         else: 

@@ -8,11 +8,9 @@ Created on Tue Jul 22 16:21:51 2025
 
 from PyQt5 import QtWidgets, uic, QtGui, QtCore
 import instruments as ik
-import quantities as pq
 import json
 import time, sys
 from time import sleep
-import pyvisa
 from delay_gen_gui import Ui_MainWindow
 import os
 
