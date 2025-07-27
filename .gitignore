@@ -10,6 +10,8 @@ yacctab.py
 
 # Distribution / packaging
 .Python
+.DS_Store
+./Software/DS_Store
 build/
 develop-eggs/
 dist/
