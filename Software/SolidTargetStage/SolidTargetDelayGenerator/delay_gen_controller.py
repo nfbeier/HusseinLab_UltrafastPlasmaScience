@@ -51,6 +51,9 @@ class delay_gen_app(QtWidgets.QMainWindow):
         self.ui.offset_v.textChanged.connect(lambda: self.updateVoltvals("Offset_Val"))
         self.ui.amplitude_v.textChanged.connect(lambda: self.updateVoltvals("Amp_Val"))
         
+        # Loading and setting the previosuly saved file
+        self.ui.set_json_bt.clicked.connect(self.SetSavedBt)
+        
         # Setting the delay values 
         self.ui.set_delay_bt.clicked.connect(self.SetDelayBt)
         
@@ -160,6 +163,14 @@ class delay_gen_app(QtWidgets.QMainWindow):
     def change_display_bt(self, btn):
         
         self.ins_dg.change_display(btn)
+
+    
+    def SetSavedBt(self):
+        # Sets the saved json values
+        self.ins_dg.set_json(self.dg_values)
+        
+
+    
     
     
     def SetDelayBt(self):
@@ -168,7 +179,7 @@ class delay_gen_app(QtWidgets.QMainWindow):
         channel_ref = str(self.ui.channel_link.text())
         
         #set the new channel link in case there was a change 
-        self.ins_dg. change_delay_link(channel, channel_ref)
+        self.ins_dg.change_delay_link(channel, channel_ref)
         
         #Now setting the delay
         sleep(0.2)
