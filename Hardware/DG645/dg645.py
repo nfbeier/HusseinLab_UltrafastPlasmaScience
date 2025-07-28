@@ -57,7 +57,32 @@ class DelayGen:
         # Writes the delay command
         self.delay_cmd = "DLAY "+channel+","+channel_ref+","+delay_val
 
+
     
+    # Function that uploads and sets the previosuly saved values for the delay
+    # generator
+    def set_json(self, json_vals):
+        i = 0
+        for a in json_vals:
+            if i < 8:
+                channel = str(a)
+                channel_ref = str(json_vals[a][0])
+                delay = str(json_vals[a][1])
+                delay_units = str(json_vals[a][2])
+                self.get_delay(channel, channel_ref, delay, delay_units)
+                self.set_delay()
+            elif i > 8:
+                voltage_select = str(a)
+                offset_v = str(json_vals[a][0])
+                amplitude_v = str(json_vals[a][1])
+                self.get_voltage(voltage_select, offset_v, amplitude_v)
+                self.set_voltage()
+            i = i+1
+    
+                
+                
+        
+        
     def set_delay(self):
   
         try:
