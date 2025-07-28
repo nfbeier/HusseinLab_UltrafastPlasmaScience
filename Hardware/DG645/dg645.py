@@ -35,7 +35,7 @@ class DelayGen:
             }
         
         ch_val = {
-            "T0" : "1",
+            "T0" : "0",
             "A" : "2",
             "B" : "3",
             "C" : "4",
@@ -56,32 +56,8 @@ class DelayGen:
         
         # Writes the delay command
         self.delay_cmd = "DLAY "+channel+","+channel_ref+","+delay_val
-
-
-    
-    # Function that uploads and sets the previosuly saved values for the delay
-    # generator
-    def set_json(self, json_vals):
-        i = 0
-        for a in json_vals:
-            if i < 8:
-                channel = str(a)
-                channel_ref = str(json_vals[a][0])
-                delay = str(json_vals[a][1])
-                delay_units = str(json_vals[a][2])
-                self.get_delay(channel, channel_ref, delay, delay_units)
-                self.set_delay()
-            elif i > 8:
-                voltage_select = str(a)
-                offset_v = str(json_vals[a][0])
-                amplitude_v = str(json_vals[a][1])
-                self.get_voltage(voltage_select, offset_v, amplitude_v)
-                self.set_voltage()
-            i = i+1
-    
-                
-                
         
+ 
         
     def set_delay(self):
   
@@ -104,7 +80,12 @@ class DelayGen:
         
         # Sets up the command lines for the generator to set the amplitude 
         # and offset 
-        self.amplitude_cmd = "LAMP "+voltage_select+","+str(amplitude_v)
+        if amplitude_v == 0:
+            print("Amplitude cannot be set to zero")
+        elif amplitude_v != 0:
+            self.amplitude_cmd = "LAMP "+voltage_select+","+str(amplitude_v)
+            
+        
         self.offset_cmd = "LOFF "+voltage_select+","+str(offset_v)
         
         
@@ -121,7 +102,7 @@ class DelayGen:
 
     def change_delay_link(self,ref,link):
         ch_val = {
-            "T0" : "1",
+            "T0" : "0",
             "A" : "2",
             "B" : "3",
             "C" : "4",
@@ -135,7 +116,7 @@ class DelayGen:
         ref_channel = ch_val[ref]
         link_channel = ch_val[link]
         
-        # Makes sure you aren't linling a channelt to itsself
+        # Makes sure you aren't linling a channel to itsself
         if ref_channel == link_channel:
             print("invalid connection")
         else: 

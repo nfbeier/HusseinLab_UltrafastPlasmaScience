@@ -77,8 +77,10 @@ class delay_gen_app(QtWidgets.QMainWindow):
         self.ui.G_bt.clicked.connect(lambda: self.change_display_bt("G"))
         self.ui.H_bt.clicked.connect(lambda: self.change_display_bt("H"))
         
+  
         
-    # Reads in the jason file
+        
+    #Reads in the jason file
     def read_json(self):
         with open("Software\SolidTargetStage\SolidTargetDelayGenerator\delay_gen_gui_inputs.json", "r") as read_file:
             inputs = json.load(read_file)
@@ -120,7 +122,7 @@ class delay_gen_app(QtWidgets.QMainWindow):
             voltage_select = str(self.ui.voltage_select.currentText())
             offset_v = float(self.ui.offset_v.text())
             amplitude_v = float(self.ui.amplitude_v.text())
-            # self.ins_dg.get_voltage(voltage_select, offset_v, amplitude_v)
+            self.ins_dg.get_voltage(voltage_select, offset_v, amplitude_v)
     
     
     def updateDelayvals(self, widget):
@@ -167,8 +169,31 @@ class delay_gen_app(QtWidgets.QMainWindow):
     
     def SetSavedBt(self):
         # Sets the saved json values
-        self.ins_dg.set_json(self.dg_values)
-        
+        i = 0
+        for a in self.dg_values:
+            if i < 0:
+            
+                channel = a
+                channel_ref = self.dg_values[a][0]
+                print(channel,channel_ref)
+                delay = self.dg_values[a][1]
+                delay_units = self.dg_values[a][2]
+                #Get the delay
+                self.ins_dg.get_delay(channel, channel_ref, delay, delay_units)
+                #Confirm the link
+                self.ins_dg.change_delay_link(channel, channel_ref)
+                sleep(0.2)
+                #Set the delay
+                self.ins_dg.set_delay()
+                
+            elif i > 8:
+                voltage_select = str(a)
+                offset_v = float(self.dg_values[a][0])
+                amplitude_v = float(self.dg_values[a][1])
+                self.ins_dg.get_voltage(voltage_select, offset_v, amplitude_v)
+                self.ins_dg.set_voltage()
+            i = i+1
+
 
     
     
@@ -238,3 +263,4 @@ if __name__ == "__main__":
     application = delay_gen_app()
     application.show()
     sys.exit(app.exec_()) 
+# %%
