@@ -424,8 +424,8 @@ class Ui_MainWindow(object):
         self.ConnectXPS.setText(_translate("MainWindow", "Connect XPS"))
         self.menuFile.setTitle(_translate("MainWindow", "File"))
         self.actionExit.setText(_translate("MainWindow", "Exit"))
-from frogtracecanvas import frogTraceCanvas
-from mplcanvas import MplCanvas
+from HelperFiles.frogtracecanvas import frogTraceCanvas
+from HelperFiles.mplcanvas import MplCanvas
 
 
 if __name__ == "__main__":
