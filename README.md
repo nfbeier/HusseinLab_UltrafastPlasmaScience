@@ -1,46 +1,57 @@
 ---
-Repository Description: 'Last Edited: July 22, 2025'
+Repository Description: 'Last Edited: July 29, 2025'
 ---
 
-Github repository for hardware and software interfacing used in the Hussein Ultrafast Plasma Science group at the University of Alberta.
+[![python](https://img.shields.io/badge/Python-3.10-3776AB.svg?style=flat&logo=python&logoColor=white)](https://www.python.org)
 
-Currently three projects are in active development
+# Overview
 
-# Viron Laser System
+Github repository for hardware and software interfacing of the smart system used by the Hussein Ultrafast Plasma Science group at the University of Alberta for experiments LIBS and high-repetition-rate, femtosecond laser experiments.
 
-Development of communication protocal to control the Quantel Viron Laser System for Portable LIBS.
+The smart system aims to interface a collection of hardware components necessary to perform high intensity laser-plasma interactions including FLIR Blackfly CCD, Newport XPS-D8 Motion Controller,
+Agilent XGS-600 Vacuum Controller, Andor iKon-M Vacuum X-ray CCD, and more. The various equipment will be controlled using Python code, and be designed in a modular structure to allow for quick
+changes in experimental setups.
 
--- Developed by Liam Droog and Shubho Mohajan 
+# Python Version
+We are standardized on Python 3.10 for all software in this repo. However, usage of the LIBS code with Stellarnet spectrometers requires Python 3.8
 
-# LIBS
+# Importing Driver Code
+This project aims to provide a consistent and reliable way to handle relative imports across various modules. By including a default pathing block at the top of the main programs, we ensure that all relative imports are correctly resolved, preventing potential import errors.
 
-Controls for automated laser-induced breakdown spectroscopy (LIBS) experiments. Communication between Stanford trigger box, Stellarnet and Thorlabs spectrometers, and linear translation stages.
+## Default Pathing Block
+To maintain consistent relative imports, we include the following default pathing block at the top of our main programs:
 
--- Developed by Shubho Mohajan and Ying Wan
+```
+import os
+import sys
 
-# Newport XPS
+cwd = os.getcwd()
+if '15tw-smartsystem' not in cwd.split(os.path.sep):
+    raise ValueError("The directory does not contain '15tw-smartsystem' folder.")
+# Rebuild the directory string up to and including '15tw-smartsystem', prevent import errors
+cwd = os.path.sep.join(cwd.split(os.path.sep)[:cwd.split(os.path.sep).index('15tw-smartsystem') + 1])
+sys.path.insert(0, cwd)
+```
 
-Development of linear translation stations controlled by the Newport XPS D4 system.
+# Contributing
+* Branches
+	* Branches must change  or implement one feature
+	* Branches created from branches must be merged in the order they are created
+* Branch Naming
+	* Branches are named as follows: <name_of_author>/<branch_type>/<description_of_branch>
+	* Branch types may be one of the following: {hotfix,bugfix,experimental,feature}
+* Commit Messages
+	* __Do not assume your code is self explanatory__
+	* __Do not assume everyone else knows what you are working on__
+	* Use the imperative mood in the subject line
+	* When in doubt, use the KISS method: Keep It Simple, Silly
 
--- Developed by Nick Beier
+## Converting PyQt5 Designer Files
+To convert PyQt5 Designer `.ui` files to Python `.py` files that can be imported into your software, you can use the `pyuic5` tool. This tool is part of the PyQt5 package and allows you to generate Python code from the `.ui` files created using the Qt Designer.
 
-# pyFROG  
+### Command
+The basic command to convert a `.ui` file to a `.py` file is:
 
-Development of ultrafast pulse measurement Frequency Resolved Optical Gating (FROG) diagnostic for use with the Spitfire laser system. Currently the software controls the Newport XPS and a Thorlabs CCS200 spectrometer
-
--- Developed by Nick Beier
-
-# Solid Target Stage
-
-Development of multi-axis target stage for hard X-ray generation with the Spitfire laser system.
-
--- Developed by Christina Strilets
-
-# DAQ
-
-Development of real-time data acquisition and analysis scripts. Currently fielded at the ALLS facility in Quebec. Watchdog scripts are used to pull data from remote desktops before being combined into a single file system.
-
---Developed by Nick Beier
-
-# Tektronix TBS2000B Oscilloscope
-Communication with a TBS2000B oscilloscope to read out nanosecond pulse pulse shape and energy information from a photodiode during experiments
+```
+pyuic5 -x ui_file.ui -o out_file.py
+```
