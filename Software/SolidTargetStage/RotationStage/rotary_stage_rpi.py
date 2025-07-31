@@ -14,8 +14,8 @@ from time import sleep
 import socket
 
 # Connecting to the PC
-HOST = '0.0.0.0'  # Listen on all interfaces
-PORT = 65432      # Choose a consistent port
+HOST = ''  # Listen on all interfaces
+PORT = 5000      # Choose a consistent port
 
 
 # Making the connection to the RPi first

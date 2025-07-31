@@ -16,8 +16,8 @@ import socket
 
 
 # Whats needed to connect to the RPi
-HOST = '172.29.115.25'  # Replace with Raspberry Pi's IP
-PORT = 65432
+HOST = 'raspberrypi'  # Replace with Raspberry Pi's IP
+PORT = 5000
 
 # # Makes sure you are in the right path!
 # cwd = os.getcwd()
