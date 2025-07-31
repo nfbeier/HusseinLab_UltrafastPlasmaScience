@@ -10,24 +10,27 @@ from PyQt5 import QtWidgets, uic, QtGui, QtCore
 import numpy as np
 import time, sys
 from time import sleep
-from rotation_stage_GUI import Ui_MainWindow
+
 import os
 import socket
 
+# Makes sure you are in the right path!
+cwd = os.getcwd()
+if "HusseinLab_UltrafastPlasmaScience" not in cwd.split(os.path.sep):
+    raise ValueError("The directory does not contain 'HusseinLab_UltrafastPlasmaScience' folder.")
+# Rebuild the directory string up to and including 'HusseinLab_UltrafastPlasmaScience', prevent import errors
+cwd = os.path.sep.join(
+    cwd.split(os.path.sep)[: cwd.split(os.path.sep).index("HusseinLab_UltrafastPlasmaScience") + 1]
+)
+sys.path.insert(0, cwd)
 
+from Software.SolidTargetStage.RotationStage.rotation_stage_GUI import Ui_MainWindow
 # Whats needed to connect to the RPi
-HOST = 'raspberrypi'  # Replace with Raspberry Pi's IP
+HOST = '192.168.0.106'  # Replace with Raspberry Pi's IP
 PORT = 5000
 
-# # Makes sure you are in the right path!
-# cwd = os.getcwd()
-# if "HusseinLab_UltrafastPlasmaScience" not in cwd.split(os.path.sep):
-#     raise ValueError("The directory does not contain 'HusseinLab_UltrafastPlasmaScience' folder.")
-# # Rebuild the directory string up to and including 'HusseinLab_UltrafastPlasmaScience', prevent import errors
-# cwd = os.path.sep.join(
-#     cwd.split(os.path.sep)[: cwd.split(os.path.sep).index("HusseinLab_UltrafastPlasmaScience") + 1]
-# )
-# sys.path.insert(0, cwd)
+
+
 
 #%%
 class rotation_stage_app(QtWidgets.QMainWindow):
@@ -41,6 +44,10 @@ class rotation_stage_app(QtWidgets.QMainWindow):
         self.shot_num = str(self.ui.shot_no_ip.text())
         self.rep_rate = float(self.ui.rep_rate_select.currentText())
         self.rpm = ''
+        
+        #Connecting to Rpi
+        self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.s.connect((HOST, PORT))
         
         
         # Selecting the rep rate 
@@ -91,8 +98,8 @@ class rotation_stage_app(QtWidgets.QMainWindow):
             #Seeing if the rpm is too low
             step_per_rev = 400
             freq = self.rpm*step_per_rev*(1/60)
-            self.delay = (1/freq)*0.5
-            if (1e6*self.delay) < 5:
+            self.delay_value = (1/freq)*0.5
+            if (1e6*self.delay_value) < 5:
                 self.ui.status_label.setText("Motor cannot support this RPM")
                 self.rpm = ''
             else:
@@ -103,39 +110,40 @@ class rotation_stage_app(QtWidgets.QMainWindow):
 
     def StartRot(self):
         self.shot_mode = self.ui.shot_mode_select.currentText()
-        self.delay = 'DELAY+'+str(self.delay)
+        self.delay_cmd = ''
+        self.shot_num = ''
+        self.delay_cmd = 'DELAY+'+str(self.delay_value)
         self.start_command = 'START'
-        if (self.shot_mode == 'Single Rotation') and (self.rpm != ''):
-            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-                try:
-                    s.connect((HOST, PORT))
-                    s.sendall(self.shot_mode.encode())
-                    sleep(0.2)
-                    s.sendall(self.delay.encode())
-                    sleep(0.2)
-                    s.sendall(self.start_command.encode())
-                    self.ui.status_label.setText(f'Shot Mode Set to:{self.shot_mode}')
-                except ConnectionRefusedError:
-                    self.ui.status_label.setText('Failed to connect to Raspberry Pi.')
+        if (self.shot_mode == 'Single Rotation') and (self.rpm != ''):        
+            try:
+                self.s.sendall(self.shot_mode.encode())
+                sleep(0.2)
+                self.s.sendall(self.delay_cmd.encode())
+                sleep(0.2)
+                self.s.sendall(self.start_command.encode())
+                self.ui.status_label.setText(f'Shot Mode Set to:{self.shot_mode}')
+            except ConnectionRefusedError:
+                self.ui.status_label.setText('Failed to connect to Raspberry Pi.')
         elif (self.shot_mode == 'N Shot') and (self.rpm != ''):
             self.shot_num = 'SHOTNO+'+str(self.ui.shot_no_ip.text())
-            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-                try:
-                    s.connect((HOST, PORT))
-                    s.sendall(self.shot_mode.encode())
-                    self.ui.status_label.setText(f'Shot Mode Set to:{self.shot_mode}')
-                    sleep(0.2)
-                    s.sendall(self.shot_num.encode())
-                    self.ui.status_label.setText(f'No shots:{self.shot_num}')
-                    sleep(0.2)
-                    s.sendall(self.delay.encode())
-                    sleep(0.2)
-                    s.sendall(self.start_command.encode())
-                except ConnectionRefusedError:
-                    self.ui.status_label.setText('Failed to connect to Raspberry Pi.')
+            try:
+                self.s.sendall(self.shot_mode.encode())
+                self.ui.status_label.setText(f'Shot Mode Set to:{self.shot_mode}')
+                sleep(0.2)
+                self.s.sendall(self.shot_num.encode())
+                self.ui.status_label.setText(f'No shots:{self.shot_num}')
+                sleep(0.2)
+                self.s.sendall(self.delay_cmd.encode())
+                sleep(0.2)
+                self.s.sendall(self.start_command.encode())
+            except ConnectionRefusedError:
+                self.ui.status_label.setText('Failed to connect to Raspberry Pi.')
         
     def DisconnectBtn(self):
         QtWidgets.QApplication.quit()
+        discoonect_cmd = 'DISCONNECT'
+        self.s.sendall(discoonect_cmd.encode())
+        
            
 
 if __name__ == "__main__":
