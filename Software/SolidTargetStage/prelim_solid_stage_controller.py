@@ -69,6 +69,8 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         
         #Setting the delay for the rotation stage
         self.ui.rel_delay_ip.textChanged.connect(self.update_rot_stage_delay)
+        self.ui.rel_delay_set_bt.clicked.connect(self.RelDelayBtn)
+        
                         
         #Adjusting and updating rotation stage diameter
         self.ui.target_diam_ip.textChanged.connect(self.updateDiameter)
@@ -106,6 +108,9 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
     
     def updateDiameter(self):
         self.diam_target = str(self.ui.target_diam_ip.text())
+    
+    def RelDelayBtn(self):
+        self.ref_delay = str(self.ui.rel_delay_ip.text())
         
     def CalculateRPM(self):
         #Parameters needed to calculate the rpm
@@ -144,7 +149,9 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
 
         self.delay_cmd = ''
         self.shot_num = ''
+        self.rot_delay_cmd = ''
         self.delay_cmd = 'DELAY+'+str(self.delay_value_rot)
+        self.rot_delay_cmd = 'DELAYROT'+str(self.ref_delay)
         self.start_command = 'START'
         
         # Assuming a 100 um steo along the cylinger's edge 
@@ -155,7 +162,7 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                 try:
                     self.s.sendall(self.shot_mode.encode())
                     sleep(0.2)
-                    self.s.sendall(self.ref_delay.encode())
+                    self.s.sendall(self.rot_delay_cmd.encode())
                     sleep(0.2)
                     self.s.sendall(self.delay_cmd.encode())
                     sleep(0.2)
@@ -166,7 +173,7 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                 try:
                     self.s.sendall(self.shot_mode.encode())
                     sleep(0.2)
-                    self.s.sendall(self.ref_delay.encode())
+                    self.s.sendall(self.rot_delay_cmd.encode())
                     sleep(0.2)
                     self.s.sendall(self.delay_cmd.encode())
                     sleep(0.2)
@@ -183,7 +190,7 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                 try:
                     self.s.sendall(self.shot_mode.encode())
                     sleep(0.2)
-                    self.s.sendall(self.ref_delay.encode())
+                    self.s.sendall(self.rot_delay_cmd.encode())
                     sleep(0.2)
                     self.s.sendall(self.shot_num_cmd.encode())
                     sleep(0.2)
