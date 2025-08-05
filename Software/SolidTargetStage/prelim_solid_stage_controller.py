@@ -41,14 +41,17 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         
         ### ROTATION STAGE SETUP #######
         # Defining important values for the rotation stage
-        self.shot_mode = 'Single Shot'
-        self.shot_num = str(self.ui.shot_no_ip.text())
+        self.shot_mode = self.ui.shot_mode_select.currentText()
+        self.shot_num = int(self.ui.shot_no_ip.text())
         self.num_shot_taken = int(self.ui.shots_taken_disp.toPlainText())
         self.rep_rate = float(self.ui.rep_rate_select.currentText())
-        self.ref_delay = str(self.ui.rel_delay_ip.text())
+        self.ref_delay = float(self.ui.rel_delay_ip.text())*1e-3
         self.ref_delay_units = 'ms'
         self.rpm = ''
         self.dg_delay = 0
+        self.ui.single_rot_fw_ck.setEnabled(True)
+        self.ui.single_rot_bw_ck.setEnabled(True)
+        self.step_per_rev = 400
         
         #Connecting to Rpi
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -97,10 +100,15 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         if self.shot_mode == 'Single Rotation':
             self.ui.single_rot_fw_ck.setEnabled(True)
             self.ui.single_rot_bw_ck.setEnabled(True)
+        else:
+            self.ui.single_rot_fw_ck.setEnabled(False)
+            self.ui.single_rot_bw_ck.setEnabled(False)
             
     
     def update_shot_no(self):   
         self.shot_num = str(self.ui.shot_no_ip.text())
+        if  self.shot_num != '':
+            self.shot_num = int(self.ui.shot_no_ip.text())
         
     def update_rot_stage_delay(self):
         self.ref_delay = float(self.ui.rel_delay_ip.text())*1e-3
@@ -125,12 +133,11 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
             
             
             #Seeing if the rpm is too low
-            step_per_rev = 400
-            freq = self.rpm*step_per_rev*(1/60)
+            freq = self.rpm*self.step_per_rev*(1/60)
             self.delay_value_rot = (1/freq)*0.5
             
             #Calculates the delay for the delay generator 
-            self.dg_delay = ((step_per_rev)/freq)+(float(self.ref_delay)*1e-3)
+            self.dg_delay = ((self.step_per_rev)/freq)+(float(self.ref_delay)*1e-3)
             
             if (1e6*self.delay_value_rot) < 5:
                 self.ui.status_label.setText("Motor cannot support this RPM")
@@ -146,7 +153,6 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
     def StartRot(self):
 
         self.delay_cmd = ''
-        self.shot_num = ''
         self.rot_delay_cmd = ''
         self.delay_cmd = 'DELAY+'+str(self.delay_value_rot)
         self.rot_delay_cmd = 'DELAYROT+'+str(self.ref_delay)
@@ -183,8 +189,9 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                  
 
         elif (self.shot_mode == 'N Shot') and (self.rpm != ''):
+            self.step_num = int((self.shot_num/ self.shot_per_rot)*self.step_per_rev)
+            self.shot_num_cmd = 'SHOTNO+'+str(self.step_num)
             if (self.shot_num+ self.num_shot_taken) < self.shot_per_rot:
-                self.shot_num_cmd = 'SHOTNO+'+str(self.ui.shot_no_ip.text())
                 try:
                     self.s.sendall(self.shot_mode.encode())
                     sleep(0.2)
@@ -209,7 +216,7 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                 try:
                     self.s.sendall(self.shot_mode.encode())
                     sleep(0.2)
-                    self.s.sendall(self.ref_delay.encode())
+                    self.s.sendall(self.rot_delay_cmd.encode())
                     sleep(0.2)
                     self.s.sendall(self.shot_num_cmd.encode())
                     sleep(0.2)
