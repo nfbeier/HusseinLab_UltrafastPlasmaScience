@@ -52,6 +52,7 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         self.ui.single_rot_fw_ck.setEnabled(True)
         self.ui.single_rot_bw_ck.setEnabled(True)
         self.step_per_rev = 400
+        self.step_taken = 0
         
         #Connecting to Rpi
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -111,12 +112,14 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
             self.shot_num = int(self.ui.shot_no_ip.text())
         
     def update_rot_stage_delay(self):
+        self.ref_delay_dg = str(self.ui.rel_delay_ip.text())
         self.ref_delay = float(self.ui.rel_delay_ip.text())*1e-3
     
     def updateDiameter(self):
         self.diam_target = str(self.ui.target_diam_ip.text())
     
     def RelDelayBtn(self):
+        self.ref_delay_dg = str(self.ui.rel_delay_ip.text())
         self.ref_delay = float(self.ui.rel_delay_ip.text())*1e-3
         
     def CalculateRPM(self):
@@ -129,15 +132,17 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
             self.rpm = (self.sep/(self.radius*1e-3))*(1/(2*np.pi))*60*1000*rep_rate
             
             # Calculating how many shots one can take in one rotation 
-            self.shot_per_rot = int((2*np.pi*self.radius)/(self.sep))
+            self.shot_per_rot = int((2*np.pi*self.radius*1e-3)/(self.sep))
             
+            #Calculating the nu,ber of steps taken in a single step
+            self.shot_per_step = (1/self.step_per_rev)*((2*np.pi*self.radius*1e-3)/(self.sep))
             
             #Seeing if the rpm is too low
             freq = self.rpm*self.step_per_rev*(1/60)
             self.delay_value_rot = (1/freq)*0.5
             
             #Calculates the delay for the delay generator 
-            self.dg_delay = ((self.step_per_rev)/freq)+(float(self.ref_delay)*1e-3)
+            #self.dg_delay = ((self.step_per_rev)/freq)+(self.ref_delay)
             
             if (1e6*self.delay_value_rot) < 5:
                 self.ui.status_label.setText("Motor cannot support this RPM")
@@ -189,9 +194,9 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                  
 
         elif (self.shot_mode == 'N Shot') and (self.rpm != ''):
-            self.step_num = int((self.shot_num/ self.shot_per_rot)*self.step_per_rev)
+            self.step_num = np.ceil((self.shot_num/ self.shot_per_rot)*self.step_per_rev)
             self.shot_num_cmd = 'SHOTNO+'+str(self.step_num)
-            if (self.shot_num+ self.num_shot_taken) < self.shot_per_rot:
+            if (self.step_num+ self.step_taken) < self.shot_per_rot:
                 try:
                     self.s.sendall(self.shot_mode.encode())
                     sleep(0.2)
@@ -206,6 +211,8 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                     self.ui.status_label.setText('Failed to connect to Raspberry Pi.')
                 
                 #Updating the status appropriately on the gui
+                self.updateShotNo()
+                
                 self.num_shot_taken = self.num_shot_taken+self.shot_num
                 self.ui.shots_taken_disp.setText(str(self.num_shot_taken))
                 self.shot_left = self.shot_per_rot - self.num_shot_taken
@@ -231,7 +238,26 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                 self.ui.shots_left_disp.setText(str(self.shot_left))
                 
                 
-                
+    def updateShotNo(self):
+        if (self.step_num+ self.step_taken) < self.step_per_rev:
+            self.step_taken = self.step_taken + self.step_num
+            self.num_shot_taken = self.num_shot_taken+int(self.shot_per_step*self.step_num)
+            self.shot_left = self.shot_per_rot - self.num_shot_taken
+            
+            #Updating the UI
+            self.ui.shots_taken_disp.setText(str(self.num_shot_taken))
+            self.ui.shots_left_disp.setText(str(self.shot_left))
+        else: 
+            self.step_taken = (self.step_taken + self.step_num) - self.step_per_rev
+            
+            self.num_shot_taken = (self.num_shot_taken+ int(self.shot_per_step*self.step_num)) - self.shot_per_rot
+            self.shot_left = self.shot_per_rot - self.num_shot_taken
+            
+            #Updating the UI
+            self.ui.shots_taken_disp.setText(str(self.num_shot_taken))
+            self.ui.shots_left_disp.setText(str(self.shot_left))
+            
+        
                 
 
         
