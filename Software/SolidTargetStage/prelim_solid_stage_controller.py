@@ -24,7 +24,7 @@ cwd = os.path.sep.join(
 )
 sys.path.insert(0, cwd)
 
-from Software.SolidTargetStage.prelim_solid_stage_gui.py import Ui_MainWindow
+from Software.SolidTargetStage.prelim_solid_stage_gui import Ui_MainWindow
 
 
 # Connecting with the RPi first for the rotation stage
@@ -43,7 +43,7 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         # Defining important values for the rotation stage
         self.shot_mode = 'Single Shot'
         self.shot_num = str(self.ui.shot_no_ip.text())
-        self.num_shot_taken = int(self.ui.shots_taken_disp.text())
+        self.num_shot_taken = int(self.ui.shots_taken_disp.toPlainText())
         self.rep_rate = float(self.ui.rep_rate_select.currentText())
         self.ref_delay = str(self.ui.rel_delay_ip.text())
         self.ref_delay_units = 'ms'
@@ -58,12 +58,11 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         
         ######### ROTATION GUI CONTROLS #########
         # Selecting the rep rate 
-        self.ui.single_rot_mode_ck.isChecked(self.select_rep_rate)
-        self.ui.n_shot_mode_ck.isChecked(self.select_rep_rate)
+        self.ui.rep_rate_select.currentIndexChanged.connect(self.select_rep_rate)         
         
         # Selecting the shot mode
-        self.ui.shot_mode_select.currentIndexChanged.connect(self.select_shot_mode)
-        
+        self.select_shot_mode()
+       
         #Selecting the number of shots
         self.ui.shot_no_ip.textChanged.connect(self.update_shot_no)
         
@@ -79,10 +78,10 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         self.ui.rpm_bt.clicked.connect(self.CalculateRPM)
         
         # Setting the Start Button
-        self.ui.start_rot_bt.clicked.connect(self.StartRot)
+        self.ui.fire_dg_bt.clicked.connect(self.StartRot)
         
         #Setting the  disconnect
-        self.ui.disconnect_rot_bt.clicked.connect(self.DisconnectBtn)
+        self.ui.stop_bt.clicked.connect(self.DisconnectBtn)
         
 
     ######### ROTATION FUNCTIONS #########  
@@ -104,13 +103,13 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         self.shot_num = str(self.ui.shot_no_ip.text())
         
     def update_rot_stage_delay(self):
-        self.ref_delay = str(self.ui.rel_delay_ip.text())
+        self.ref_delay = float(self.ui.rel_delay_ip.text())*1e-3
     
     def updateDiameter(self):
         self.diam_target = str(self.ui.target_diam_ip.text())
     
     def RelDelayBtn(self):
-        self.ref_delay = str(self.ui.rel_delay_ip.text())
+        self.ref_delay = float(self.ui.rel_delay_ip.text())*1e-3
         
     def CalculateRPM(self):
         #Parameters needed to calculate the rpm
@@ -138,7 +137,6 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                 self.rpm = ''
             else:
                 self.rpm = str(self.rpm)
-                self.ui.start_rot_bt.setEnabled(True)
                 self.ui.shot_per_rot_disp.setText(str(self.shot_per_rot))
                 if self.num_shot_taken == 0:
                     self.ui.shots_left_disp.setText(str(self.shot_per_rot))
@@ -151,7 +149,7 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         self.shot_num = ''
         self.rot_delay_cmd = ''
         self.delay_cmd = 'DELAY+'+str(self.delay_value_rot)
-        self.rot_delay_cmd = 'DELAYROT'+str(self.ref_delay)
+        self.rot_delay_cmd = 'DELAYROT+'+str(self.ref_delay)
         self.start_command = 'START'
         
         # Assuming a 100 um steo along the cylinger's edge 
