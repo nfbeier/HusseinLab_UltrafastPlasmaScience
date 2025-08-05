@@ -212,11 +212,7 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                 
                 #Updating the status appropriately on the gui
                 self.updateShotNo()
-                
-                self.num_shot_taken = self.num_shot_taken+self.shot_num
-                self.ui.shots_taken_disp.setText(str(self.num_shot_taken))
-                self.shot_left = self.shot_per_rot - self.num_shot_taken
-                self.ui.shots_left_disp.setText(str(self.shot_left))
+
             else:
                 self.num_shot_taken = (self.shot_num+ self.num_shot_taken) - self.shot_per_rot
                 self.shot_per_rot = self.shot_per_rot - self.num_shot_taken
@@ -234,8 +230,7 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                     self.ui.status_label.setText('Failed to connect to Raspberry Pi.')
                 
                 #Updating the status appropriately on the gui
-                self.ui.shots_taken_disp.setText(str(self.num_shot_taken))
-                self.ui.shots_left_disp.setText(str(self.shot_left))
+                self.updateShotNo()
                 
                 
     def updateShotNo(self):
