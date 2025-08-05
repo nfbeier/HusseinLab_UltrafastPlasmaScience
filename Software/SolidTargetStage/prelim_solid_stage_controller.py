@@ -61,7 +61,8 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         self.ui.rep_rate_select.currentIndexChanged.connect(self.select_rep_rate)         
         
         # Selecting the shot mode
-        self.select_shot_mode()
+        self.ui.shot_mode_select.currentIndexChanged.connect(self.select_shot_mode)
+       
        
         #Selecting the number of shots
         self.ui.shot_no_ip.textChanged.connect(self.update_shot_no)
@@ -92,12 +93,11 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
             self.ui.shots_left_disp.setText(str(self.shot_per_rot))
 
     def select_shot_mode(self):    
-        if self.ui.single_rot_mode_ck.isChecked():
-            self.shot_mode = 'Single Shot'
+        self.shot_mode = self.ui.shot_mode_select.currentText()
+        if self.shot_mode == 'Single Rotation':
             self.ui.single_rot_fw_ck.setEnabled(True)
             self.ui.single_rot_bw_ck.setEnabled(True)
-        elif self.ui.n_shot_mode_ck.isChecked():
-            self.shot_mode = 'N Shot'
+            
     
     def update_shot_no(self):   
         self.shot_num = str(self.ui.shot_no_ip.text())
