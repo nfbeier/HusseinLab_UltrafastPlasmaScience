@@ -214,7 +214,8 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                     sleep(0.2)
                     self.s.sendall(self.start_command.encode())
                     # Checking for a signal back 
-                    
+                    response = self.s.recv(1024).decode().strip()
+                    print("Received from Pi:", response)
                     
                     #Upating the shots taken 
                     self.num_shot_taken = self.num_shot_taken + self.shot_per_rot
@@ -232,7 +233,8 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                     sleep(0.2)
                     self.s.sendall(self.start_command.encode())
                     # Checking for a signal back 
-                    
+                    response = self.s.recv(1024).decode().strip()
+                    print("Received from Pi:", response)
                     
                     #Upating the shots taken 
                     self.num_shot_taken = self.num_shot_taken + self.shot_per_rot
@@ -262,6 +264,11 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                     self.s.sendall(self.delay_cmd.encode())
                     sleep(0.2)
                     self.s.sendall(self.start_command.encode())
+                    
+                    # Checking for a signal back 
+                    response = self.s.recv(1024).decode().strip()
+                    print("Received from Pi:", response)
+                    
                 except ConnectionRefusedError:
                     self.ui.status_label.setText('Failed to connect to Raspberry Pi.')
                 
@@ -269,8 +276,6 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                 self.updateShotNo()
 
             else:
-                self.num_shot_taken = (self.shot_num+ self.num_shot_taken) - self.shot_per_rot
-                self.shot_per_rot = self.shot_per_rot - self.num_shot_taken
                 try:
                     self.s.sendall(self.shot_mode.encode())
                     sleep(0.2)
@@ -281,6 +286,11 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                     self.s.sendall(self.delay_cmd.encode())
                     sleep(0.2)
                     self.s.sendall(self.start_command.encode())
+                    
+                    # Checking for a signal back 
+                    response = self.s.recv(1024).decode().strip()
+                    print("Received from Pi:", response)
+                    
                 except ConnectionRefusedError:
                     self.ui.status_label.setText('Failed to connect to Raspberry Pi.')
                 
@@ -297,6 +307,7 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
             #Updating the UI
             self.ui.shots_taken_disp.setText(str(self.num_shot_taken))
             self.ui.progressBar.setValue(self.step_taken)
+            self.ui.steps_taken_disp(str(self.step_taken))
         else: 
             self.step_taken = (self.step_taken + self.step_num) - self.step_per_rev
             
@@ -306,6 +317,7 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
             #Updating the UI
             self.ui.shots_taken_disp.setText(str(self.num_shot_taken))
             self.ui.progressBar.setValue(self.step_taken)
+            self.ui.steps_taken_disp(str(self.step_taken))
             
         
         
