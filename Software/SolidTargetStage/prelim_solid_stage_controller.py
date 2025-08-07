@@ -46,13 +46,15 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         self.num_shot_taken = int(self.ui.shots_taken_disp.toPlainText())
         self.rep_rate = float(self.ui.rep_rate_select.currentText())
         self.ref_delay = float(self.ui.rel_delay_ip.text())*1e-3
+        self.shot_sep = float(self.ui.shot_sep_ip.text())*1e-6
         self.ref_delay_units = 'ms'
         self.rpm = ''
         self.dg_delay = 0
         self.ui.single_rot_fw_ck.setEnabled(True)
         self.ui.single_rot_bw_ck.setEnabled(True)
-        self.step_per_rev = 400
+        self.step_per_rev = 1600
         self.step_taken = 0
+        
         
         #Connecting to Rpi
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -67,7 +69,6 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         # Selecting the shot mode
         self.ui.shot_mode_select.currentIndexChanged.connect(self.select_shot_mode)
        
-       
         #Selecting the number of shots
         self.ui.shot_no_ip.textChanged.connect(self.update_shot_no)
         
@@ -75,6 +76,8 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         self.ui.rel_delay_ip.textChanged.connect(self.update_rot_stage_delay)
         self.ui.rel_delay_set_bt.clicked.connect(self.RelDelayBtn)
         
+        #Adjusting and updating effective separation between shots
+        self.ui.shot_sep_ip.textChanged.connect(self.updateEffSep)
                         
         #Adjusting and updating rotation stage diameter
         self.ui.target_diam_ip.textChanged.connect(self.updateDiameter)
@@ -106,14 +109,52 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
             self.ui.single_rot_bw_ck.setEnabled(False)
             
     
+    def updateEffSep(self):   
+        self.shot_sep_prelim = str(self.ui.shot_sep_ip.text())
+        if  self.shot_sep_prelim != '':
+            self.shot_sep = float(self.ui.shot_sep_ip.text())*1e-6
+    
     def update_shot_no(self):   
         self.shot_num = str(self.ui.shot_no_ip.text())
         if  self.shot_num != '':
             self.shot_num = int(self.ui.shot_no_ip.text())
+            self.updateStep4Shot()
+            
+    def updateStep4Shot(self):
+        # Parameters needed to calculate the step # given
+        # the shot #
+        self.step_num = 0
+        self.step_num_text = ''
+        self.sep = self.shot_sep
+        self.diam_target = str(self.ui.target_diam_ip.text())
+        rep_rate = float(self.ui.rep_rate_select.currentText()) 
+        
+        if self.shot_num == 1:
+            self.step_num = 1
+            self.ui.step_4_shot_disp.setText(str(self.step_num))
+        elif self.diam_target!= '': 
+            self.radius =  float(self.diam_target)*0.5            
+            self.rpm = (self.sep/(self.radius*1e-3))*(1/(2*np.pi))*60*1000*rep_rate
+            
+            # Calculating how many shots one can take in one rotation 
+            self.shot_per_rot = int((2*np.pi*self.radius*1e-3)/(self.sep))
+            
+            # Calculating the steps needed to take for given shot #
+            self.step_num = ((self.shot_num/ self.shot_per_rot)*self.step_per_rev)
+            
+            # Displaying the results 
+            self.step_num_text = f"{self.step_num:.2f}"
+            self.ui.step_4_shot_disp.setText(self.step_num_text)
+        
+        #Calculates RPM again in case values were changed 
+        self.CalculateRPM()
+              
+         
         
     def update_rot_stage_delay(self):
         self.ref_delay_dg = str(self.ui.rel_delay_ip.text())
-        self.ref_delay = float(self.ui.rel_delay_ip.text())*1e-3
+        if self.ref_delay_dg != '':
+            self.ref_delay = float(self.ui.rel_delay_ip.text())*1e-3
     
     def updateDiameter(self):
         self.diam_target = str(self.ui.target_diam_ip.text())
@@ -124,7 +165,7 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         
     def CalculateRPM(self):
         #Parameters needed to calculate the rpm
-        self.sep = 100*1e-6
+        self.sep = self.shot_sep
         self.diam_target = str(self.ui.target_diam_ip.text())
         rep_rate = float(self.ui.rep_rate_select.currentText()) 
         if (self.diam_target != ''): 
@@ -149,12 +190,8 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                 self.rpm = ''
             else:
                 self.rpm = str(self.rpm)
-                self.ui.shot_per_rot_disp.setText(str(self.shot_per_rot))
-                if self.num_shot_taken == 0:
-                    self.ui.shots_left_disp.setText(str(self.shot_per_rot))
-                    
-                
-                
+                   
+                                
     def StartRot(self):
 
         self.delay_cmd = ''
@@ -176,6 +213,13 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                     self.s.sendall(self.delay_cmd.encode())
                     sleep(0.2)
                     self.s.sendall(self.start_command.encode())
+                    # Checking for a signal back 
+                    
+                    
+                    #Upating the shots taken 
+                    self.num_shot_taken = self.num_shot_taken + self.shot_per_rot
+                    self.ui.shots_taken_disp.setText(str(self.num_shot_taken))
+                    
                 except ConnectionRefusedError:
                     self.ui.status_label.setText('Failed to connect to Raspberry Pi.')
             elif self.ui.single_rot_bw_ck.isChecked():
@@ -187,6 +231,13 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                     self.s.sendall(self.delay_cmd.encode())
                     sleep(0.2)
                     self.s.sendall(self.start_command.encode())
+                    # Checking for a signal back 
+                    
+                    
+                    #Upating the shots taken 
+                    self.num_shot_taken = self.num_shot_taken + self.shot_per_rot
+                    self.ui.shots_taken_disp.setText(str(self.num_shot_taken)) 
+                    
                 except ConnectionRefusedError:
                     self.ui.status_label.setText('Failed to connect to Raspberry Pi.')
             else: 
@@ -194,7 +245,11 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                  
 
         elif (self.shot_mode == 'N Shot') and (self.rpm != ''):
-            self.step_num = np.ceil((self.shot_num/ self.shot_per_rot)*self.step_per_rev)
+            #Making sure we have the right shot #
+            self.updateStep4Shot()
+            #Turining it into an integer 
+            self.step_num = np.ceil(self.step_num)
+            # Setting up the command
             self.shot_num_cmd = 'SHOTNO+'+str(self.step_num)
             if (self.step_num+ self.step_taken) < self.shot_per_rot:
                 try:
@@ -241,22 +296,17 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
             
             #Updating the UI
             self.ui.shots_taken_disp.setText(str(self.num_shot_taken))
-            self.ui.shots_left_disp.setText(str(self.shot_left))
+            self.ui.progressBar.setValue(self.step_taken)
         else: 
             self.step_taken = (self.step_taken + self.step_num) - self.step_per_rev
             
-            self.num_shot_taken = (self.num_shot_taken+ int(self.shot_per_step*self.step_num)) - self.shot_per_rot
-            self.shot_left = self.shot_per_rot - self.num_shot_taken
+            self.num_shot_taken = (self.num_shot_taken+ int(self.shot_per_step*self.step_num)) 
+
             
             #Updating the UI
             self.ui.shots_taken_disp.setText(str(self.num_shot_taken))
-            self.ui.shots_left_disp.setText(str(self.shot_left))
+            self.ui.progressBar.setValue(self.step_taken)
             
-        
-                
-
-        
-        
         
         
         
