@@ -17,8 +17,8 @@
    <widget class="QFrame" name="frame">
     <property name="geometry">
      <rect>
-      <x>70</x>
-      <y>0</y>
+      <x>20</x>
+      <y>20</y>
       <width>411</width>
       <height>271</height>
      </rect>
@@ -486,9 +486,9 @@
    <widget class="QWidget" name="widget" native="true">
     <property name="geometry">
      <rect>
-      <x>530</x>
-      <y>-10</y>
-      <width>351</width>
+      <x>30</x>
+      <y>310</y>
+      <width>391</width>
       <height>311</height>
      </rect>
     </property>
@@ -517,7 +517,7 @@
       <rect>
        <x>20</x>
        <y>30</y>
-       <width>141</width>
+       <width>161</width>
        <height>16</height>
       </rect>
      </property>
@@ -533,9 +533,9 @@
     <widget class="QLabel" name="label_11">
      <property name="geometry">
       <rect>
-       <x>190</x>
+       <x>220</x>
        <y>30</y>
-       <width>141</width>
+       <width>161</width>
        <height>16</height>
       </rect>
      </property>
@@ -553,7 +553,7 @@
       <rect>
        <x>20</x>
        <y>70</y>
-       <width>151</width>
+       <width>181</width>
        <height>41</height>
       </rect>
      </property>
@@ -572,9 +572,9 @@
     <widget class="QLabel" name="label_13">
      <property name="geometry">
       <rect>
-       <x>190</x>
+       <x>220</x>
        <y>70</y>
-       <width>151</width>
+       <width>181</width>
        <height>41</height>
       </rect>
      </property>
@@ -595,7 +595,7 @@
       <rect>
        <x>20</x>
        <y>170</y>
-       <width>141</width>
+       <width>151</width>
        <height>41</height>
       </rect>
      </property>
@@ -614,9 +614,9 @@
     <widget class="QLabel" name="label_15">
      <property name="geometry">
       <rect>
-       <x>190</x>
+       <x>220</x>
        <y>170</y>
-       <width>141</width>
+       <width>161</width>
        <height>41</height>
       </rect>
      </property>
@@ -637,7 +637,7 @@
       <rect>
        <x>20</x>
        <y>50</y>
-       <width>131</width>
+       <width>161</width>
        <height>21</height>
       </rect>
      </property>
@@ -650,9 +650,9 @@
     <widget class="QTextBrowser" name="z_pos_disp">
      <property name="geometry">
       <rect>
-       <x>190</x>
+       <x>220</x>
        <y>50</y>
-       <width>131</width>
+       <width>161</width>
        <height>21</height>
       </rect>
      </property>
@@ -667,7 +667,7 @@
       <rect>
        <x>20</x>
        <y>100</y>
-       <width>131</width>
+       <width>161</width>
        <height>21</height>
       </rect>
      </property>
@@ -680,9 +680,9 @@
     <widget class="QLineEdit" name="z_abs_mv_ip">
      <property name="geometry">
       <rect>
-       <x>190</x>
+       <x>220</x>
        <y>100</y>
-       <width>131</width>
+       <width>161</width>
        <height>21</height>
       </rect>
      </property>
@@ -697,7 +697,7 @@
       <rect>
        <x>20</x>
        <y>200</y>
-       <width>131</width>
+       <width>151</width>
        <height>21</height>
       </rect>
      </property>
@@ -710,9 +710,9 @@
     <widget class="QLineEdit" name="z_step_ip">
      <property name="geometry">
       <rect>
-       <x>190</x>
+       <x>220</x>
        <y>200</y>
-       <width>131</width>
+       <width>161</width>
        <height>21</height>
       </rect>
      </property>
@@ -727,7 +727,7 @@
       <rect>
        <x>20</x>
        <y>130</y>
-       <width>141</width>
+       <width>161</width>
        <height>21</height>
       </rect>
      </property>
@@ -743,9 +743,9 @@
     <widget class="QCheckBox" name="z_abs_mv_ck">
      <property name="geometry">
       <rect>
-       <x>190</x>
+       <x>230</x>
        <y>130</y>
-       <width>141</width>
+       <width>161</width>
        <height>21</height>
       </rect>
      </property>
@@ -766,7 +766,7 @@
       <rect>
        <x>20</x>
        <y>150</y>
-       <width>141</width>
+       <width>161</width>
        <height>31</height>
       </rect>
      </property>
@@ -785,9 +785,9 @@
      </property>
      <property name="geometry">
       <rect>
-       <x>180</x>
+       <x>220</x>
        <y>150</y>
-       <width>141</width>
+       <width>161</width>
        <height>31</height>
       </rect>
      </property>
@@ -808,7 +808,7 @@
       <rect>
        <x>20</x>
        <y>230</y>
-       <width>141</width>
+       <width>161</width>
        <height>31</height>
       </rect>
      </property>
@@ -829,7 +829,7 @@
       <rect>
        <x>20</x>
        <y>260</y>
-       <width>141</width>
+       <width>161</width>
        <height>31</height>
       </rect>
      </property>
@@ -848,9 +848,9 @@
      </property>
      <property name="geometry">
       <rect>
-       <x>180</x>
+       <x>220</x>
        <y>230</y>
-       <width>141</width>
+       <width>161</width>
        <height>31</height>
       </rect>
      </property>
@@ -869,9 +869,9 @@
      </property>
      <property name="geometry">
       <rect>
-       <x>180</x>
+       <x>220</x>
        <y>260</y>
-       <width>141</width>
+       <width>161</width>
        <height>31</height>
       </rect>
      </property>
@@ -888,10 +888,10 @@
    <widget class="QGroupBox" name="groupBox">
     <property name="geometry">
      <rect>
-      <x>30</x>
-      <y>280</y>
+      <x>460</x>
+      <y>20</y>
       <width>491</width>
-      <height>501</height>
+      <height>641</height>
      </rect>
     </property>
     <property name="font">
@@ -909,7 +909,7 @@
       <rect>
        <x>20</x>
        <y>30</y>
-       <width>101</width>
+       <width>121</width>
        <height>31</height>
       </rect>
      </property>
@@ -953,7 +953,7 @@
     <widget class="QLineEdit" name="target_diam_ip">
      <property name="geometry">
       <rect>
-       <x>150</x>
+       <x>160</x>
        <y>30</y>
        <width>101</width>
        <height>31</height>
@@ -1011,9 +1011,9 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>190</y>
+       <y>220</y>
        <width>471</width>
-       <height>151</height>
+       <height>161</height>
       </rect>
      </property>
      <property name="font">
@@ -1029,7 +1029,7 @@
      <widget class="QLabel" name="label_18">
       <property name="geometry">
        <rect>
-        <x>170</x>
+        <x>160</x>
         <y>60</y>
         <width>71</width>
         <height>31</height>
@@ -1053,9 +1053,9 @@
       <property name="geometry">
        <rect>
         <x>140</x>
-        <y>60</y>
+        <y>50</y>
         <width>20</width>
-        <height>71</height>
+        <height>91</height>
        </rect>
       </property>
       <property name="orientation">
@@ -1163,7 +1163,7 @@
        <rect>
         <x>320</x>
         <y>60</y>
-        <width>71</width>
+        <width>61</width>
         <height>31</height>
        </rect>
       </property>
@@ -1184,8 +1184,8 @@
      <widget class="QLabel" name="label_35">
       <property name="geometry">
        <rect>
-        <x>170</x>
-        <y>100</y>
+        <x>160</x>
+        <y>110</y>
         <width>71</width>
         <height>31</height>
        </rect>
@@ -1208,7 +1208,7 @@
       <property name="geometry">
        <rect>
         <x>240</x>
-        <y>100</y>
+        <y>110</y>
         <width>71</width>
         <height>31</height>
        </rect>
@@ -1244,7 +1244,7 @@ p, li { white-space: pre-wrap; }
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>420</y>
+       <y>500</y>
        <width>461</width>
        <height>61</height>
       </rect>
@@ -1257,14 +1257,14 @@ p, li { white-space: pre-wrap; }
       </font>
      </property>
      <property name="title">
-      <string>Status</string>
+      <string>Channel Information</string>
      </property>
      <widget class="QLabel" name="status_label">
       <property name="geometry">
        <rect>
         <x>10</x>
         <y>30</y>
-        <width>431</width>
+        <width>221</width>
         <height>21</height>
        </rect>
       </property>
@@ -1276,7 +1276,40 @@ p, li { white-space: pre-wrap; }
        </font>
       </property>
       <property name="text">
-       <string/>
+       <string>Channels AB - trigger Rotation Stage </string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="status_label_3">
+      <property name="geometry">
+       <rect>
+        <x>260</x>
+        <y>30</y>
+        <width>171</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>11</pointsize>
+        <weight>50</weight>
+        <bold>false</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Channels CD - triggers Laser</string>
+      </property>
+     </widget>
+     <widget class="Line" name="line_2">
+      <property name="geometry">
+       <rect>
+        <x>230</x>
+        <y>20</y>
+        <width>20</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
       </property>
      </widget>
     </widget>
@@ -1284,7 +1317,7 @@ p, li { white-space: pre-wrap; }
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>120</y>
+       <y>140</y>
        <width>461</width>
        <height>71</height>
       </rect>
@@ -1370,9 +1403,9 @@ p, li { white-space: pre-wrap; }
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>340</y>
+       <y>400</y>
        <width>461</width>
-       <height>81</height>
+       <height>91</height>
       </rect>
      </property>
      <property name="font">
@@ -1389,7 +1422,7 @@ p, li { white-space: pre-wrap; }
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>30</y>
+        <y>40</y>
         <width>61</width>
         <height>31</height>
        </rect>
@@ -1590,7 +1623,7 @@ p, li { white-space: pre-wrap; }
      <widget class="QLabel" name="label_34">
       <property name="geometry">
        <rect>
-        <x>270</x>
+        <x>250</x>
         <y>50</y>
         <width>41</width>
         <height>31</height>
@@ -1613,9 +1646,9 @@ p, li { white-space: pre-wrap; }
      <widget class="QTextBrowser" name="steps_taken_disp">
       <property name="geometry">
        <rect>
-        <x>310</x>
-        <y>30</y>
-        <width>131</width>
+        <x>320</x>
+        <y>40</y>
+        <width>111</width>
         <height>31</height>
        </rect>
       </property>
@@ -1633,7 +1666,7 @@ p, li { white-space: pre-wrap; }
       <rect>
        <x>20</x>
        <y>70</y>
-       <width>111</width>
+       <width>121</width>
        <height>51</height>
       </rect>
      </property>
@@ -1654,7 +1687,7 @@ p, li { white-space: pre-wrap; }
     <widget class="QLineEdit" name="shot_sep_ip">
      <property name="geometry">
       <rect>
-       <x>150</x>
+       <x>160</x>
        <y>80</y>
        <width>101</width>
        <height>31</height>
@@ -1671,12 +1704,52 @@ p, li { white-space: pre-wrap; }
       <string>100</string>
      </property>
     </widget>
+    <widget class="QGroupBox" name="groupBox_10">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>560</y>
+       <width>461</width>
+       <height>61</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>11</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="title">
+      <string>Status</string>
+     </property>
+     <widget class="QLabel" name="status_label_2">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>30</y>
+        <width>431</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>11</pointsize>
+        <weight>50</weight>
+        <bold>false</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </widget>
    </widget>
    <widget class="QGroupBox" name="groupBox_5">
     <property name="geometry">
      <rect>
-      <x>540</x>
-      <y>300</y>
+      <x>980</x>
+      <y>20</y>
       <width>221</width>
       <height>111</height>
      </rect>
@@ -1895,8 +1968,8 @@ p, li { white-space: pre-wrap; }
    <widget class="QPushButton" name="set_json_bt">
     <property name="geometry">
      <rect>
-      <x>770</x>
-      <y>340</y>
+      <x>1210</x>
+      <y>60</y>
       <width>131</width>
       <height>51</height>
      </rect>
@@ -1913,8 +1986,8 @@ p, li { white-space: pre-wrap; }
    <widget class="QGroupBox" name="groupBox_7">
     <property name="geometry">
      <rect>
-      <x>540</x>
-      <y>420</y>
+      <x>980</x>
+      <y>140</y>
       <width>411</width>
       <height>101</height>
      </rect>
@@ -2112,10 +2185,10 @@ p, li { white-space: pre-wrap; }
    <widget class="QGroupBox" name="groupBox_8">
     <property name="geometry">
      <rect>
-      <x>540</x>
-      <y>530</y>
+      <x>980</x>
+      <y>250</y>
       <width>411</width>
-      <height>101</height>
+      <height>111</height>
      </rect>
     </property>
     <property name="font">
@@ -2152,9 +2225,9 @@ p, li { white-space: pre-wrap; }
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>40</y>
+       <y>50</y>
        <width>61</width>
-       <height>51</height>
+       <height>41</height>
       </rect>
      </property>
      <property name="sizePolicy">
@@ -2261,8 +2334,8 @@ p, li { white-space: pre-wrap; }
    <widget class="QPushButton" name="fire_dg_bt">
     <property name="geometry">
      <rect>
-      <x>540</x>
-      <y>640</y>
+      <x>980</x>
+      <y>390</y>
       <width>201</width>
       <height>61</height>
      </rect>
@@ -2280,8 +2353,8 @@ p, li { white-space: pre-wrap; }
    <widget class="QPushButton" name="stop_bt">
     <property name="geometry">
      <rect>
-      <x>750</x>
-      <y>640</y>
+      <x>1190</x>
+      <y>390</y>
       <width>201</width>
       <height>61</height>
      </rect>
