@@ -250,7 +250,7 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
             #Making sure we have the right shot #
             self.updateStep4Shot()
             #Turining it into an integer 
-            self.step_num = np.ceil(self.step_num)
+            self.step_num = int(np.ceil(self.step_num))
             # Setting up the command
             self.shot_num_cmd = 'SHOTNO+'+str(self.step_num)
             if (self.step_num+ self.step_taken) < self.shot_per_rot:
@@ -303,21 +303,21 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
             self.step_taken = self.step_taken + self.step_num
             self.num_shot_taken = self.num_shot_taken+int(self.shot_per_step*self.step_num)
             self.shot_left = self.shot_per_rot - self.num_shot_taken
-            
+            self.step_taken = int(self.step_taken)
             #Updating the UI
             self.ui.shots_taken_disp.setText(str(self.num_shot_taken))
             self.ui.progressBar.setValue(self.step_taken)
-            self.ui.steps_taken_disp(str(self.step_taken))
+            self.ui.steps_taken_disp.setText(str(self.step_taken))
         else: 
             self.step_taken = (self.step_taken + self.step_num) - self.step_per_rev
-            
+            self.step_taken = int(self.step_taken)
             self.num_shot_taken = (self.num_shot_taken+ int(self.shot_per_step*self.step_num)) 
 
             
             #Updating the UI
             self.ui.shots_taken_disp.setText(str(self.num_shot_taken))
             self.ui.progressBar.setValue(self.step_taken)
-            self.ui.steps_taken_disp(str(self.step_taken))
+            self.ui.steps_taken_disp.setText(str(self.step_taken))
             
         
         
