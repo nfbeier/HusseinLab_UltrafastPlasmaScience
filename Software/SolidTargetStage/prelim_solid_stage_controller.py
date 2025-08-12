@@ -447,68 +447,75 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         #Then displays the change on the delay generator    
         self.ins_dg.display_amplitdue('CD')
         
+        self.ref_delay_dg = str(self.ui.rel_delay_ip.text())
+        
         if self.shot_mode == 'Single Rotation':
             #Calculates the delay for the delay generator
             self.dg_delay = ((self.step_per_rev)/self.freq)
             self.dg_delay_rot = round((self.dg_delay + self.ref_delay),6)
             self.dg_delay_laser = round((self.dg_delay),6)
             
+            #set the new channel link in case there was a change 
+            self.ins_dg.change_delay_link('B', 'A')
+            
             # Setting the delay for the rotation stage - channel AB
             self.dg_values['B'][1] = self.dg_delay_rot
             self.dg_values['B'][2] = 's'
             self.ins_dg.get_delay('B', 'A', self.dg_delay_rot, 's')
-            
-            #set the new channel link in case there was a change 
-            self.ins_dg.change_delay_link('B', 'A')
             self.ins_dg.set_delay()
             
-            # Setting the delay for the laser - channel CD
-            self.dg_values['C'][1] = self.dg_delay_laser
-            self.dg_values['C'][2] = 's'
-            self.ins_dg.get_delay('C', 'A', self.dg_delay_laser, 's')
-            
-            #set the new channel link in case there was a change 
-            self.ins_dg.change_delay_link('C', 'A')
-            self.ins_dg.set_delay()
-              
-            self.dg_values['D'][1] = float(self.ref_delay_dg)
-            self.dg_values['D'][2] = 'ms'
-            self.ins_dg.get_delay('D', 'C', float(self.ref_delay_dg), 'ms')
             
             #set the new channel link in case there was a change 
             self.ins_dg.change_delay_link('D', 'C')
+            
+            # Setting the delay for the laser - channel CD
+            self.dg_values['D'][1] = self.dg_delay_laser
+            self.dg_values['D'][2] = 's'
+            self.ins_dg.get_delay('D', 'C', self.dg_delay_laser, 's')
             self.ins_dg.set_delay()
+            
+            #set the new channel link in case there was a change 
+            self.ins_dg.change_delay_link('C', 'A')
+              
+            self.dg_values['C'][1] = float(self.ref_delay_dg)
+            self.dg_values['C'][2] = 'ms'
+            self.ins_dg.get_delay('C', 'A', float(self.ref_delay_dg), 'ms')
+            self.ins_dg.set_delay()
+            
+            
             
         else:
             self.dg_delay = ((self.step_num)/self.freq)
             self.dg_delay_rot = round((self.dg_delay + self.ref_delay),6)
             self.dg_delay_laser = round((self.dg_delay),6)
+
+            #set the new channel link in case there was a change 
+            self.ins_dg.change_delay_link('B', 'A')
             
             # Setting the delay for the rotation stage - channel AB
             self.dg_values['B'][1] = self.dg_delay_rot
             self.dg_values['B'][2] = 's'
             self.ins_dg.get_delay('B', 'A', self.dg_delay_rot, 's')
-            
-            #set the new channel link in case there was a change 
-            self.ins_dg.change_delay_link('B', 'A')
             self.ins_dg.set_delay()
-            
-            # Setting the delay for the laser - channel CD
-            self.dg_values['C'][1] = self.dg_delay_laser
-            self.dg_values['C'][2] = 's'
-            self.ins_dg.get_delay('C', 'A', self.dg_delay_laser, 's')
-            
-            #set the new channel link in case there was a change 
-            self.ins_dg.change_delay_link('C', 'A')
-            self.ins_dg.set_delay()
-              
-            self.dg_values['D'][1] = float(self.ref_delay_dg)
-            self.dg_values['D'][2] = 'ms'
-            self.ins_dg.get_delay('D', 'C', float(self.ref_delay_dg), 'ms')
             
             #set the new channel link in case there was a change 
             self.ins_dg.change_delay_link('D', 'C')
+
+            # Setting the delay for the laser - channel CD
+            self.dg_values['D'][1] = self.dg_delay_laser
+            self.dg_values['D'][2] = 's'
+            self.ins_dg.get_delay('D', 'C', self.dg_delay_laser, 's')
             self.ins_dg.set_delay()
+            
+            #set the new channel link in case there was a change 
+            self.ins_dg.change_delay_link('C', 'A')
+              
+            self.dg_values['C'][1] = float(self.ref_delay_dg)
+            self.dg_values['C'][2] = 'ms'
+            self.ins_dg.get_delay('C', 'A', float(self.ref_delay_dg), 'ms')
+            self.ins_dg.set_delay()
+            
+            
             
 
     
@@ -534,8 +541,9 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                     self.s.sendall(self.delay_cmd.encode())
                     sleep(0.2)
                     #Firing the delay generator then starting the rotation 
-                    self.FireBtn()
                     self.s.sendall(self.start_command.encode())
+                    self.FireIns()
+                    
                     
                     # Checking for a signal back 
                     self.done_sig = self.s.recv(1024).decode().strip()
@@ -555,8 +563,8 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                     self.s.sendall(self.delay_cmd.encode())
                     sleep(0.2)
                     #Firing the delay generator then starting the rotation 
-                    self.FireBtn()
                     self.s.sendall(self.start_command.encode())
+                    self.FireIns()
                     
                     # Checking for a signal back 
                     self.done_sig = self.s.recv(1024).decode().strip()
@@ -590,8 +598,8 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                     self.s.sendall(self.delay_cmd.encode())
                     sleep(0.2)
                     #Firing the delay generator then starting the rotation 
-                    self.FireBtn()
                     self.s.sendall(self.start_command.encode())
+                    self.FireIns()
                     
                     # Checking for a signal back 
                     self.done_sig = self.s.recv(1024).decode().strip()
@@ -614,8 +622,8 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                     self.s.sendall(self.delay_cmd.encode())
                     sleep(0.2)
                     #Firing the delay generator then starting the rotation 
-                    self.FireBtn()
                     self.s.sendall(self.start_command.encode())
+                    self.FireIns()
                     
                     # Checking for a signal back 
                     self.done_sig = self.s.recv(1024).decode().strip()
@@ -628,6 +636,7 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                 self.updateShotNo()
     
     
+
     
     def DisconnectBtn(self):
         QtWidgets.QApplication.quit()
