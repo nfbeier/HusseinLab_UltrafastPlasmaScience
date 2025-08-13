@@ -32,6 +32,9 @@ from Software.SolidTargetStage.prelim_solid_stage_gui import Ui_MainWindow
 #Importing the Delay generator class 
 from Hardware.DG645.dg645 import DelayGen
 
+#Importing the XPS Class
+from Hardware.XPS.XPS import XPS
+
 # Connecting with the RPi first for the rotation stage
 HOST = '192.168.0.106'  # Replace with Raspberry Pi's IP
 PORT = 5000
@@ -71,7 +74,24 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         self.ins_dg = DelayGen("COM4", 9600) # dg645
         
         
+        ##### XPS STAGE SETUP ######
+        self.xps = None
+        self.xpsAxes = [None, None]
         
+        # XPS GUI Setup
+        self.ui.x_min_trav_ip.setText('0')
+        self.ui.x_max_trav_ip.setText('20')
+        
+        self.ui.z_min_trav_ip.setText('0')
+        self.ui.z_max_trav_ip.setText('20')
+        
+        self.ui.x_abs_mv_ip.setText('0')
+        self.ui.z_abs_mv_ip.setText('0')
+        
+        self.ui.x_step_ip.setText('0')
+        self.ui.z_step_ip.setText('0')
+        
+  
         ######### ROTATION GUI CONTROLS #########
         # Selecting the rep rate 
         self.ui.rep_rate_select.currentIndexChanged.connect(self.select_rep_rate)         
@@ -135,6 +155,34 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         self.ui.H_bt.clicked.connect(lambda: self.change_display_bt("H"))
         
         
+        
+        ######## XPS FUNCTIONS ##########
+        
+        #Connect Command
+        self.ui.connect_xps_bt.clicked.connect(self._initXPS)
+        
+        #Initialize, home, enable disable commands
+        self.ui.init_xps_bt.clicked.connect(lambda: self.xpsStatusBtn("Initialize"))
+        self.ui.home_xps_bt.clicked.connect(lambda: self.xpsStatusBtn("Home"))
+        self.ui.enable_dis_xps_bt.clicked.connect(lambda: self.xpsStatusBtn("EnableDisable"))
+        
+        #Adjusting the minimum and maximum travel limits for the two stages
+        self.ui.x_min_trav_ip.textChanged.connect(lambda: self.updateTravelLimits("minXPSX"))
+        self.ui.x_max_trav_ip.textChanged.connect(lambda: self.updateTravelLimits("maxXPSX"))
+        
+        self.ui.z_min_trav_ip.textChanged.connect(lambda: self.updateTravelLimits("minXPSZ"))
+        self.ui.z_min_trav_ip.textChanged.connect(lambda: self.updateTravelLimits("maxXPSZ"))
+        
+        #Moving the two stages
+        self.ui.x_abs_mv_bt.clicked.connect(lambda: self.xpsMotionBtn("AbsoluteX"))
+        self.ui.x_step_f_bt.clicked.connect(lambda: self.xpsMotionBtn("ForwardX"))
+        self.ui.x_step_b_bt.clicked.connect(lambda: self.xpsMotionBtn("BackwardX"))
+        
+        self.ui.z_abs_mv_bt.clicked.connect(lambda: self.xpsMotionBtn("AbsoluteZ"))
+        self.ui.z_step_f_bt.clicked.connect(lambda: self.xpsMotionBtn("ForwardZ"))
+        self.ui.z_step_b_bt.clicked.connect(lambda: self.xpsMotionBtn("BackwardZ"))
+        
+        
         ####### COMBINED FUNCTIONS ########
         # Setting the Start Button
         self.ui.fire_dg_bt.clicked.connect(self.StartRot)
@@ -145,7 +193,6 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         
         
         
-
     ######### ROTATION FUNCTIONS #########  
     
     def select_rep_rate(self):   
@@ -202,8 +249,7 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         
         #Calculates RPM again in case values were changed 
         self.CalculateRPM()
-              
-         
+                   
         
     def update_rot_stage_delay(self):
         self.ref_delay_dg = str(self.ui.rel_delay_ip.text())
@@ -249,7 +295,7 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
 
         
     def updateShotNo(self):
-        if (self.step_num+ self.step_taken) < self.step_per_rev:
+        if (self.step_num+ self.step_taken) <= self.step_per_rev:
             self.step_taken = self.step_taken + self.step_num
             self.num_shot_taken = self.num_shot_taken+int(self.shot_per_step*self.step_num)
             self.shot_left = self.shot_per_rot - self.num_shot_taken
@@ -258,18 +304,26 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
             self.ui.shots_taken_disp.setText(str(self.num_shot_taken))
             self.ui.progressBar.setValue(self.step_taken)
             self.ui.steps_taken_disp.setText(str(self.step_taken))
-        else: 
-            self.step_taken = (self.step_taken + self.step_num) - self.step_per_rev
-            self.step_taken = int(self.step_taken)
-            self.num_shot_taken = (self.num_shot_taken+ int(self.shot_per_step*self.step_num)) 
+            
+            # Seeing if a rotation has been completed 
+            # Get the current value
+            current_value = float(self.ui.progressBar.value())
+            if current_value == float(self.step_per_rev):
+                #Telling the user the stage has completed a 
+                # full rotation and to step forward
+                self.ui.status_label.setText("Full Rotation Complete, Move the Stage")
+            
+        # else: 
+        #     self.step_taken = (self.step_taken + self.step_num) - self.step_per_rev
+        #     self.step_taken = int(self.step_taken)
+        #     self.num_shot_taken = (self.num_shot_taken+ int(self.shot_per_step*self.step_num)) 
 
             
-            #Updating the UI
-            self.ui.shots_taken_disp.setText(str(self.num_shot_taken))
-            self.ui.progressBar.setValue(self.step_taken)
-            self.ui.steps_taken_disp.setText(str(self.step_taken))
-    
-      
+        #     #Updating the UI
+        #     self.ui.shots_taken_disp.setText(str(self.num_shot_taken))
+        #     self.ui.progressBar.setValue(self.step_taken)
+        #     self.ui.steps_taken_disp.setText(str(self.step_taken))
+        
      
      ######### DELAY GEN FUNCTIONS ######### 
      
@@ -411,13 +465,261 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
             self.ins_dg.display_amplitdue(voltage_select)
         
         
-
-    
+    # Fires Delay Generator / sends a single trigger    
     def FireIns(self):
         self.ins_dg.single_shot_fire_dg()
     
     
+    ############## XPS STAGE  FUNCTIONS ##########################
+    
+    # Function initialize
+    def _initXPS(self):
+        #Initalizing the xps
+        #Initialize XPS
+        try:
+            self.xps_ipaddress = str(self.ui.ip_address_ip.text())
+            self.xps = XPS(self.xps_ipaddress)
+            self.xpsGroupNames = self.xps.getXPSStatus()
+            self.ui.x_stage_select.clear()
+            self.ui.z_stage_select.clear()
+            self.ui.x_stage_select.addItems(list(self.xpsGroupNames.keys()))
+            self.ui.z_stage_select.addItems(list(self.xpsGroupNames.keys()))
+            self.ui.z_stage_select.setCurrentIndex(1)
+            self.xpsAxes = [str(self.ui.x_stage_select.currentText()),str(self.ui.z_stage_select.currentText())]
+            
+            self.xps.setGroup(self.xpsAxes[0])
+            self.xps.setGroup(self.xpsAxes[1])
+            self.xpsStageStatus = [self.xps.getStageStatus(axis) for axis in self.xpsAxes]
+            
+            self.ui.home_xps_bt.setEnabled(True)
+            self.ui.enable_dis_xps_bt.setEnabled(True)
+            self.ui.init_xps_bt.setEnabled(True)
+            self.ui.stop_bt.setEnabled(True)
+            
+            #Selecting the different stages
+            self.ui.x_stage_select.currentIndexChanged.connect(lambda: self.updateGroup(0))
+            self.ui.z_stage_select.currentIndexChanged.connect(lambda: self.updateGroup(1))
+            
+        except AttributeError:
+            self.xps = None
+        #GUI Interface
+        self.updateGUIStatus()
         
+    
+    # Function to update the x and z info 
+    def updateGroup(self, axis):
+        if axis == 0:
+            self.xpsAxes[0] = str(self.ui.x_stage_select.currentText())
+            self.xps.setGroup(self.xpsAxes[0])
+        if axis == 1:
+            self.xpsAxes[1] = str(self.ui.z_stage_select.currentText())
+            self.xps.setGroup(self.xpsAxes[1])
+        
+        self.xpsStageStatus = [self.xps.getStageStatus(axis) for axis in self.xpsAxes]
+        self.updateGUIStatus()
+    
+    # Functions that corresponds to the intialize, home and enable / disable fcns
+    def xpsStatusBtn(self,btn):
+        if btn == "Initialize":
+            self.xps.initializeStage(self.xpsAxes[0])
+            self.xps.initializeStage(self.xpsAxes[1])
+        elif btn == "Home":
+            self.xps.homeStage(self.xpsAxes[0])
+            self.xps.homeStage(self.xpsAxes[1])
+        elif btn == "EnableDisable" and self.xpsStageStatus[0].upper() == "Disabled state".upper():
+            self.xps.enableGroup(self.xpsAxes[0])
+            self.xps.enableGroup(self.xpsAxes[1])
+        elif btn == "EnableDisable" and self.xpsStageStatus[0][:11].upper() == "Ready state".upper():
+            self.xps.disableGroup(self.xpsAxes[0])
+            self.xps.disableGroup(self.xpsAxes[1])
+            
+        self.xpsStageStatus = [self.xps.getStageStatus(axis) for axis in self.xpsAxes]
+        self.updateGUIStatus()
+        
+    
+    # XPS Motion Control
+
+    def xpsMotionBtn(self, btn):
+        posX_current = float(self.xps.getStagePosition(self.xpsAxes[0]))
+        posZ_current = float(self.xps.getStagePosition(self.xpsAxes[1]))
+        
+        posX_abs = float(self.ui.x_abs_mv_ip.text())
+        posZ_abs = float(self.ui.z_abs_mv_ip.text())
+        
+        posX_rel = float(self.ui.x_step_ip.text())
+        posZ_rel = float(self.ui.z_step_ip.text())
+        
+        limit_max_x = float(self.ui.x_max_trav_ip.text())
+        limit_min_x = float(self.ui.x_min_trav_ip.text())
+        
+        limit_max_z = float(self.ui.z_max_trav_ip.text())
+        limit_min_z = float(self.ui.z_min_trav_ip.text())
+        
+        if self.xpsStageStatus[0][:11].upper() == "Ready state".upper():
+            if btn == "AbsoluteX" and self.ui.x_abs_mv_ck.isChecked():
+                if posX_abs < limit_min_x or posX_abs > limit_max_x:
+                    self.ui.status_label_x.setText('Invalid travel input')                  
+                else:
+                    self.xps.moveAbsolute(self.xpsAxes[0],posX_abs)
+                    self.ui.status_label_x.setText('')
+                self.updatePosition()
+            elif btn == "ForwardX":
+                if (posX_rel+posX_current) < limit_min_x or (posX_current+posX_rel) > limit_max_x:
+                    self.ui.status_label_x.setText('Invalid travel input')                 
+                else:
+                    self.xps.moveRelative(self.xpsAxes[0],posX_rel)
+                    self.ui.status_label_x.setText('')
+                self.updatePosition()
+                
+            elif btn == "BackwardX":
+                if (posX_current-posX_rel) < limit_min_x or (posX_current-posX_rel) > limit_max_x:
+                    self.ui.status_label_x.setText('Invalid travel input')                  
+                else:
+                    self.xps.moveRelative(self.xpsAxes[0],-1*posX_rel)
+                    self.ui.status_label_x.setText('')
+                self.updatePosition()
+                
+        if self.xpsStageStatus[1][:11].upper() == "Ready state".upper():
+            if btn == "AbsoluteZ" and self.ui.z_abs_mv_ck.isChecked():
+                if posZ_abs < limit_min_z or posZ_abs > limit_max_z:
+                    self.ui.status_label_z.setText('Invalid travel input')                  
+                else:
+                    self.xps.moveAbsolute(self.xpsAxes[1],posZ_abs)
+                    self.ui.status_label_z.setText('')
+                self.updatePosition()
+            elif btn == "ForwardZ":
+                if (posZ_current+posZ_rel) < limit_min_z or (posZ_current+posZ_rel) > limit_max_z:
+                    self.ui.status_label_z.setText('Invalid travel input')                   
+                else:
+                    self.xps.moveRelative(self.xpsAxes[1],posZ_rel)
+                    self.ui.status_label_z.setText('')
+                self.updatePosition()
+                
+            elif btn == "BackwardZ":
+                if (posZ_current-posZ_rel) < limit_min_z or (posZ_current-posZ_rel) > limit_max_z:
+                    self.ui.status_label_z.setText('Invalid travel input')                   
+                else:
+                    self.xps.moveRelative(self.xpsAxes[1],-1*posZ_rel)
+                    self.ui.status_label_z.setText('')
+                self.updatePosition()
+
+        else:
+            self.ui.status_label_z.setText('Stage not ready to move') 
+            self.ui.status_label_x.setText('Stage not ready to move') 
+        #GUI Interface
+        self.updateGUIStatus()
+    
+    
+    ## XPS Stage Combined Fcns
+    
+    def updateGUIStatus(self):
+        if self.xps:
+            if self.xpsStageStatus[0] == "Not initialized state" or self.xpsStageStatus[0] == "Not initialized state due to a GroupKill or KillAll command":
+                self.ui.home_xps_bt.setEnabled(False)
+                self.ui.enable_dis_xps_bt.setEnabled(False)
+                self.ui.x_abs_mv_bt.setEnabled(False)
+                self.ui.x_step_f_bt.setEnabled(False)
+                self.ui.x_step_b_bt.setEnabled(False)
+                self.ui.z_abs_mv_bt.setEnabled(False)
+                self.ui.z_step_f_bt.setEnabled(False)
+                self.ui.z_step_b_bt.setEnabled(False)
+                self.ui.x_status.setText("Not Initialized")
+                self.ui.z_status.setText("Not Initialized")
+                
+            elif self.xpsStageStatus[0] == "Not referenced state":
+                self.ui.home_xps_bt.setEnabled(True)
+                self.ui.enable_dis_xps_bt.setEnabled(False)
+                self.ui.x_abs_mv_bt.setEnabled(False)
+                self.ui.x_step_f_bt.setEnabled(False)
+                self.ui.x_step_b_bt.setEnabled(False)
+                self.ui.z_abs_mv_bt.setEnabled(False)
+                self.ui.z_step_f_bt.setEnabled(False)
+                self.ui.z_step_b_bt.setEnabled(False)
+                self.ui.x_status.setText("Not Homed")
+                self.ui.z_status.setText("Not Homed")
+                
+            elif self.xpsStageStatus[0] == "Disabled state":
+                self.ui.enable_dis_xps_bt.setEnabled(True)
+                self.ui.init_xps_bt.setEnabled(False)
+                self.ui.home_xps_bt.setEnabled(False)
+                self.ui.x_abs_mv_bt.setEnabled(False)
+                self.ui.x_step_f_bt.setEnabled(False)
+                self.ui.x_step_b_bt.setEnabled(False)
+                self.ui.z_abs_mv_bt.setEnabled(False)
+                self.ui.z_step_f_bt.setEnabled(False)
+                self.ui.z_step_b_bt.setEnabled(False)
+                self.ui.x_status.setText("Disabled")
+                self.ui.z_status.setText("Disabled")
+                
+            elif self.xpsStageStatus[0][:11].upper() == "Ready state".upper():
+                self.ui.enable_dis_xps_bt.setEnabled(True)
+                self.ui.init_xps_bt.setEnabled(False)
+                self.ui.home_xps_bt.setEnabled(False)
+                self.ui.x_abs_mv_bt.setEnabled(True)
+                self.ui.x_step_f_bt.setEnabled(True)
+                self.ui.x_step_b_bt.setEnabled(True)
+                self.ui.z_abs_mv_bt.setEnabled(True)
+                self.ui.z_step_f_bt.setEnabled(True)
+                self.ui.z_step_b_bt.setEnabled(True)
+                self.ui.x_status.setText("Enabled")
+                self.ui.z_status.setText("Enabled")
+                   
+        self.updatePosition()
+    
+    
+    def updatePosition(self):
+        if self.xps:
+            self.ui.x_pos_disp.setText(str(self.xps.getStagePosition(self.xpsAxes[0])))         
+            self.ui.z_pos_disp.setText(str(self.xps.getStagePosition(self.xpsAxes[1])))
+            self.xpsStageStatus = [self.xps.getStageStatus(axis) for axis in self.xpsAxes]
+     
+    
+    def updateTravelLimits(self, lim):
+        time.sleep(.5)
+        if lim == "minXPSX":   
+            try:
+                limit = float(self.ui.x_min_trav_ip.text())
+                if limit < 0 or limit > 50:
+                    self.ui.status_label_x.setText('Invalid minimum limit')
+                    self.ui.x_min_trav_ip.setText(str(self.xps.getminLimit(self.xpsAxes[0])))
+                else:
+                    self.xps.setminLimit(self.xpsAxes[0],limit)
+            except:
+                pass
+            
+        elif lim == "maxXPSX":
+            try:
+                limit = float(self.ui.x_max_trav_ip.text())
+                if limit < 0 or limit > 50:
+                    self.ui.status_label_x.setText('Invalid maximum limit')
+                    self.ui.x_max_trav_ip.setText(str(self.xps.getmaxLimit(self.xpsAxes[0])))
+                else:
+                    self.xps.setmaxLimit(self.xpsAxes[0],limit)
+            except:
+                pass
+            
+        elif lim == "minXPSZ":
+            try:
+                limit = float(self.ui.z_min_trav_ip.text())
+                if limit < 0 or limit > 50:
+                    self.ui.status_label_z.setText('Invalid minimum limit')
+                    self.ui.z_min_trav_ip.setText(str(self.xps.getminLimit(self.xpsAxes[1])))
+                else:
+                    self.xps.setminLimit(self.xpsAxes[1],limit)
+            except:
+                pass
+            
+        elif lim == "maxXPSZ":
+            try:
+                limit = float(self.ui.z_max_trav_ip.text())
+                if limit < 0 or limit > 50:
+                    self.ui.status_label_z.setText('Invalid maximum limit')
+                    self.ui.z_max_trav_ip.setText(str(self.xps.getmaxLimit(self.xpsAxes[1])))
+                else:
+                    self.xps.setmaxLimit(self.xpsAxes[1],limit)
+            except:
+                pass
+            
         
     ### COMBINED FCNS #######
     
@@ -482,8 +784,6 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
             self.ins_dg.get_delay('C', 'A', float(self.ref_delay_dg), 'ms')
             self.ins_dg.set_delay()
             
-            
-            
         else:
             self.dg_delay = ((self.step_num)/self.freq)
             self.dg_delay_rot = round((self.dg_delay + self.ref_delay),6)
@@ -515,9 +815,6 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
             self.ins_dg.get_delay('C', 'A', float(self.ref_delay_dg), 'ms')
             self.ins_dg.set_delay()
             
-            
-            
-
     
     def StartRot(self):       
         # Setting up for values the rotation stage needs
@@ -543,14 +840,17 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                     #Firing the delay generator then starting the rotation 
                     self.s.sendall(self.start_command.encode())
                     self.FireIns()
-                    
-                    
+                                        
                     # Checking for a signal back 
                     self.done_sig = self.s.recv(1024).decode().strip()
                     
                     #Upating the shots taken 
                     self.num_shot_taken = self.num_shot_taken + self.shot_per_rot
                     self.ui.shots_taken_disp.setText(str(self.num_shot_taken))
+                    
+                    if self.done_sig == 'DONE':
+                        self.ui.status_label.setText('Finished the Rotation')
+                        
                     
                 except ConnectionRefusedError:
                     self.ui.status_label.setText('Failed to connect to Raspberry Pi.')
@@ -568,11 +868,14 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                     
                     # Checking for a signal back 
                     self.done_sig = self.s.recv(1024).decode().strip()
-                    
-                    
+                                        
                     #Upating the shots taken 
                     self.num_shot_taken = self.num_shot_taken + self.shot_per_rot
-                    self.ui.shots_taken_disp.setText(str(self.num_shot_taken)) 
+                    self.ui.shots_taken_disp.setText(str(self.num_shot_taken))
+                    
+                    if self.done_sig == 'DONE':
+                        self.ui.status_label.setText('Finished the Rotation')
+                    
                     
                 except ConnectionRefusedError:
                     self.ui.status_label.setText('Failed to connect to Raspberry Pi.')
@@ -587,7 +890,7 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
             self.step_num = int(np.ceil(self.step_num))
             # Setting up the command
             self.shot_num_cmd = 'SHOTNO+'+str(self.step_num)
-            if (self.step_num+ self.step_taken) < self.shot_per_rot:
+            if (self.step_num+ self.step_taken) <= self.step_per_rev:
                 try:
                     self.s.sendall(self.shot_mode.encode())
                     sleep(0.2)
@@ -604,6 +907,9 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                     # Checking for a signal back 
                     self.done_sig = self.s.recv(1024).decode().strip()
                     
+                    if self.done_sig == 'DONE':
+                        self.ui.status_label.setText('Finished taking the Shots')
+                     
                     
                 except ConnectionRefusedError:
                     self.ui.status_label.setText('Failed to connect to Raspberry Pi.')
@@ -613,33 +919,23 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
 
             else:
                 try:
-                    self.s.sendall(self.shot_mode.encode())
-                    sleep(0.2)
-                    self.s.sendall(self.rot_delay_cmd.encode())
-                    sleep(0.2)
-                    self.s.sendall(self.shot_num_cmd.encode())
-                    sleep(0.2)
-                    self.s.sendall(self.delay_cmd.encode())
-                    sleep(0.2)
-                    #Firing the delay generator then starting the rotation 
-                    self.s.sendall(self.start_command.encode())
-                    self.FireIns()
-                    
-                    # Checking for a signal back 
-                    self.done_sig = self.s.recv(1024).decode().strip()
+                    self.step_avail2take = self.step_per_rev - (self.step_taken)
+                    self.shot_avail2take = int((self.step_avail2take/self.step_per_rev)*self.shot_per_rot)
+                    self.ui.status_label.setText(f"Too many shots requested - Only have {self.shot_avail2take} shots left or {self.step_avail2take} steps left")
                    
                     
                 except ConnectionRefusedError:
                     self.ui.status_label.setText('Failed to connect to Raspberry Pi.')
                 
-                #Updating the status appropriately on the gui
-                self.updateShotNo()
-    
-    
-
-    
+        
     def DisconnectBtn(self):
-        QtWidgets.QApplication.quit()
+        #Shutting down the XPS stages 
+        if self.xps:
+            if self.xpsStageStatus[0][:11].upper() == "Ready state".upper():
+                self.xps.disableGroup(self.xpsAxes[0])
+            if self.xpsStageStatus[1][:11].upper() == "Ready state".upper():
+                self.xps.disableGroup(self.xpsAxes[1])
+            self.updateGUIStatus()
         
         #Shutdown for the Rpi
         discoonect_cmd = 'DISCONNECT'
@@ -664,6 +960,9 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
             
         #Disconnecting the device now
         self.ins_dg.disconnect_dg()
+        
+        #Disconnecting the app now 
+        QtWidgets.QApplication.quit()
         
            
 

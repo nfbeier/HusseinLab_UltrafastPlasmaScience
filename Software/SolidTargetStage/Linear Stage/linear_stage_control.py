@@ -114,7 +114,7 @@ class MainWindow(QtWidgets.QMainWindow):
         #GUI Interface
         self.updateGUIStatus()
             
-    # Function to update the x and y info 
+    # Function to update the x and z info 
     def updateGroup(self, axis):
         if axis == 0:
             self.xpsAxes[0] = str(self.ui.x_stage_select.currentText())

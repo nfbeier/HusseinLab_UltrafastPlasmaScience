@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1063</width>
-    <height>848</height>
+    <width>1427</width>
+    <height>772</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -488,8 +488,8 @@
      <rect>
       <x>30</x>
       <y>310</y>
-      <width>391</width>
-      <height>311</height>
+      <width>411</width>
+      <height>381</height>
      </rect>
     </property>
     <widget class="QLabel" name="label_9">
@@ -697,7 +697,7 @@
       <rect>
        <x>20</x>
        <y>200</y>
-       <width>151</width>
+       <width>161</width>
        <height>21</height>
       </rect>
      </property>
@@ -884,14 +884,94 @@
       <string>Z Step Backward</string>
      </property>
     </widget>
+    <widget class="QGroupBox" name="groupBox_11">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>290</y>
+       <width>161</width>
+       <height>71</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>11</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="title">
+      <string>X Status</string>
+     </property>
+     <widget class="QLabel" name="status_label_x">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>30</y>
+        <width>141</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>11</pointsize>
+        <weight>50</weight>
+        <bold>false</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QGroupBox" name="groupBox_12">
+     <property name="geometry">
+      <rect>
+       <x>220</x>
+       <y>290</y>
+       <width>161</width>
+       <height>71</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>11</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="title">
+      <string>Z Status</string>
+     </property>
+     <widget class="QLabel" name="status_label_z">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>30</y>
+        <width>141</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>11</pointsize>
+        <weight>50</weight>
+        <bold>false</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </widget>
    </widget>
    <widget class="QGroupBox" name="groupBox">
     <property name="geometry">
      <rect>
       <x>460</x>
-      <y>20</y>
+      <y>10</y>
       <width>491</width>
-      <height>641</height>
+      <height>671</height>
      </rect>
     </property>
     <property name="font">
@@ -1246,7 +1326,7 @@ p, li { white-space: pre-wrap; }
        <x>10</x>
        <y>500</y>
        <width>461</width>
-       <height>61</height>
+       <height>71</height>
       </rect>
      </property>
      <property name="font">
@@ -1259,13 +1339,13 @@ p, li { white-space: pre-wrap; }
      <property name="title">
       <string>Channel Information</string>
      </property>
-     <widget class="QLabel" name="status_label">
+     <widget class="QLabel" name="label_for_tigger_info">
       <property name="geometry">
        <rect>
         <x>10</x>
         <y>30</y>
         <width>221</width>
-        <height>21</height>
+        <height>31</height>
        </rect>
       </property>
       <property name="font">
@@ -1285,7 +1365,7 @@ p, li { white-space: pre-wrap; }
         <x>260</x>
         <y>30</y>
         <width>171</width>
-        <height>21</height>
+        <height>31</height>
        </rect>
       </property>
       <property name="font">
@@ -1303,7 +1383,7 @@ p, li { white-space: pre-wrap; }
       <property name="geometry">
        <rect>
         <x>230</x>
-        <y>20</y>
+        <y>30</y>
         <width>20</width>
         <height>31</height>
        </rect>
@@ -1708,7 +1788,7 @@ p, li { white-space: pre-wrap; }
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>560</y>
+       <y>580</y>
        <width>461</width>
        <height>61</height>
       </rect>
@@ -1723,7 +1803,7 @@ p, li { white-space: pre-wrap; }
      <property name="title">
       <string>Status</string>
      </property>
-     <widget class="QLabel" name="status_label_2">
+     <widget class="QLabel" name="status_label">
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -2375,7 +2455,7 @@ p, li { white-space: pre-wrap; }
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1063</width>
+     <width>1427</width>
      <height>37</height>
     </rect>
    </property>
