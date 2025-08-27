@@ -21,7 +21,7 @@ sys.path.insert(0,cwd)
 
 from pyvisa import ResourceManager
 from instrumental import instrument, list_instruments
-from pyFROG_GUI import Ui_MainWindow
+from HelperFiles.pyFROG_GUI import Ui_MainWindow
 from Hardware.XPS.XPS import XPS
 
 class ThorlabsSpecThread(QtCore.QThread):
