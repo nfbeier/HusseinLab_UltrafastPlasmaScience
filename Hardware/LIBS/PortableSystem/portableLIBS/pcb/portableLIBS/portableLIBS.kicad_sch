@@ -1,0 +1,51 @@
+(kicad_sch (version 20230121) (generator eeschema)
+
+  (uuid 73b7d95c-555d-4f30-836e-a730978be8d4)
+
+  (paper "A4")
+
+  (lib_symbols
+  )
+
+
+  (sheet (at 38.1 104.14) (size 34.29 29.21) (fields_autoplaced)
+    (stroke (width 0.1524) (type solid))
+    (fill (color 0 0 0 0.0000))
+    (uuid bcf15d2d-b7a3-4ebd-8c16-6a53714f8cd2)
+    (property "Sheetname" "Demo" (at 38.1 103.4284 0)
+      (effects (font (size 1.27 1.27)) (justify left bottom))
+    )
+    (property "Sheetfile" "demo.kicad_sch" (at 38.1 133.9346 0)
+      (effects (font (size 1.27 1.27)) (justify left top))
+    )
+    (property "Field2" "" (at 38.1 104.14 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (instances
+      (project "portableLIBS"
+        (path "/73b7d95c-555d-4f30-836e-a730978be8d4" (page "3"))
+      )
+    )
+  )
+
+  (sheet (at 24.13 21.59) (size 109.22 52.07) (fields_autoplaced)
+    (stroke (width 0.1524) (type solid))
+    (fill (color 0 0 0 0.0000))
+    (uuid eb713e43-a37d-48d3-85f8-06d19ed12bac)
+    (property "Sheetname" "Laser Interlock" (at 24.13 20.8784 0)
+      (effects (font (size 1.27 1.27)) (justify left bottom))
+    )
+    (property "Sheetfile" "interlock.kicad_sch" (at 24.13 74.2446 0)
+      (effects (font (size 1.27 1.27)) (justify left top))
+    )
+    (instances
+      (project "portableLIBS"
+        (path "/73b7d95c-555d-4f30-836e-a730978be8d4" (page "2"))
+      )
+    )
+  )
+
+  (sheet_instances
+    (path "/" (page "1"))
+  )
+)
