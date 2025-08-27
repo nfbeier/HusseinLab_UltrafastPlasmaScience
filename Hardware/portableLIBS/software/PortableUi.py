@@ -11,16 +11,17 @@ import numpy as np
 import pandas as pd
 import time
 import joblib
+import os, sys
 # import sklearn
 cwd = os.getcwd()
-if 'portableLIBS' not in cwd.split(os.path.sep):
-    raise ValueError("The directory does not contain 'portableLIBS' folder.")
+if 'Hardware' not in cwd.split(os.path.sep):
+    raise ValueError("The directory does not contain 'Hardware' folder.")
 # Rebuild the directory string up to and including 'portablelIBS', prevent import errors
-cwd = os.path.sep.join(cwd.split(os.path.sep)[:cwd.split(os.path.sep).index('portableLIBS') + 1])
-os.chdir(cwd)
-cwd = os.path.join(cwd, 'software') 
-
+cwd = os.path.sep.join(cwd.split(os.path.sep)[:cwd.split(os.path.sep).index('Hardware') + 1])
+cwd = os.path.join(cwd) 
 sys.path.insert(0,cwd)
+
+print(cwd)
 
 from Viron.Viron import VironLaser
 from Viron.telnetGUI import TelnetSessionGUI

@@ -53,9 +53,18 @@ class VironLaser():
         
         '''
         if self.tn is not None:
-            self.tn.write(command.encode('ascii') + b'\r\n')
-            time.sleep(0.1)
-            rtn = self.tn.read_very_eager().decode('utf-8')
+            try:
+                self.tn.write(command.encode('ascii') + b'\r')
+            except AttributeError:
+                print("Connection may not have gracefully closed")
+            except ConnectionResetError:
+                print("Viron has gone offline")
+            try:
+                rtn = self.tn.expect([b'\r'])
+                rtn = rtn[-1].decode('utf-8')
+            except TimeoutError:
+                self.tngui_print("Error: Timeout Error")
+                return False
             if "Bad Command" in rtn:
                 self.tngui_print("Error, Bad Command")
                 return False
@@ -100,23 +109,7 @@ class VironLaser():
         if self.send_command('$FIRE'):
             return True
         return False
-    
-    def set_external_trigger(self):
-        """
-        Sets the Viron laser to external trigger mode.
-        """
-        # set trigger to external on diode and QS
-        if not self.send_command("$TRIG EI"):
-            return False
-        # set QS 
-        if not self.send_command("$QSON 1"):
-            return False
-        if not self.send_command("$QSBLANK 0"):
-            return False
-        if not self.send_command("$FIRE"):
-            return False
-        return True    
-    
+        
     def set_rep_rate(self, rate):
         '''
         Sets the repetition rate of the Viron laser.
@@ -127,11 +120,11 @@ class VironLaser():
         rate = int(rate)
         self.tngui_print("Setting Rep Rate to: " + str(rate))
         if rate in range(1, 21): 
-            result = self.send_command(f'$QSDIVBY {int(20 / rate)}')  # Set the repetition rate
+            result = self.send_command(f'$DFREQ {rate}')  # Set the repetition rate
             self.tngui_print(result)
         else:
             self.tngui_print('Invalid repetition rate')
-    
+
     def get_temps(self):
         '''
         Retrieves the laser and diode temperatures from the Viron laser.
@@ -142,23 +135,26 @@ class VironLaser():
         
         temps = {'Laser Temp': 'N/A', 'Diode Temp': 'N/A'}
         
-        
-        # there's gotta be a more elegant way to do this. Oh well.
-        rtn = False
-        rtn = self.send_command('$LTEMF ?', response=True)
-        if rtn:
-            temps['Laser Temp'] =  float(rtn.split()[1])
+        try:
+            # there's gotta be a more elegant way to do this. Oh well.
+            rtn = False
+            rtn = self.send_command('$LTEMF ?', response=True)
+            if rtn:
+                temps['Laser Temp'] =  float(rtn.split()[1])
+                
+            rtn = False
+            rtn = self.send_command('$DTEMF ?', response=True)
+            if rtn:
+                if 'off' in rtn.lower():
+                    temps['Diode Temp'] = 'Off'
+                else:
+                    temps['Diode Temp'] = float(rtn.split()[1])
             
-        rtn = False
-        rtn = self.send_command('$DTEMF ?', response=True)
-        if rtn:
-            if 'off' in rtn.lower():
-                temps['Diode Temp'] = 'Off'
-            else:
-                temps['Diode Temp'] = float(rtn.split()[1])
-        
-        return temps
-            
+            return temps
+        except Exception as e:
+            print("Exception raised in Viron/get_temps():", e)
+            return {'Laser Temp': 'N/A', 'Diode Temp': 'N/A'}
+    
     def get_status(self):
         '''
         Retrieves and self.tngui_prints the status information of the Viron laser.
@@ -182,10 +178,10 @@ class VironLaser():
         # self.tngui_print(f'Status Binary: {int(status, 16):0{output_length}b}')
         # self.tngui_print(f'Fault Binary: {int(fault, 16):0{output_length}b}')
         # self.tngui_print(f'Warning Binary: {int(warning, 16):0{output_length}b}')
-        
-        laser_temp = float(self.send_command('$LTEMF ?', response=True).split()[1])
-        # self.tngui_print(f'Laser Temperature: {laser_temp:.2f}')
         try:
+            laser_temp = float(self.send_command('$LTEMF ?', response=True).split()[1])
+            #  self.tngui_print(f'Laser Temperature: {laser_temp:.2f}')
+        
             diode_temp = float(self.send_command('$DTEMF ?', response=True).split()[1])
             # self.tngui_print(f'Diode Temperature: {diode_temp:.2f}')
         except ValueError:
@@ -232,8 +228,17 @@ class VironLaser():
         else:
             self.tngui_print('Invalid numerical qsdelay')
         return False
-    
 
+    def set_burst_mode(self, bstnum):
+        result = self.send_command("$BURST 1")  
+        if not result:
+            self.tngui_print("Failed to set $BURST 1")
+            return False
+        result = self.send_command(f"$BSTON {bstnum}")
+        if not result:
+              self.tngui_print(f"Failed to set $BSTON {bstnum}")
+              return False
+        return True
 
     def set_qs_pre(self, delay):
         """
@@ -261,15 +266,56 @@ class VironLaser():
         """
         Sets the Viron laser to single shot mode.
         """
+        if not self.send_command("$STANDBY"):
+            print("shits fucked")
+            return False
+        # make sure burst is off
+        if not self.send_command("$BURST 0"):
+            return False
         # set trigger to internal on diode and QS
         if not self.send_command("$TRIG II"):
             return False
         # set QS to single shot
         if not self.send_command("$QSON 2"):
             return False
+        print("single shot set")
         return True
         
+    def set_auto_fire(self):
+        """
+        Sets the Viron laser to single shot mode.
+        """
+        if not self.send_command("$STANDBY"):
+            print("shits fucked II electric boogaloo")
+
+            return False
+        # make sure burst is off
+        if not self.send_command("$BURST 0"):
+            return False
+        # set trigger to internal on diode and QS
+        if not self.send_command("$TRIG II"):
+            return False
+        # set QS to auto ] shot
+        if not self.send_command("$QSON 1"):
+            return False
+        return True
         
+    def set_external_trigger(self):
+        """
+        Sets the Viron laser to external trigger mode.
+        """
+        # set trigger to external on diode and QS
+        if not self.send_command("$TRIG EI"):
+            return False
+        # set QS 
+        if not self.send_command("$QSON 1"):
+            return False
+        if not self.send_command("$QSBLANK 0"):
+            return False
+        if not self.send_command("$FIRE"):
+            return False
+        return True
+       
     def fire_single_shot(self):
         """
         Fires a single shot from the Viron laser.
@@ -292,8 +338,7 @@ class VironLaser():
         '''
         Logs out of the Viron laser.
         '''
-        result = self.send_command('$LOGOUT')
-        self.tngui_print(result)  
+        self.send_command('$LOGOUT', response=False)
         
     def close(self):
         '''
