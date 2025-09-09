@@ -850,6 +850,9 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                     
                     if self.done_sig == 'DONE':
                         self.ui.status_label.setText('Finished the Rotation')
+                        # Now stepping the stage forward
+                        self.xpsMotionBtn("ForwardX")
+                        self.ui.status_label.setText('Rotation Complete and Stage Moved, Ready for Next Fire')
                         
                     
                 except ConnectionRefusedError:
@@ -875,6 +878,9 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                     
                     if self.done_sig == 'DONE':
                         self.ui.status_label.setText('Finished the Rotation')
+                        # Now stepping the stage backwards
+                        self.xpsMotionBtn("BackwardX")
+                        self.ui.status_label.setText('Rotation Complete and Stage Moved, Ready for Next Fire')
                     
                     
                 except ConnectionRefusedError:
