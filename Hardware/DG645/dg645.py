@@ -66,6 +66,68 @@ class DelayGen:
             
         except Exception as e:
            print(f"An error occurred: {e}")
+           
+    
+    def get_trg_src(self, trg_src):
+        # Sets the offset on the delay gen
+        src_val = {
+            "Internal" : "0",
+            "External rising edges" : "1",
+            "External falling edges" : "2",
+            "Single shot external rising edges" : "3",
+            "Single shot external falling edges" : "4",
+            "Single shot" : "5",
+            "Line":"6"
+            
+            }
+        #Selects the appropriate trigger source
+        trg_src_select = src_val[trg_src]
+        
+        # Sets up the command lines for the generator to set the tirgger source
+        self.trg_src_cmd = "TSRC "+trg_src_select
+        
+
+    def set_trg_src(self):
+        # Sets the offset on the delay gen
+        try:
+            self.ins.sendcmd(self.trg_src_cmd)
+        except Exception as e:
+           print(f"An error occurred: {e}")
+    
+    def query_trg_src(self):
+        """
+        Query the current trigger source from the DG645 and store it in self.trg_src_dev.
+        
+        Returns
+        -------
+        dict
+            Dictionary containing 'code' (integer 0-6) and 'name' 
+        """
+        # Mapping from numeric code to trigger source name
+        src_names = {
+            0: "Internal",
+            1: "External rising edges",
+            2: "External falling edges",
+            3: "Single shot external rising edges",
+            4: "Single shot external falling edges",
+            5: "Single shot",
+            6: "Line"
+        }
+        
+        try:
+            # Query the device and get the response
+            response = self.ins.query("TSRC?")
+            # Convert response to integer
+            trg_code = int(response.strip())
+            
+            self.trg_src_dev = src_names.get(trg_code, "Unknown")
+            return self.trg_src_dev
+        except Exception as e:
+            print(f"An error occurred while querying trigger source: {e}")
+            self.trg_src_dev = None
+            return None
+
+        
     
     def get_voltage(self, voltage_select, offset_v, amplitude_v):
         # Sets the offset on the delay gen

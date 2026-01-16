@@ -6,19 +6,19 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>532</width>
-    <height>576</height>
+    <width>539</width>
+    <height>744</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QPushButton" name="start_dg_bt">
+   <widget class="QPushButton" name="star_dg_bt">
     <property name="geometry">
      <rect>
-      <x>50</x>
-      <y>400</y>
+      <x>40</x>
+      <y>550</y>
       <width>211</width>
       <height>81</height>
      </rect>
@@ -30,14 +30,14 @@
      </font>
     </property>
     <property name="text">
-     <string>Single Shot</string>
+     <string>Fire Delay Generator</string>
     </property>
    </widget>
    <widget class="QPushButton" name="stop_dg_bt">
     <property name="geometry">
      <rect>
-      <x>270</x>
-      <y>400</y>
+      <x>260</x>
+      <y>550</y>
       <width>221</width>
       <height>81</height>
      </rect>
@@ -55,7 +55,7 @@
    <widget class="QGroupBox" name="groupBox_2">
     <property name="geometry">
      <rect>
-      <x>40</x>
+      <x>30</x>
       <y>130</y>
       <width>461</width>
       <height>131</height>
@@ -249,9 +249,9 @@
    <widget class="QGroupBox" name="groupBox_3">
     <property name="geometry">
      <rect>
-      <x>40</x>
-      <y>270</y>
-      <width>451</width>
+      <x>30</x>
+      <y>260</y>
+      <width>461</width>
       <height>121</height>
      </rect>
     </property>
@@ -322,7 +322,7 @@
     <widget class="QLabel" name="label_10">
      <property name="geometry">
       <rect>
-       <x>90</x>
+       <x>100</x>
        <y>40</y>
        <width>71</width>
        <height>16</height>
@@ -341,7 +341,7 @@
     <widget class="QLabel" name="label_11">
      <property name="geometry">
       <rect>
-       <x>220</x>
+       <x>230</x>
        <y>40</y>
        <width>91</width>
        <height>16</height>
@@ -360,7 +360,7 @@
     <widget class="QLineEdit" name="offset_v">
      <property name="geometry">
       <rect>
-       <x>90</x>
+       <x>100</x>
        <y>60</y>
        <width>111</width>
        <height>41</height>
@@ -370,7 +370,7 @@
     <widget class="QLineEdit" name="amplitude_v">
      <property name="geometry">
       <rect>
-       <x>220</x>
+       <x>230</x>
        <y>60</y>
        <width>111</width>
        <height>41</height>
@@ -380,7 +380,7 @@
     <widget class="QPushButton" name="set_level_bt">
      <property name="geometry">
       <rect>
-       <x>350</x>
+       <x>360</x>
        <y>50</y>
        <width>91</width>
        <height>51</height>
@@ -613,13 +613,144 @@
      <string>Set Saved Settings</string>
     </property>
    </widget>
+   <widget class="QGroupBox" name="groupBox_4">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>380</y>
+      <width>461</width>
+      <height>151</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="title">
+     <string>Trigger Source</string>
+    </property>
+    <widget class="QLabel" name="label_15">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>70</y>
+       <width>60</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <weight>50</weight>
+       <bold>false</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>Select</string>
+     </property>
+    </widget>
+    <widget class="QComboBox" name="trigger_source_select">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>80</y>
+       <width>271</width>
+       <height>61</height>
+      </rect>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <item>
+      <property name="text">
+       <string>Internal</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>External rising edges</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>External falling edges</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Single shot external rising edges</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Single shot external falling edges</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Single shot</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Line</string>
+      </property>
+     </item>
+    </widget>
+    <widget class="QPushButton" name="set_trig_src_bt">
+     <property name="geometry">
+      <rect>
+       <x>290</x>
+       <y>80</y>
+       <width>131</width>
+       <height>61</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Set Source</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="trig_src_disp">
+     <property name="geometry">
+      <rect>
+       <x>170</x>
+       <y>30</y>
+       <width>271</width>
+       <height>31</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_16">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>20</y>
+       <width>141</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <weight>50</weight>
+       <bold>false</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>Current Trigger Source</string>
+     </property>
+    </widget>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>532</width>
+     <width>539</width>
      <height>37</height>
     </rect>
    </property>
