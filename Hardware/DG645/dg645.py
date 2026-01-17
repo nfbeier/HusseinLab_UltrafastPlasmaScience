@@ -221,8 +221,8 @@ class DelayGen:
         self.ins.sendcmd("IFRS 0")
         
     def single_shot_fire_dg(self):
-        # sends a single shot 
-        self.ins.sendcmd('TSRC 5')
+        # sends a single shot if in single shot mode
+        # otherwise for an external trigger to send a single shot
         self.ins.sendcmd('*TRG')
 
 
