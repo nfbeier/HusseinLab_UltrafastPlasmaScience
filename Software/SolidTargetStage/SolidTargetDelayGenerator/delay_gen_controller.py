@@ -41,7 +41,7 @@ class delay_gen_app(QtWidgets.QMainWindow):
         
         # Set the saved trigger source on the device
         self.ins_dg.get_trg_src(self.saved_trig_src)
-        self.ins_dg.set_trg_src(self.saved_trig_src)
+        self.ins_dg.set_trg_src()
         
         # Query and display the current trigger source to confirm
         current_trig_src = self.ins_dg.query_trg_src()
@@ -77,7 +77,7 @@ class delay_gen_app(QtWidgets.QMainWindow):
         #Buttons to fire and shutdown
         self.ui.stop_dg_bt.clicked.connect(self.DisconnectBtn)
         
-        self.ui.start_dg_bt.clicked.connect(self.FireBtn)
+        self.ui.star_dg_bt.clicked.connect(self.FireBtn)
         
         # #Buttons for displaying on the delay generator
         self.ui.T0_bt.clicked.connect(lambda: self.change_display_bt("T0"))
@@ -185,7 +185,7 @@ class delay_gen_app(QtWidgets.QMainWindow):
         self.ins_dg.get_trg_src(trg_src)
         
         #Now setting the trigger source  
-        self.ins_dg.set_trg_src(trg_src)
+        self.ins_dg.set_trg_src()
         
         #Displaying this value
         current_trig_src = self.ins_dg.query_trg_src()
