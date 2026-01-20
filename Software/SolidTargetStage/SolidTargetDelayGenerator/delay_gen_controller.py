@@ -11,7 +11,7 @@ import instruments as ik
 import json
 import time, sys
 from time import sleep
-from delay_gen_gui import Ui_MainWindow
+from delay_gen_ui import Ui_MainWindow
 import os
 
 # Makes sure you are in the right path!
