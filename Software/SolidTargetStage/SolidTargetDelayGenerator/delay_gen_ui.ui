@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>650</width>
-    <height>744</height>
+    <width>575</width>
+    <height>741</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,8 +17,8 @@
    <widget class="QPushButton" name="star_dg_bt">
     <property name="geometry">
      <rect>
-      <x>40</x>
-      <y>550</y>
+      <x>60</x>
+      <y>570</y>
       <width>211</width>
       <height>81</height>
      </rect>
@@ -36,8 +36,8 @@
    <widget class="QPushButton" name="stop_dg_bt">
     <property name="geometry">
      <rect>
-      <x>260</x>
-      <y>550</y>
+      <x>290</x>
+      <y>570</y>
       <width>221</width>
       <height>81</height>
      </rect>
@@ -57,7 +57,7 @@
      <rect>
       <x>30</x>
       <y>130</y>
-      <width>590</width>
+      <width>511</width>
       <height>131</height>
      </rect>
     </property>
@@ -129,7 +129,7 @@
     <widget class="QLabel" name="label">
      <property name="geometry">
       <rect>
-       <x>70</x>
+       <x>90</x>
        <y>40</y>
        <width>81</width>
        <height>16</height>
@@ -167,7 +167,7 @@
     <widget class="QLabel" name="label_3">
      <property name="geometry">
       <rect>
-       <x>160</x>
+       <x>200</x>
        <y>40</y>
        <width>60</width>
        <height>16</height>
@@ -186,7 +186,7 @@
     <widget class="QLineEdit" name="delay_disp">
      <property name="geometry">
       <rect>
-       <x>150</x>
+       <x>190</x>
        <y>60</y>
        <width>111</width>
        <height>41</height>
@@ -196,7 +196,7 @@
     <widget class="QLabel" name="label_4">
      <property name="geometry">
       <rect>
-       <x>270</x>
+       <x>310</x>
        <y>40</y>
        <width>60</width>
        <height>16</height>
@@ -215,7 +215,7 @@
     <widget class="QLineEdit" name="unit_disp">
      <property name="geometry">
       <rect>
-       <x>270</x>
+       <x>310</x>
        <y>60</y>
        <width>71</width>
        <height>41</height>
@@ -225,7 +225,7 @@
     <widget class="QPushButton" name="set_delay_bt">
      <property name="geometry">
       <rect>
-       <x>480</x>
+       <x>400</x>
        <y>50</y>
        <width>91</width>
        <height>51</height>
@@ -238,7 +238,7 @@
     <widget class="QLineEdit" name="channel_link">
      <property name="geometry">
       <rect>
-       <x>70</x>
+       <x>90</x>
        <y>60</y>
        <width>71</width>
        <height>41</height>
@@ -251,7 +251,7 @@
      <rect>
       <x>30</x>
       <y>260</y>
-      <width>590</width>
+      <width>511</width>
       <height>121</height>
      </rect>
     </property>
@@ -287,9 +287,9 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>50</y>
+       <y>60</y>
        <width>71</width>
-       <height>61</height>
+       <height>41</height>
       </rect>
      </property>
      <property name="sizePolicy">
@@ -322,7 +322,7 @@
     <widget class="QLabel" name="label_10">
      <property name="geometry">
       <rect>
-       <x>100</x>
+       <x>110</x>
        <y>40</y>
        <width>71</width>
        <height>16</height>
@@ -341,7 +341,7 @@
     <widget class="QLabel" name="label_11">
      <property name="geometry">
       <rect>
-       <x>230</x>
+       <x>240</x>
        <y>40</y>
        <width>91</width>
        <height>16</height>
@@ -360,7 +360,7 @@
     <widget class="QLineEdit" name="offset_v">
      <property name="geometry">
       <rect>
-       <x>100</x>
+       <x>110</x>
        <y>60</y>
        <width>111</width>
        <height>41</height>
@@ -370,7 +370,7 @@
     <widget class="QLineEdit" name="amplitude_v">
      <property name="geometry">
       <rect>
-       <x>230</x>
+       <x>240</x>
        <y>60</y>
        <width>111</width>
        <height>41</height>
@@ -380,7 +380,7 @@
     <widget class="QPushButton" name="set_level_bt">
      <property name="geometry">
       <rect>
-       <x>480</x>
+       <x>400</x>
        <y>50</y>
        <width>91</width>
        <height>51</height>
@@ -603,7 +603,7 @@
    <widget class="QPushButton" name="set_json_bt">
     <property name="geometry">
      <rect>
-      <x>460</x>
+      <x>330</x>
       <y>30</y>
       <width>161</width>
       <height>71</height>
@@ -617,9 +617,9 @@
     <property name="geometry">
      <rect>
       <x>30</x>
-      <y>380</y>
-      <width>590</width>
-      <height>151</height>
+      <y>400</y>
+      <width>511</width>
+      <height>161</height>
      </rect>
     </property>
     <property name="font">
@@ -654,9 +654,9 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>80</y>
-       <width>340</width>
-       <height>61</height>
+       <y>100</y>
+       <width>291</width>
+       <height>41</height>
       </rect>
      </property>
      <property name="sizePolicy">
@@ -684,10 +684,10 @@
     <widget class="QPushButton" name="set_trig_src_bt">
      <property name="geometry">
       <rect>
-       <x>370</x>
-       <y>80</y>
-       <width>200</width>
-       <height>61</height>
+       <x>310</x>
+       <y>90</y>
+       <width>141</width>
+       <height>51</height>
       </rect>
      </property>
      <property name="text">
@@ -699,7 +699,7 @@
       <rect>
        <x>170</x>
        <y>30</y>
-       <width>400</width>
+       <width>321</width>
        <height>31</height>
       </rect>
      </property>
@@ -730,8 +730,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>539</width>
-     <height>24</height>
+     <width>575</width>
+     <height>37</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuDelay_Generator_Control">
