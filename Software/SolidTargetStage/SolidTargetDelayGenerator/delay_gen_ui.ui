@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>539</width>
+    <width>650</width>
     <height>744</height>
    </rect>
   </property>
@@ -57,7 +57,7 @@
      <rect>
       <x>30</x>
       <y>130</y>
-      <width>461</width>
+      <width>590</width>
       <height>131</height>
      </rect>
     </property>
@@ -225,7 +225,7 @@
     <widget class="QPushButton" name="set_delay_bt">
      <property name="geometry">
       <rect>
-       <x>350</x>
+       <x>480</x>
        <y>50</y>
        <width>91</width>
        <height>51</height>
@@ -251,7 +251,7 @@
      <rect>
       <x>30</x>
       <y>260</y>
-      <width>461</width>
+      <width>590</width>
       <height>121</height>
      </rect>
     </property>
@@ -380,7 +380,7 @@
     <widget class="QPushButton" name="set_level_bt">
      <property name="geometry">
       <rect>
-       <x>360</x>
+       <x>480</x>
        <y>50</y>
        <width>91</width>
        <height>51</height>
@@ -603,7 +603,7 @@
    <widget class="QPushButton" name="set_json_bt">
     <property name="geometry">
      <rect>
-      <x>330</x>
+      <x>460</x>
       <y>30</y>
       <width>161</width>
       <height>71</height>
@@ -618,7 +618,7 @@
      <rect>
       <x>30</x>
       <y>380</y>
-      <width>461</width>
+      <width>590</width>
       <height>151</height>
      </rect>
     </property>
@@ -653,9 +653,9 @@
     <widget class="QComboBox" name="trigger_source_select">
      <property name="geometry">
       <rect>
-       <x>0</x>
+       <x>10</x>
        <y>80</y>
-       <width>271</width>
+       <width>340</width>
        <height>61</height>
       </rect>
      </property>
@@ -684,9 +684,9 @@
     <widget class="QPushButton" name="set_trig_src_bt">
      <property name="geometry">
       <rect>
-       <x>290</x>
+       <x>370</x>
        <y>80</y>
-       <width>131</width>
+       <width>200</width>
        <height>61</height>
       </rect>
      </property>
@@ -699,7 +699,7 @@
       <rect>
        <x>170</x>
        <y>30</y>
-       <width>271</width>
+       <width>400</width>
        <height>31</height>
       </rect>
      </property>
