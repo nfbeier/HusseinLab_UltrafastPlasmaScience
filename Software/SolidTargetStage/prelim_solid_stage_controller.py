@@ -121,6 +121,14 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         # Reads in previous input for different channel levels 
         self.read_json()
         
+        # Set the saved trigger source on the device
+        self.ins_dg.get_trg_src(self.saved_trig_src)
+        self.ins_dg.set_trg_src()
+        
+        # Query and display the current trigger source to confirm
+        current_trig_src = self.ins_dg.query_trg_src()
+        self.ui.trig_src_disp.setText(current_trig_src)
+        
         # Creating the user inputs / buttons for the gui 
         self.ui.delay_select.currentIndexChanged.connect(lambda: self.disp_ch("delay"))
         self.ui.voltage_select.currentIndexChanged.connect(lambda: self.disp_ch("voltage"))
@@ -132,6 +140,11 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         #Adjusting and updating the voltage values
         self.ui.offset_v.textChanged.connect(lambda: self.updateVoltvals("Offset_Val"))
         self.ui.amplitude_v.textChanged.connect(lambda: self.updateVoltvals("Amp_Val"))
+        
+        #Selecting the trigger source 
+        self.ui.trigger_source_select.currentIndexChanged.connect(self.trg_src_change)
+        #Changing the trigger source 
+        self.ui.set_trig_src_bt.clicked.connect(self.SetTrigSrc)
         
         # Loading and setting the previosuly saved file
         self.ui.set_json_bt.clicked.connect(self.SetSavedBt)
@@ -345,6 +358,8 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
             "EF" : [inputs["EF_offset"], inputs["EF_Amp"]],
             "GH" : [inputs["GH_offset"], inputs["GH_Amp"]]
             }
+        # Read trigger source if it exists in the JSON file
+        self.saved_trig_src = inputs.get("trigger_source", "Internal")
         
     def disp_ch(self, widget):    
         if widget == "delay":
@@ -403,6 +418,21 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
             amplitude_v = float(self.ui.amplitude_v.text())
             self.ins_dg.get_voltage(voltage_select, offset_v, amplitude_v)
     
+    def trg_src_change(self):
+        trg_src = str(self.ui.trigger_source_select.currentText())
+        self.ins_dg.get_trg_src(trg_src)
+    
+    def SetTrigSrc(self):
+        # Sets the value in case there was a change
+        trg_src = str(self.ui.trigger_source_select.currentText())
+        self.ins_dg.get_trg_src(trg_src)
+        
+        #Now setting the trigger source  
+        self.ins_dg.set_trg_src()
+        
+        #Displaying this value
+        current_trig_src = self.ins_dg.query_trg_src()
+        self.ui.trig_src_disp.setText(current_trig_src)
    
     def change_display_bt(self, btn):       
         self.ins_dg.change_display(btn)
@@ -959,6 +989,10 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
             for i in ["AB", "CD", "EF", "GH"]:
                 inputs[i+"_offset"] = self.dg_values[i][0]
                 inputs[i+"_Amp"] = self.dg_values[i][1]
+            
+            # Save the current trigger source
+            current_trig_src = self.ins_dg.query_trg_src()
+            inputs["trigger_source"] = current_trig_src
                 
             write_file.seek(0)
             json.dump(inputs, write_file)
