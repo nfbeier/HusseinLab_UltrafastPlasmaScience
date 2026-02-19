@@ -1,9 +1,9 @@
 import pandas as pd
 import h5py as h5
+from scipy import constants
 import time, sys, os
 import pyqtgraph as pg
 import numpy as np
-from scipy import constants
 from scipy.optimize import curve_fit
 
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
@@ -97,7 +97,7 @@ class FROGTraceThread(QtCore.QThread):
         self.xps = XPS(xps_ipaddress)
         self.xpsGroupNames = self.xps.getXPSStatus()
         xpsGroups = list(self.xpsGroupNames.keys())
-        self.xpsAxis = str(xpsGroups[0])
+        self.xpsAxis = str(xpsGroups[1])
 
         self.xps.setGroup(self.xpsAxis)
         self.xpsStageStatus = self.xps.getStageStatus(self.xpsAxis)
