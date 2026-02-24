@@ -22,6 +22,7 @@ if "HusseinLab_UltrafastPlasmaScience" not in cwd.split(os.path.sep):
 cwd = os.path.sep.join(
     cwd.split(os.path.sep)[: cwd.split(os.path.sep).index("HusseinLab_UltrafastPlasmaScience") + 1]
 )
+os.chdir(cwd)
 sys.path.insert(0, cwd)
 
 from Hardware.DG645.dg645 import DelayGen

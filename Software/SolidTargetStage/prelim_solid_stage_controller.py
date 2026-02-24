@@ -24,6 +24,7 @@ if "HusseinLab_UltrafastPlasmaScience" not in cwd.split(os.path.sep):
 cwd = os.path.sep.join(
     cwd.split(os.path.sep)[: cwd.split(os.path.sep).index("HusseinLab_UltrafastPlasmaScience") + 1]
 )
+os.chdir(cwd)
 sys.path.insert(0, cwd)
 
 # Importing the control window
@@ -54,6 +55,7 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         self.num_shot_taken = int(self.ui.shots_taken_disp.toPlainText())
         self.rep_rate = float(self.ui.rep_rate_select.currentText())
         self.ref_delay = float(self.ui.rel_delay_ip.text())*1e-3
+        self.ref_delay_dg = self.ui.rel_delay_ip.text()
         self.shot_sep = float(self.ui.shot_sep_ip.text())*1e-6
         self.rpm = ''
         self.dg_delay = 0
@@ -113,7 +115,7 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         self.ui.target_diam_ip.textChanged.connect(self.updateDiameter)
         
         # Calculating the RPM button
-        self.ui.rpm_bt.clicked.connect(self.CalculateRPM)
+        self.ui.rpm_bt.clicked.connect(self.CalculateRPMButton)
         
         
         
@@ -203,10 +205,45 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         #Setting the  disconnect
         self.ui.stop_bt.clicked.connect(self.DisconnectBtn)
         
+        # Initialize error message label
+        self.ui.error_msg_label.setText('')
+        # self.ui.error_msg_label.setStyleSheet("color: red;") # Removed initial color setting
+        
         
         
         
     ######### ROTATION FUNCTIONS #########  
+    
+    def display_error_message(self, message, error_type="ERROR"):
+        """
+        Display error/warning messages both in GUI and terminal.
+        
+        Args:
+            message (str): The error message to display
+            error_type (str): Type of message - "ERROR", "WARNING", or "INFO"
+        """
+        # Format message with timestamp
+        timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
+        formatted_msg = f"[{timestamp}] {error_type}: {message}"
+        
+        # Print to terminal
+        print(formatted_msg)
+        
+        # Display in GUI error label
+        self.ui.error_msg_label.setText(message)
+        
+        # Set color based on error type
+        if error_type == "ERROR":
+            self.ui.error_msg_label.setStyleSheet("background-color: #ff9999; color: black; padding: 5px; border-radius: 4px;")
+        elif error_type == "WARNING":
+            self.ui.error_msg_label.setStyleSheet("background-color: #ffbd95; color: black; padding: 5px; border-radius: 4px;")
+        elif error_type == "INFO":
+            self.ui.error_msg_label.setStyleSheet("background-color: #b8dfa7; color: black; padding: 5px; border-radius: 4px;")
+    
+    def clear_error_message(self):
+        """Clear the error message from GUI."""
+        self.ui.error_msg_label.setText('')
+        self.ui.error_msg_label.setStyleSheet('')
     
     def select_rep_rate(self):   
         self.rep_rate = float(self.ui.rep_rate_select.currentText())
@@ -224,14 +261,14 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
             
     
     def updateEffSep(self):   
-        self.shot_sep_prelim = str(self.ui.shot_sep_ip.text())
+        self.shot_sep_prelim = self.ui.shot_sep_ip.text()
         if  self.shot_sep_prelim != '':
-            self.shot_sep = float(self.ui.shot_sep_ip.text())*1e-6
+            self.shot_sep = float(self.shot_sep_prelim)*1e-6
     
     def update_shot_no(self):   
-        self.shot_num = str(self.ui.shot_no_ip.text())
-        if  self.shot_num != '':
-            self.shot_num = int(self.ui.shot_no_ip.text())
+        shot_num_text = self.ui.shot_no_ip.text()
+        if shot_num_text != '':
+            self.shot_num = int(shot_num_text)
             self.updateStep4Shot()
             
     def updateStep4Shot(self):
@@ -240,42 +277,42 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         self.step_num = 0
         self.step_num_text = ''
         self.sep = self.shot_sep
-        self.diam_target = str(self.ui.target_diam_ip.text())
-        rep_rate = float(self.ui.rep_rate_select.currentText()) 
+        self.diam_target = self.ui.target_diam_ip.text()
         
         if self.shot_num == 1:
             self.step_num = 1
             self.ui.step_4_shot_disp.setText(str(self.step_num))
-        elif self.diam_target!= '': 
-            self.radius =  float(self.diam_target)*0.5            
-            self.rpm = (self.sep/(self.radius*1e-3))*(1/(2*np.pi))*60*1000*rep_rate
+        elif self.diam_target != '': 
+            self.radius = float(self.diam_target) * 0.5
             
             # Calculating how many shots one can take in one rotation 
             self.shot_per_rot = int((2*np.pi*self.radius*1e-3)/(self.sep))
             
             # Calculating the steps needed to take for given shot #
-            self.step_num = ((self.shot_num/ self.shot_per_rot)*self.step_per_rev)
+            self.step_num = ((self.shot_num / self.shot_per_rot) * self.step_per_rev)
             
             # Displaying the results 
             self.step_num_text = f"{self.step_num:.2f}"
             self.ui.step_4_shot_disp.setText(self.step_num_text)
-        
-        #Calculates RPM again in case values were changed 
-        self.CalculateRPM()
                    
         
     def update_rot_stage_delay(self):
-        self.ref_delay_dg = str(self.ui.rel_delay_ip.text())
+        self.ref_delay_dg = self.ui.rel_delay_ip.text()
         if self.ref_delay_dg != '':
-            self.ref_delay = float(self.ui.rel_delay_ip.text())*1e-3
-            self.ref_delay_dg = str(self.ui.rel_delay_ip.text())
+            self.ref_delay = float(self.ref_delay_dg)*1e-3
     
     def updateDiameter(self):
-        self.diam_target = str(self.ui.target_diam_ip.text())
+        self.diam_target = self.ui.target_diam_ip.text()
     
     def RelDelayBtn(self):
-        self.ref_delay_dg = str(self.ui.rel_delay_ip.text())
-        self.ref_delay = float(self.ui.rel_delay_ip.text())*1e-3
+        self.ref_delay_dg = self.ui.rel_delay_ip.text()
+        self.ref_delay = float(self.ref_delay_dg)*1e-3
+    
+    def CalculateRPMButton(self):
+        """Wrapper function for the Calculate RPM button that also sets delay generator"""
+        self.CalculateRPM()
+        if self.rpm != '':
+            self.setDelaysDG()
         
     def CalculateRPM(self):
         #Parameters needed to calculate the rpm
@@ -283,28 +320,31 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         self.diam_target = str(self.ui.target_diam_ip.text())
         rep_rate = float(self.ui.rep_rate_select.currentText()) 
         if (self.diam_target != ''): 
-            self.radius =  float(self.diam_target)*0.5            
+            self.radius = float(self.diam_target) * 0.5
             self.rpm = (self.sep/(self.radius*1e-3))*(1/(2*np.pi))*60*1000*rep_rate
             
             # Calculating how many shots one can take in one rotation 
             self.shot_per_rot = int((2*np.pi*self.radius*1e-3)/(self.sep))
             
-            #Calculating the nu,ber of steps taken in a single step
+            # Calculating the shots of steps taken in a single step
             self.shot_per_step = (1/self.step_per_rev)*((2*np.pi*self.radius*1e-3)/(self.sep))
             
-            #Seeing if the rpm is too low
-            self.freq = self.rpm*self.step_per_rev*(1/60)
-            self.delay_value_rot = (1/self.freq)*0.5
+            # Calculating the frequency for delay calculations
+            self.freq = self.rpm * self.step_per_rev * (1/60)
+            self.delay_value_rot = (1/self.freq) * 0.5
             
-            
-            if (1e6*self.delay_value_rot) < 5:
-                self.ui.status_label.setText("Motor cannot support this RPM")
+            # Seeing if the rpm is too high
+            # based off the maximum recommended working speed not 
+            # max allowable speed for a NEMA 23 stepper motor
+            if self.rpm > 500:
+                error_msg = f"RPM calculation failed: Calculated RPM ({self.rpm:.2f}) exceeds motor maximum (500 RPM). Reduce shot separation or target diameter."
+                self.display_error_message(error_msg, "ERROR")
+                self.ui.status_label.setText("RPM too high for motor")
                 self.rpm = ''
             else:
                 self.rpm = str(self.rpm)
-            
-            # sets up the delays on the delay generator 
-            self.setDelaysDG()
+                self.clear_error_message()
+
 
         
     def updateShotNo(self):
@@ -326,16 +366,7 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                 # full rotation and to step forward
                 self.ui.status_label.setText("Full Rotation Complete, Move the Stage")
             
-        # else: 
-        #     self.step_taken = (self.step_taken + self.step_num) - self.step_per_rev
-        #     self.step_taken = int(self.step_taken)
-        #     self.num_shot_taken = (self.num_shot_taken+ int(self.shot_per_step*self.step_num)) 
 
-            
-        #     #Updating the UI
-        #     self.ui.shots_taken_disp.setText(str(self.num_shot_taken))
-        #     self.ui.progressBar.setValue(self.step_taken)
-        #     self.ui.steps_taken_disp.setText(str(self.step_taken))
         
      
      ######### DELAY GEN FUNCTIONS ######### 
@@ -368,21 +399,19 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
             self.ui.delay_disp.setText(str(self.dg_values[channel][1]))   
             self.ui.unit_disp.setText(self.dg_values[channel][2])
             
-            channel_select =  str(self.ui.delay_select.currentText())
-            channel = str(self.ui.channel_link.text())
-            delay = float(self.ui.delay_disp.text())
-            delay_units = str(self.ui.unit_disp.text())
-            self.ins_dg.get_delay(channel_select, channel, delay, delay_units)
+            channel_ref = self.dg_values[channel][0]
+            delay = self.dg_values[channel][1]
+            delay_units = self.dg_values[channel][2]
+            self.ins_dg.get_delay(channel, channel_ref, delay, delay_units)
             
         elif widget == "voltage":
             channel = self.ui.voltage_select.currentText()
             self.ui.offset_v.setText(str(self.dg_values[channel][0]))
             self.ui.amplitude_v.setText(str(self.dg_values[channel][1]))
             
-            voltage_select = str(self.ui.voltage_select.currentText())
-            offset_v = float(self.ui.offset_v.text())
-            amplitude_v = float(self.ui.amplitude_v.text())
-            self.ins_dg.get_voltage(voltage_select, offset_v, amplitude_v)
+            offset_v = self.dg_values[channel][0]
+            amplitude_v = self.dg_values[channel][1]
+            self.ins_dg.get_voltage(channel, offset_v, amplitude_v)
     
      
     def updateDelayvals(self, widget):
@@ -392,15 +421,14 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
             delay = float(self.ui.delay_disp.text())
             self.dg_values[channel][1] = delay
         elif widget == "Delay_Units" and (self.ui.unit_disp.text() != ''):
-            delay_units = str(self.ui.unit_disp.text())
+            delay_units = self.ui.unit_disp.text()
             self.dg_values[channel][2] = delay_units
          
         if self.ui.channel_link.text() != "" and self.ui.delay_disp.text() != "" and self.ui.unit_disp.text() != "":
-            channel_select =  str(self.ui.delay_select.currentText())
-            channel = str(self.ui.channel_link.text())
+            channel_ref = self.ui.channel_link.text()
             delay = float(self.ui.delay_disp.text())
-            delay_units = str(self.ui.unit_disp.text())
-            self.ins_dg.get_delay(channel_select, channel, delay, delay_units)
+            delay_units = self.ui.unit_disp.text()
+            self.ins_dg.get_delay(channel, channel_ref, delay, delay_units)
             
             
     def updateVoltvals(self, widget):
@@ -413,18 +441,17 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
             self.dg_values[channel][1] = amp_val
         
         if self.ui.offset_v.text() != "" and self.ui.amplitude_v.text() != "":
-            voltage_select = str(self.ui.voltage_select.currentText())
             offset_v = float(self.ui.offset_v.text())
             amplitude_v = float(self.ui.amplitude_v.text())
-            self.ins_dg.get_voltage(voltage_select, offset_v, amplitude_v)
+            self.ins_dg.get_voltage(channel, offset_v, amplitude_v)
     
     def trg_src_change(self):
-        trg_src = str(self.ui.trigger_source_select.currentText())
+        trg_src = self.ui.trigger_source_select.currentText()
         self.ins_dg.get_trg_src(trg_src)
     
     def SetTrigSrc(self):
         # Sets the value in case there was a change
-        trg_src = str(self.ui.trigger_source_select.currentText())
+        trg_src = self.ui.trigger_source_select.currentText()
         self.ins_dg.get_trg_src(trg_src)
         
         #Now setting the trigger source  
@@ -457,18 +484,18 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                 self.ins_dg.set_delay()
                 
             elif i > 8:
-                voltage_select = str(a)
+                voltage_select = a
                 offset_v = float(self.dg_values[a][0])
                 amplitude_v = float(self.dg_values[a][1])
                 self.ins_dg.get_voltage(voltage_select, offset_v, amplitude_v)
                 self.ins_dg.set_voltage()
-            i = i+1
+            i += 1
 
 
     def SetDelayBt(self):
         # Sets the value
-        channel =  str(self.ui.delay_select.currentText())
-        channel_ref = str(self.ui.channel_link.text())
+        channel = self.ui.delay_select.currentText()
+        channel_ref = self.ui.channel_link.text()
         
         #set the new channel link in case there was a change 
         self.ins_dg.change_delay_link(channel, channel_ref)
@@ -485,7 +512,7 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         
     def SetVoltageBt(self):
         # Sets the value
-        voltage_select = str(self.ui.voltage_select.currentText())
+        voltage_select = self.ui.voltage_select.currentText()
  
         sleep(0.2)
         if self.ui.offset_v.text() != "" and self.ui.amplitude_v.text() != "":
@@ -507,7 +534,7 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         #Initalizing the xps
         #Initialize XPS
         try:
-            self.xps_ipaddress = str(self.ui.ip_address_ip.text())
+            self.xps_ipaddress = self.ui.ip_address_ip.text()
             self.xps = XPS(self.xps_ipaddress)
             self.xpsGroupNames = self.xps.getXPSStatus()
             self.ui.x_stage_select.clear()
@@ -515,7 +542,7 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
             self.ui.x_stage_select.addItems(list(self.xpsGroupNames.keys()))
             self.ui.z_stage_select.addItems(list(self.xpsGroupNames.keys()))
             self.ui.z_stage_select.setCurrentIndex(1)
-            self.xpsAxes = [str(self.ui.x_stage_select.currentText()),str(self.ui.z_stage_select.currentText())]
+            self.xpsAxes = [self.ui.x_stage_select.currentText(), self.ui.z_stage_select.currentText()]
             
             self.xps.setGroup(self.xpsAxes[0])
             self.xps.setGroup(self.xpsAxes[1])
@@ -539,10 +566,10 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
     # Function to update the x and z info 
     def updateGroup(self, axis):
         if axis == 0:
-            self.xpsAxes[0] = str(self.ui.x_stage_select.currentText())
+            self.xpsAxes[0] = self.ui.x_stage_select.currentText()
             self.xps.setGroup(self.xpsAxes[0])
         if axis == 1:
-            self.xpsAxes[1] = str(self.ui.z_stage_select.currentText())
+            self.xpsAxes[1] = self.ui.z_stage_select.currentText()
             self.xps.setGroup(self.xpsAxes[1])
         
         self.xpsStageStatus = [self.xps.getStageStatus(axis) for axis in self.xpsAxes]
@@ -588,54 +615,78 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         if self.xpsStageStatus[0][:11].upper() == "Ready state".upper():
             if btn == "AbsoluteX" and self.ui.x_abs_mv_ck.isChecked():
                 if posX_abs < limit_min_x or posX_abs > limit_max_x:
-                    self.ui.status_label_x.setText('Invalid travel input')                  
+                    error_msg = f"X-axis absolute move failed: Target position {posX_abs:.2f} mm is outside travel limits [{limit_min_x:.2f}, {limit_max_x:.2f}] mm"
+                    self.display_error_message(error_msg, "ERROR")
+                    self.ui.status_label_x.setText('Position out of range')                  
                 else:
                     self.xps.moveAbsolute(self.xpsAxes[0],posX_abs)
                     self.ui.status_label_x.setText('')
+                    self.clear_error_message()
                 self.updatePosition()
             elif btn == "ForwardX":
                 if (posX_rel+posX_current) < limit_min_x or (posX_current+posX_rel) > limit_max_x:
-                    self.ui.status_label_x.setText('Invalid travel input')                 
+                    new_pos = posX_current + posX_rel
+                    error_msg = f"X-axis forward step failed: New position {new_pos:.2f} mm would exceed travel limits [{limit_min_x:.2f}, {limit_max_x:.2f}] mm. Current position: {posX_current:.2f} mm, Step: {posX_rel:.2f} mm"
+                    self.display_error_message(error_msg, "ERROR")
+                    self.ui.status_label_x.setText('Step exceeds limits')                 
                 else:
                     self.xps.moveRelative(self.xpsAxes[0],posX_rel)
                     self.ui.status_label_x.setText('')
+                    self.clear_error_message()
                 self.updatePosition()
                 
             elif btn == "BackwardX":
                 if (posX_current-posX_rel) < limit_min_x or (posX_current-posX_rel) > limit_max_x:
-                    self.ui.status_label_x.setText('Invalid travel input')                  
+                    new_pos = posX_current - posX_rel
+                    error_msg = f"X-axis backward step failed: New position {new_pos:.2f} mm would exceed travel limits [{limit_min_x:.2f}, {limit_max_x:.2f}] mm. Current position: {posX_current:.2f} mm, Step: {posX_rel:.2f} mm"
+                    self.display_error_message(error_msg, "ERROR")
+                    self.ui.status_label_x.setText('Step exceeds limits')                  
                 else:
                     self.xps.moveRelative(self.xpsAxes[0],-1*posX_rel)
                     self.ui.status_label_x.setText('')
+                    self.clear_error_message()
                 self.updatePosition()
                 
         if self.xpsStageStatus[1][:11].upper() == "Ready state".upper():
             if btn == "AbsoluteZ" and self.ui.z_abs_mv_ck.isChecked():
                 if posZ_abs < limit_min_z or posZ_abs > limit_max_z:
-                    self.ui.status_label_z.setText('Invalid travel input')                  
+                    error_msg = f"Z-axis absolute move failed: Target position {posZ_abs:.2f} mm is outside travel limits [{limit_min_z:.2f}, {limit_max_z:.2f}] mm"
+                    self.display_error_message(error_msg, "ERROR")
+                    self.ui.status_label_z.setText('Position out of range')                  
                 else:
                     self.xps.moveAbsolute(self.xpsAxes[1],posZ_abs)
                     self.ui.status_label_z.setText('')
+                    self.clear_error_message()
                 self.updatePosition()
             elif btn == "ForwardZ":
                 if (posZ_current+posZ_rel) < limit_min_z or (posZ_current+posZ_rel) > limit_max_z:
-                    self.ui.status_label_z.setText('Invalid travel input')                   
+                    new_pos = posZ_current + posZ_rel
+                    error_msg = f"Z-axis forward step failed: New position {new_pos:.2f} mm would exceed travel limits [{limit_min_z:.2f}, {limit_max_z:.2f}] mm. Current position: {posZ_current:.2f} mm, Step: {posZ_rel:.2f} mm"
+                    self.display_error_message(error_msg, "ERROR")
+                    self.ui.status_label_z.setText('Step exceeds limits')                   
                 else:
                     self.xps.moveRelative(self.xpsAxes[1],posZ_rel)
                     self.ui.status_label_z.setText('')
+                    self.clear_error_message()
                 self.updatePosition()
                 
             elif btn == "BackwardZ":
                 if (posZ_current-posZ_rel) < limit_min_z or (posZ_current-posZ_rel) > limit_max_z:
-                    self.ui.status_label_z.setText('Invalid travel input')                   
+                    new_pos = posZ_current - posZ_rel
+                    error_msg = f"Z-axis backward step failed: New position {new_pos:.2f} mm would exceed travel limits [{limit_min_z:.2f}, {limit_max_z:.2f}] mm. Current position: {posZ_current:.2f} mm, Step: {posZ_rel:.2f} mm"
+                    self.display_error_message(error_msg, "ERROR")
+                    self.ui.status_label_z.setText('Step exceeds limits')                   
                 else:
                     self.xps.moveRelative(self.xpsAxes[1],-1*posZ_rel)
                     self.ui.status_label_z.setText('')
+                    self.clear_error_message()
                 self.updatePosition()
 
         else:
-            self.ui.status_label_z.setText('Stage not ready to move') 
-            self.ui.status_label_x.setText('Stage not ready to move') 
+            error_msg = f"XPS stage motion failed: Stage not in ready state. Current status - X: {self.xpsStageStatus[0]}, Z: {self.xpsStageStatus[1]}"
+            self.display_error_message(error_msg, "ERROR")
+            self.ui.status_label_z.setText('Stage not ready') 
+            self.ui.status_label_x.setText('Stage not ready') 
         #GUI Interface
         self.updateGUIStatus()
     
@@ -710,10 +761,13 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
             try:
                 limit = float(self.ui.x_min_trav_ip.text())
                 if limit < 0 or limit > 50:
+                    error_msg = f"X-axis minimum limit invalid: {limit:.2f} mm is outside allowed range [0, 50] mm"
+                    self.display_error_message(error_msg, "ERROR")
                     self.ui.status_label_x.setText('Invalid minimum limit')
                     self.ui.x_min_trav_ip.setText(str(self.xps.getminLimit(self.xpsAxes[0])))
                 else:
                     self.xps.setminLimit(self.xpsAxes[0],limit)
+                    self.clear_error_message()
             except:
                 pass
             
@@ -721,10 +775,13 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
             try:
                 limit = float(self.ui.x_max_trav_ip.text())
                 if limit < 0 or limit > 50:
+                    error_msg = f"X-axis maximum limit invalid: {limit:.2f} mm is outside allowed range [0, 50] mm"
+                    self.display_error_message(error_msg, "ERROR")
                     self.ui.status_label_x.setText('Invalid maximum limit')
                     self.ui.x_max_trav_ip.setText(str(self.xps.getmaxLimit(self.xpsAxes[0])))
                 else:
                     self.xps.setmaxLimit(self.xpsAxes[0],limit)
+                    self.clear_error_message()
             except:
                 pass
             
@@ -732,10 +789,13 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
             try:
                 limit = float(self.ui.z_min_trav_ip.text())
                 if limit < 0 or limit > 50:
+                    error_msg = f"Z-axis minimum limit invalid: {limit:.2f} mm is outside allowed range [0, 50] mm"
+                    self.display_error_message(error_msg, "ERROR")
                     self.ui.status_label_z.setText('Invalid minimum limit')
                     self.ui.z_min_trav_ip.setText(str(self.xps.getminLimit(self.xpsAxes[1])))
                 else:
                     self.xps.setminLimit(self.xpsAxes[1],limit)
+                    self.clear_error_message()
             except:
                 pass
             
@@ -743,10 +803,13 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
             try:
                 limit = float(self.ui.z_max_trav_ip.text())
                 if limit < 0 or limit > 50:
+                    error_msg = f"Z-axis maximum limit invalid: {limit:.2f} mm is outside allowed range [0, 50] mm"
+                    self.display_error_message(error_msg, "ERROR")
                     self.ui.status_label_z.setText('Invalid maximum limit')
                     self.ui.z_max_trav_ip.setText(str(self.xps.getmaxLimit(self.xpsAxes[1])))
                 else:
                     self.xps.setmaxLimit(self.xpsAxes[1],limit)
+                    self.clear_error_message()
             except:
                 pass
             
@@ -778,8 +841,6 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         self.ins_dg.set_voltage()
         #Then displays the change on the delay generator    
         self.ins_dg.display_amplitdue('CD')
-        
-        self.ref_delay_dg = str(self.ui.rel_delay_ip.text())
         
         if self.shot_mode == 'Single Rotation':
             #Calculates the delay for the delay generator
@@ -846,7 +907,8 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
             self.ins_dg.set_delay()
             
     
-    def StartRot(self):       
+    def StartRot(self):
+        
         # Setting up for values the rotation stage needs
         self.delay_cmd = ''
         self.rot_delay_cmd = ''
@@ -854,10 +916,17 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         self.rot_delay_cmd = 'DELAYROT+'+str(self.ref_delay)
         self.start_command = 'START'
         
-        # Assuming a 100 um steo along the cylinger's edge 
-        self.single_step = str(0.1)
-        self.ui.x_step_ip.setText(self.single_step)
+        # Assuming the sepration along the cylinders edge is the same as the shot
+        # separation
+        # converting it to mm
+        self.cylinder_sep_mm = float(self.ui.shot_sep_ip.text())*1000
+        self.ui.x_step_ip.setText(str(self.cylinder_sep_mm))
+        
         if (self.shot_mode == 'Single Rotation') and (self.rpm != ''):
+            # Recalculate RPM in case rep rate or other parameters changed
+            self.CalculateRPM()
+            # Set up the delay generator with current values
+            self.setDelaysDG()
             if self.ui.single_rot_fw_ck.isChecked():
                 try:
                     #Setting up the needed values for the rotation stage
@@ -879,6 +948,8 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                     self.ui.shots_taken_disp.setText(str(self.num_shot_taken))
                     
                     if self.done_sig == 'DONE':
+                        info_msg = f"Single rotation (forward) completed successfully. {self.shot_per_rot} shots taken. Moving stage forward by {self.cylinder_sep_mm:.2f} mm."
+                        self.display_error_message(info_msg, "INFO")
                         self.ui.status_label.setText('Finished the Rotation')
                         # Now stepping the stage forward
                         self.xpsMotionBtn("ForwardX")
@@ -886,7 +957,13 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                         
                     
                 except ConnectionRefusedError:
-                    self.ui.status_label.setText('Failed to connect to Raspberry Pi.')
+                    error_msg = f"Raspberry Pi connection failed: Unable to connect to RPi at {HOST}:{PORT}. Check network connection and ensure RPi server is running."
+                    self.display_error_message(error_msg, "ERROR")
+                    self.ui.status_label.setText('RPi connection failed')
+                except Exception as e:
+                    error_msg = f"Single rotation (forward) failed: {str(e)}"
+                    self.display_error_message(error_msg, "ERROR")
+                    self.ui.status_label.setText('Rotation error')
             elif self.ui.single_rot_bw_ck.isChecked():
                 try:
                     self.s.sendall(self.shot_mode.encode())
@@ -907,6 +984,8 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                     self.ui.shots_taken_disp.setText(str(self.num_shot_taken))
                     
                     if self.done_sig == 'DONE':
+                        info_msg = f"Single rotation (backward) completed successfully. {self.shot_per_rot} shots taken. Moving stage backward by {self.cylinder_sep_mm:.2f} mm."
+                        self.display_error_message(info_msg, "INFO")
                         self.ui.status_label.setText('Finished the Rotation')
                         # Now stepping the stage backwards
                         self.xpsMotionBtn("BackwardX")
@@ -914,19 +993,34 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                     
                     
                 except ConnectionRefusedError:
-                    self.ui.status_label.setText('Failed to connect to Raspberry Pi.')
+                    error_msg = f"Raspberry Pi connection failed: Unable to connect to RPi at {HOST}:{PORT}. Check network connection and ensure RPi server is running."
+                    self.display_error_message(error_msg, "ERROR")
+                    self.ui.status_label.setText('RPi connection failed')
+                except Exception as e:
+                    error_msg = f"Single rotation (backward) failed: {str(e)}"
+                    self.display_error_message(error_msg, "ERROR")
+                    self.ui.status_label.setText('Rotation error')
             else: 
-                self.ui.status_label.setText('Must Select a Forward or Backward Step')
+                error_msg = "Single rotation mode error: Must select either Forward or Backward direction checkbox before starting rotation."
+                self.display_error_message(error_msg, "WARNING")
+                self.ui.status_label.setText('Select rotation direction')
                  
 
         elif (self.shot_mode == 'N Shot') and (self.rpm != ''):
-            #Making sure we have the right shot #
+            # Recalculate RPM in case rep rate or other parameters changed
+            self.CalculateRPM()
+            
+            # Update step calculations for the current shot number
             self.updateStep4Shot()
-            #Turining it into an integer 
+            
+            # Set up the delay generator with current values
+            self.setDelaysDG()
+            
+            # Turning it into an integer 
             self.step_num = int(np.ceil(self.step_num))
             # Setting up the command
             self.shot_num_cmd = 'SHOTNO+'+str(self.step_num)
-            if (self.step_num+ self.step_taken) <= self.step_per_rev:
+            if (self.step_num + self.step_taken) <= self.step_per_rev:
                 try:
                     self.s.sendall(self.shot_mode.encode())
                     sleep(0.2)
@@ -936,7 +1030,7 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                     sleep(0.2)
                     self.s.sendall(self.delay_cmd.encode())
                     sleep(0.2)
-                    #Firing the delay generator then starting the rotation 
+                    # Firing the delay generator then starting the rotation 
                     self.s.sendall(self.start_command.encode())
                     self.FireIns()
                     
@@ -944,25 +1038,40 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                     self.done_sig = self.s.recv(1024).decode().strip()
                     
                     if self.done_sig == 'DONE':
+                        info_msg = f"N-shot mode completed successfully. {self.shot_num} shots taken ({self.step_num} steps). Total shots taken: {self.num_shot_taken + int(self.shot_per_step*self.step_num)}/{self.shot_per_rot}"
+                        self.display_error_message(info_msg, "INFO")
                         self.ui.status_label.setText('Finished taking the Shots')
                      
                     
                 except ConnectionRefusedError:
-                    self.ui.status_label.setText('Failed to connect to Raspberry Pi.')
+                    error_msg = f"Raspberry Pi connection failed: Unable to connect to RPi at {HOST}:{PORT}. Check network connection and ensure RPi server is running."
+                    self.display_error_message(error_msg, "ERROR")
+                    self.ui.status_label.setText('RPi connection failed')
+                except Exception as e:
+                    error_msg = f"N-shot mode failed: {str(e)}"
+                    self.display_error_message(error_msg, "ERROR")
+                    self.ui.status_label.setText('N-shot error')
                 
-                #Updating the status appropriately on the gui
+                # Updating the status appropriately on the gui
                 self.updateShotNo()
 
             else:
-                try:
-                    self.step_avail2take = self.step_per_rev - (self.step_taken)
-                    self.shot_avail2take = int((self.step_avail2take/self.step_per_rev)*self.shot_per_rot)
-                    self.ui.status_label.setText(f"Too many shots requested - Only have {self.shot_avail2take} shots left or {self.step_avail2take} steps left")
-                   
-                    
-                except ConnectionRefusedError:
-                    self.ui.status_label.setText('Failed to connect to Raspberry Pi.')
+                self.step_avail2take = self.step_per_rev - (self.step_taken)
+                self.shot_avail2take = int((self.step_avail2take/self.step_per_rev)*self.shot_per_rot)
+                error_msg = f"N-shot mode error: Requested {self.shot_num} shots ({self.step_num} steps) exceeds available capacity. Shots available: {self.shot_avail2take}, Steps available: {self.step_avail2take}, Steps taken: {self.step_taken}/{self.step_per_rev}"
+                self.display_error_message(error_msg, "ERROR")
+                self.ui.status_label.setText(f"Only {self.shot_avail2take} shots left")
                 
+        else:
+            # Handle case where RPM is not calculated
+            if self.rpm == '':
+                error_msg = "Rotation start failed: RPM not calculated. Please click 'Calculate RPM' button first to set motor speed based on target diameter and shot separation."
+                self.display_error_message(error_msg, "ERROR")
+                self.ui.status_label.setText('Calculate RPM first')
+            else:
+                error_msg = f"Rotation start failed: Unknown shot mode '{self.shot_mode}'. Please select either 'Single Rotation' or 'N Shot' mode."
+                self.display_error_message(error_msg, "ERROR")
+                self.ui.status_label.setText('Invalid shot mode')
         
     def DisconnectBtn(self):
         #Shutting down the XPS stages 

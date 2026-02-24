@@ -382,6 +382,9 @@
        <bold>true</bold>
       </font>
      </property>
+     <property name="autoFillBackground">
+      <bool>false</bool>
+     </property>
      <property name="text">
       <string>Connect XPS</string>
      </property>
@@ -1063,6 +1066,11 @@
      </item>
      <item>
       <property name="text">
+       <string>0.1</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
        <string>0.5</string>
       </property>
      </item>
@@ -1229,7 +1237,7 @@
       </property>
       <item>
        <property name="text">
-        <string>Single Rotation</string>
+        <string>Single Shot</string>
        </property>
       </item>
       <item>
@@ -2579,6 +2587,46 @@ p, li { white-space: pre-wrap; }
      </property>
      <property name="text">
       <string>Current Trigger Source</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="groupBox_14">
+    <property name="geometry">
+     <rect>
+      <x>980</x>
+      <y>600</y>
+      <width>411</width>
+      <height>81</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>11</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="title">
+     <string>Error Messages</string>
+    </property>
+    <widget class="QLabel" name="error_msg_label">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>30</y>
+       <width>391</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>11</pointsize>
+       <weight>50</weight>
+       <bold>false</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string/>
      </property>
     </widget>
    </widget>

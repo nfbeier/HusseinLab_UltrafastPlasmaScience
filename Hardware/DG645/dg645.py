@@ -69,7 +69,6 @@ class DelayGen:
            
     
     def get_trg_src(self, trg_src):
-        # Sets the offset on the delay gen
         src_val = {
             "Internal" : "0",
             "External rising edges" : "1",
