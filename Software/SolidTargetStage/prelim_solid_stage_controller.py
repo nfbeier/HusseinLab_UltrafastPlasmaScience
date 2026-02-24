@@ -264,6 +264,7 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         self.shot_sep_prelim = self.ui.shot_sep_ip.text()
         if  self.shot_sep_prelim != '':
             self.shot_sep = float(self.shot_sep_prelim)*1e-6
+            
     
     def update_shot_no(self):   
         shot_num_text = self.ui.shot_no_ip.text()
@@ -919,7 +920,7 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         # Assuming the sepration along the cylinders edge is the same as the shot
         # separation
         # converting it to mm
-        self.cylinder_sep_mm = float(self.ui.shot_sep_ip.text())*1000
+        self.cylinder_sep_mm = float(self.ui.shot_sep_ip.text())*1e-3
         self.ui.x_step_ip.setText(str(self.cylinder_sep_mm))
         
         if (self.shot_mode == 'Single Rotation') and (self.rpm != ''):
