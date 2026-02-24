@@ -2613,9 +2613,9 @@ p, li { white-space: pre-wrap; }
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>10</y>
-       <width>391</width>
-       <height>41</height>
+       <y>30</y>
+       <width>471</width>
+       <height>131</height>
       </rect>
      </property>
      <property name="font">
@@ -2627,6 +2627,9 @@ p, li { white-space: pre-wrap; }
      </property>
      <property name="text">
       <string/>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
      </property>
     </widget>
    </widget>

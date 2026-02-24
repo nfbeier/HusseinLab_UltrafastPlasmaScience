@@ -82,10 +82,10 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         
         # XPS GUI Setup
         self.ui.x_min_trav_ip.setText('0')
-        self.ui.x_max_trav_ip.setText('20')
+        self.ui.x_max_trav_ip.setText('46')
         
         self.ui.z_min_trav_ip.setText('0')
-        self.ui.z_max_trav_ip.setText('20')
+        self.ui.z_max_trav_ip.setText('50')
         
         self.ui.x_abs_mv_ip.setText('0')
         self.ui.z_abs_mv_ip.setText('0')
