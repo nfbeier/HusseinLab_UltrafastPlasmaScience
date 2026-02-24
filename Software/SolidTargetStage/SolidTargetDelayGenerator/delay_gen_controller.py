@@ -35,7 +35,7 @@ class delay_gen_app(QtWidgets.QMainWindow):
         self.ui.setupUi(self)
     
         #Connecting the instrument
-        self.ins_dg = DelayGen("COM4", 9600) # dg645
+        self.ins_dg = DelayGen("COM5", 9600) # dg645
         
         # Reads in previous input for different channel levels 
         self.read_json()
@@ -99,6 +99,7 @@ class delay_gen_app(QtWidgets.QMainWindow):
     def read_json(self):
         with open("Software\SolidTargetStage\SolidTargetDelayGenerator\delay_gen_gui_inputs.json", "r") as read_file:
             inputs = json.load(read_file)
+            print(inputs)
         self.dg_values = {
             "A" : [inputs["A_ch"], inputs["A_delay"], inputs["A_delay_unit"]],
             "B" : [inputs["B_ch"], inputs["B_delay"], inputs["B_delay_unit"]],
@@ -270,7 +271,7 @@ class delay_gen_app(QtWidgets.QMainWindow):
         # First writing the json file to save current settings
         with open("Software\SolidTargetStage\SolidTargetDelayGenerator\delay_gen_gui_inputs.json", "r+") as write_file:
             inputs = json.load(write_file)
-            
+
             for i in ["A", "B", "C", "D", "E", "F", "G", "H"]:
                 inputs[i+"_ch"] = self.dg_values[i][0]
                 inputs[i+"_delay"] = self.dg_values[i][1]
@@ -278,7 +279,7 @@ class delay_gen_app(QtWidgets.QMainWindow):
             for i in ["AB", "CD", "EF", "GH"]:
                 inputs[i+"_offset"] = self.dg_values[i][0]
                 inputs[i+"_Amp"] = self.dg_values[i][1]
-            
+
             # Save the current trigger source
             current_trig_src = self.ins_dg.query_trg_src()
             inputs["trigger_source"] = current_trig_src
