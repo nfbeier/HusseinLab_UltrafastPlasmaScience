@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1512, 949)
+        MainWindow.resize(1512, 860)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.frame = QtWidgets.QFrame(self.centralwidget)
@@ -1002,7 +1002,7 @@ class Ui_MainWindow(object):
         self.label_4.setText(_translate("MainWindow", "Minimum Travel (mm)"))
         self.label_7.setText(_translate("MainWindow", "Maximum Travel (mm)"))
         self.label_3.setText(_translate("MainWindow", "IP address"))
-        self.ip_address_ip.setText(_translate("MainWindow", "192.168.0.254"))
+        self.ip_address_ip.setText(_translate("MainWindow", "192.168.0.79"))
         self.label_8.setText(_translate("MainWindow", "Status"))
         self.connect_xps_bt.setText(_translate("MainWindow", "Connect XPS"))
         self.init_xps_bt.setText(_translate("MainWindow", "Initialize"))
