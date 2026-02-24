@@ -944,17 +944,25 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                     # Checking for a signal back 
                     self.done_sig = self.s.recv(1024).decode().strip()
                     
-                    #Upating the shots taken 
-                    self.num_shot_taken = self.num_shot_taken + self.shot_per_rot
-                    self.ui.shots_taken_disp.setText(str(self.num_shot_taken))
-                    
                     if self.done_sig == 'DONE':
+                        #Updating the shots taken only after confirmation
+                        self.num_shot_taken = self.num_shot_taken + self.shot_per_rot
+                        self.ui.shots_taken_disp.setText(str(self.num_shot_taken))
+                        
                         info_msg = f"Single rotation (forward) completed successfully. {self.shot_per_rot} shots taken. Moving stage forward by {self.cylinder_sep_mm:.2f} mm."
                         self.display_error_message(info_msg, "INFO")
                         self.ui.status_label.setText('Finished the Rotation')
                         # Now stepping the stage forward
                         self.xpsMotionBtn("ForwardX")
                         self.ui.status_label.setText('Rotation Complete and Stage Moved, Ready for Next Fire')
+                    elif self.done_sig == 'FAIL':
+                        error_msg = "Single rotation (forward) failed: Trigger signal not detected within timeout. Check delay generator trigger and connections."
+                        self.display_error_message(error_msg, "ERROR")
+                        self.ui.status_label.setText('Trigger not detected')
+                    else:
+                        error_msg = f"Single rotation (forward) failed: Unexpected response from RPi: '{self.done_sig}'"
+                        self.display_error_message(error_msg, "ERROR")
+                        self.ui.status_label.setText('Unexpected RPi response')
                         
                     
                 except ConnectionRefusedError:
@@ -979,18 +987,26 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                     
                     # Checking for a signal back 
                     self.done_sig = self.s.recv(1024).decode().strip()
-                                        
-                    #Upating the shots taken 
-                    self.num_shot_taken = self.num_shot_taken + self.shot_per_rot
-                    self.ui.shots_taken_disp.setText(str(self.num_shot_taken))
                     
                     if self.done_sig == 'DONE':
+                        #Updating the shots taken only after confirmation
+                        self.num_shot_taken = self.num_shot_taken + self.shot_per_rot
+                        self.ui.shots_taken_disp.setText(str(self.num_shot_taken))
+                        
                         info_msg = f"Single rotation (backward) completed successfully. {self.shot_per_rot} shots taken. Moving stage backward by {self.cylinder_sep_mm:.2f} mm."
                         self.display_error_message(info_msg, "INFO")
                         self.ui.status_label.setText('Finished the Rotation')
                         # Now stepping the stage backwards
                         self.xpsMotionBtn("BackwardX")
                         self.ui.status_label.setText('Rotation Complete and Stage Moved, Ready for Next Fire')
+                    elif self.done_sig == 'FAIL':
+                        error_msg = "Single rotation (backward) failed: Trigger signal not detected within timeout. Check delay generator trigger and connections."
+                        self.display_error_message(error_msg, "ERROR")
+                        self.ui.status_label.setText('Trigger not detected')
+                    else:
+                        error_msg = f"Single rotation (backward) failed: Unexpected response from RPi: '{self.done_sig}'"
+                        self.display_error_message(error_msg, "ERROR")
+                        self.ui.status_label.setText('Unexpected RPi response')
                     
                     
                 except ConnectionRefusedError:
@@ -1042,6 +1058,14 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                         info_msg = f"N-shot mode completed successfully. {self.shot_num} shots taken ({self.step_num} steps). Total shots taken: {self.num_shot_taken + int(self.shot_per_step*self.step_num)}/{self.shot_per_rot}"
                         self.display_error_message(info_msg, "INFO")
                         self.ui.status_label.setText('Finished taking the Shots')
+                    elif self.done_sig == 'FAIL':
+                        error_msg = "N-shot mode failed: Trigger signal not detected within timeout. Check delay generator trigger and connections."
+                        self.display_error_message(error_msg, "ERROR")
+                        self.ui.status_label.setText('Trigger not detected')
+                    else:
+                        error_msg = f"N-shot mode failed: Unexpected response from RPi: '{self.done_sig}'"
+                        self.display_error_message(error_msg, "ERROR")
+                        self.ui.status_label.setText('Unexpected RPi response')
                      
                     
                 except ConnectionRefusedError:
