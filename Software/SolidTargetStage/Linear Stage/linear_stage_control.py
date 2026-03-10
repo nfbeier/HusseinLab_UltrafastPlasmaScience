@@ -11,6 +11,11 @@ from scipy import constants
 from PyQt5 import QtCore, QtGui, QtWidgets
 import os
 
+# Add the script's own directory to sys.path so local modules (e.g. stage_controller_test_GUI) are found
+script_dir = os.path.dirname(os.path.abspath(__file__))
+if script_dir not in sys.path:
+    sys.path.insert(0, script_dir)
+
 # Makes sure you are in the right path!
 cwd = os.getcwd()
 if "HusseinLab_UltrafastPlasmaScience" not in cwd.split(os.path.sep):
