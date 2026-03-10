@@ -5,7 +5,7 @@ Created on Fri Jul 18 09:31:21 2025
 
 @author: christina
 """
-import time, sys
+import time, sys, json
 import numpy as np
 from scipy import constants
 from PyQt5 import QtCore, QtGui, QtWidgets
@@ -94,6 +94,17 @@ class MainWindow(QtWidgets.QMainWindow):
         # Start in independent mode — disable together widgets
         self.updateMovementMode()
         
+        #Save and recall position buttons (two experiments: objective and target)
+        self.saved_positions_files = {
+            "objective": os.path.join(script_dir, "saved_positions_objective.json"),
+            "target": os.path.join(script_dir, "saved_positions_target.json")
+        }
+        self._initSavedPositions()
+        self.ui.save_current_pos_obj_bt.clicked.connect(lambda: self.savePosition("objective"))
+        self.ui.recall_obj_saved_bt.clicked.connect(lambda: self.recallPosition("objective"))
+        self.ui.save_current_pos_target_bt.clicked.connect(lambda: self.savePosition("target"))
+        self.ui.recall_target_saved_bt.clicked.connect(lambda: self.recallPosition("target"))
+        
         #Stop Button
         self.ui.stop_bt.clicked.connect(self.stopBtn)
         
@@ -121,6 +132,10 @@ class MainWindow(QtWidgets.QMainWindow):
             self.ui.enable_dis_xps_bt.setEnabled(True)
             self.ui.init_xps_bt.setEnabled(True)
             self.ui.stop_bt.setEnabled(True)
+            self.ui.save_current_pos_obj_bt.setEnabled(True)
+            self.ui.recall_obj_saved_bt.setEnabled(True)
+            self.ui.save_current_pos_target_bt.setEnabled(True)
+            self.ui.recall_target_saved_bt.setEnabled(True)
             
             #Selecting the different stages
             self.ui.x_stage_select.currentIndexChanged.connect(lambda: self.updateGroup(0))
@@ -182,10 +197,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.z_step_b_bt.setEnabled(independent and ready)
         self.ui.x_abs_mv_ck.setEnabled(independent)
         self.ui.z_abs_mv_ck.setEnabled(independent)
-        self.ui.x_abs_mv_ip.setEnabled(independent)
-        self.ui.z_abs_mv_ip.setEnabled(independent)
-        self.ui.x_step_ip.setEnabled(independent)
-        self.ui.z_step_ip.setEnabled(independent)
         
         # Together-mode widgets
         self.ui.abs_mv_together_bt.setEnabled(together and ready)
@@ -417,6 +428,53 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.xps.disableGroup(self.xpsAxes[1])
             self.updateGUIStatus()
             QtWidgets.QApplication.quit()
+    
+    def _initSavedPositions(self):
+        """Create saved positions files with defaults if they don't exist."""
+        default = {"x_pos": 0.1, "z_pos": 0.1}
+        for filepath in self.saved_positions_files.values():
+            if not os.path.exists(filepath):
+                with open(filepath, 'w') as f:
+                    json.dump(default, f, indent=2)
+    
+    def savePosition(self, experiment):
+        """Save the current stage positions to the experiment's JSON file."""
+        if self.xps:
+            try:
+                x_pos = float(self.xps.getStagePosition(self.xpsAxes[0]))
+                z_pos = float(self.xps.getStagePosition(self.xpsAxes[1]))
+                positions = {"x_pos": x_pos, "z_pos": z_pos}
+                with open(self.saved_positions_files[experiment], 'w') as f:
+                    json.dump(positions, f, indent=2)
+                print(f"Saved {experiment} positions: X={x_pos} mm, Z={z_pos} mm")
+            except Exception as e:
+                print(f"Error saving {experiment} positions: {e}")
+    
+    def recallPosition(self, experiment):
+        """Recall saved positions and move stages to those positions."""
+        if self.xps:
+            try:
+                with open(self.saved_positions_files[experiment], 'r') as f:
+                    positions = json.load(f)
+                x_pos = positions["x_pos"]
+                z_pos = positions["z_pos"]
+                
+                # Update the absolute move inputs to show where we're going
+                self.ui.x_abs_mv_ip.setText(str(x_pos))
+                self.ui.z_abs_mv_ip.setText(str(z_pos))
+                
+                # Move both stages to saved positions
+                if self.xpsStageStatus[0][:11].upper() == "Ready state".upper():
+                    self.xps.moveAbsolute(self.xpsAxes[0], x_pos)
+                if self.xpsStageStatus[1][:11].upper() == "Ready state".upper():
+                    self.xps.moveAbsolute(self.xpsAxes[1], z_pos)
+                
+                self.updatePosition()
+                print(f"Recalled {experiment} positions: X={x_pos} mm, Z={z_pos} mm")
+            except FileNotFoundError:
+                print(f"No saved {experiment} positions file found")
+            except Exception as e:
+                print(f"Error recalling {experiment} positions: {e}")
             
             
         
