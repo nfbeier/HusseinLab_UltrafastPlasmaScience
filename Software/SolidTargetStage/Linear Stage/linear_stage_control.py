@@ -19,6 +19,7 @@ if "HusseinLab_UltrafastPlasmaScience" not in cwd.split(os.path.sep):
 cwd = os.path.sep.join(
     cwd.split(os.path.sep)[: cwd.split(os.path.sep).index("HusseinLab_UltrafastPlasmaScience") + 1]
 )
+os.chdir(cwd)
 sys.path.insert(0, cwd)
 
 from stage_controller_test_GUI import Ui_Dialog
@@ -76,6 +77,17 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.z_abs_mv_bt.clicked.connect(lambda: self.xpsMotionBtn("AbsoluteZ"))
         self.ui.z_step_f_bt.clicked.connect(lambda: self.xpsMotionBtn("ForwardZ"))
         self.ui.z_step_b_bt.clicked.connect(lambda: self.xpsMotionBtn("BackwardZ"))
+        
+        #Moving together buttons
+        self.ui.abs_mv_together_bt.clicked.connect(lambda: self.xpsMotionBtn("AbsoluteTogether"))
+        self.ui.step_fwd_together_bt.clicked.connect(lambda: self.xpsMotionBtn("ForwardTogether"))
+        self.ui.step_bckwd_together_bt.clicked.connect(lambda: self.xpsMotionBtn("BackwardTogether"))
+        
+        #Movement mode combo box
+        self.ui.stage_movement_select.currentIndexChanged.connect(self.updateMovementMode)
+        
+        # Start in independent mode — disable together widgets
+        self.updateMovementMode()
         
         #Stop Button
         self.ui.stop_bt.clicked.connect(self.stopBtn)
@@ -144,6 +156,38 @@ class MainWindow(QtWidgets.QMainWindow):
         self.xpsStageStatus = [self.xps.getStageStatus(axis) for axis in self.xpsAxes]
         self.updateGUIStatus()
 
+    def updateMovementMode(self):
+        """Enable/disable widgets based on the selected movement mode."""
+        mode = self.ui.stage_movement_select.currentIndex()  # 0 = independent, 1 = together
+        independent = (mode == 0)
+        together = (mode == 1)
+        
+        # Check whether stages are ready (motion buttons should only be active if ready)
+        ready = False
+        if self.xps and hasattr(self, 'xpsStageStatus'):
+            if self.xpsStageStatus[0][:11].upper() == "Ready state".upper():
+                ready = True
+        
+        # Independent-mode widgets
+        self.ui.x_abs_mv_bt.setEnabled(independent and ready)
+        self.ui.x_step_f_bt.setEnabled(independent and ready)
+        self.ui.x_step_b_bt.setEnabled(independent and ready)
+        self.ui.z_abs_mv_bt.setEnabled(independent and ready)
+        self.ui.z_step_f_bt.setEnabled(independent and ready)
+        self.ui.z_step_b_bt.setEnabled(independent and ready)
+        self.ui.x_abs_mv_ck.setEnabled(independent)
+        self.ui.z_abs_mv_ck.setEnabled(independent)
+        self.ui.x_abs_mv_ip.setEnabled(independent)
+        self.ui.z_abs_mv_ip.setEnabled(independent)
+        self.ui.x_step_ip.setEnabled(independent)
+        self.ui.z_step_ip.setEnabled(independent)
+        
+        # Together-mode widgets
+        self.ui.abs_mv_together_bt.setEnabled(together and ready)
+        self.ui.step_fwd_together_bt.setEnabled(together and ready)
+        self.ui.step_bckwd_together_bt.setEnabled(together and ready)
+        self.ui.together_abs_mv_ck.setEnabled(together)
+
     def xpsMotionBtn(self, btn):
         posX_current = float(self.xps.getStagePosition(self.xpsAxes[0]))
         posZ_current = float(self.xps.getStagePosition(self.xpsAxes[1]))
@@ -203,8 +247,40 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.xps.moveRelative(self.xpsAxes[1],-1*posZ_rel)
                 self.updatePosition()
 
-        else:
-            print("Stage not ready to move")
+        # --- Together mode: move both axes simultaneously ---
+        if self.xpsStageStatus[0][:11].upper() == "Ready state".upper() and self.xpsStageStatus[1][:11].upper() == "Ready state".upper():
+            if btn == "AbsoluteTogether" and self.ui.together_abs_mv_ck.isChecked():
+                x_ok = limit_min_x <= posX_abs <= limit_max_x
+                z_ok = limit_min_z <= posZ_abs <= limit_max_z
+                if not x_ok or not z_ok:
+                    print("Invalid travel input for together absolute move")
+                else:
+                    self.xps.moveAbsolute(self.xpsAxes[0], posX_abs)
+                    self.xps.moveAbsolute(self.xpsAxes[1], posZ_abs)
+                self.updatePosition()
+                
+            elif btn == "ForwardTogether":
+                x_ok = limit_min_x <= (posX_current + posX_rel) <= limit_max_x
+                z_ok = limit_min_z <= (posZ_current + posZ_rel) <= limit_max_z
+                if not x_ok or not z_ok:
+                    print("Invalid travel input for together forward step")
+                else:
+                    self.xps.moveRelative(self.xpsAxes[0], posX_rel)
+                    self.xps.moveRelative(self.xpsAxes[1], posZ_rel)
+                self.updatePosition()
+                
+            elif btn == "BackwardTogether":
+                x_ok = limit_min_x <= (posX_current - posX_rel) <= limit_max_x
+                z_ok = limit_min_z <= (posZ_current - posZ_rel) <= limit_max_z
+                if not x_ok or not z_ok:
+                    print("Invalid travel input for together backward step")
+                else:
+                    self.xps.moveRelative(self.xpsAxes[0], -1*posX_rel)
+                    self.xps.moveRelative(self.xpsAxes[1], -1*posZ_rel)
+                self.updatePosition()
+        elif btn in ("AbsoluteTogether", "ForwardTogether", "BackwardTogether"):
+            print("Both stages must be ready to move together")
+
         #GUI Interface
         self.updateGUIStatus()
     
@@ -221,6 +297,9 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.ui.z_abs_mv_bt.setEnabled(False)
                 self.ui.z_step_f_bt.setEnabled(False)
                 self.ui.z_step_b_bt.setEnabled(False)
+                self.ui.abs_mv_together_bt.setEnabled(False)
+                self.ui.step_fwd_together_bt.setEnabled(False)
+                self.ui.step_bckwd_together_bt.setEnabled(False)
                 self.ui.x_status.setText("Not Initialized")
                 self.ui.z_status.setText("Not Initialized")
                 
@@ -233,6 +312,9 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.ui.z_abs_mv_bt.setEnabled(False)
                 self.ui.z_step_f_bt.setEnabled(False)
                 self.ui.z_step_b_bt.setEnabled(False)
+                self.ui.abs_mv_together_bt.setEnabled(False)
+                self.ui.step_fwd_together_bt.setEnabled(False)
+                self.ui.step_bckwd_together_bt.setEnabled(False)
                 self.ui.x_status.setText("Not Homed")
                 self.ui.z_status.setText("Not Homed")
                 
@@ -246,6 +328,9 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.ui.z_abs_mv_bt.setEnabled(False)
                 self.ui.z_step_f_bt.setEnabled(False)
                 self.ui.z_step_b_bt.setEnabled(False)
+                self.ui.abs_mv_together_bt.setEnabled(False)
+                self.ui.step_fwd_together_bt.setEnabled(False)
+                self.ui.step_bckwd_together_bt.setEnabled(False)
                 self.ui.x_status.setText("Disabled")
                 self.ui.z_status.setText("Disabled")
                 
@@ -253,14 +338,10 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.ui.enable_dis_xps_bt.setEnabled(True)
                 self.ui.init_xps_bt.setEnabled(False)
                 self.ui.home_xps_bt.setEnabled(False)
-                self.ui.x_abs_mv_bt.setEnabled(True)
-                self.ui.x_step_f_bt.setEnabled(True)
-                self.ui.x_step_b_bt.setEnabled(True)
-                self.ui.z_abs_mv_bt.setEnabled(True)
-                self.ui.z_step_f_bt.setEnabled(True)
-                self.ui.z_step_b_bt.setEnabled(True)
                 self.ui.x_status.setText("Enabled")
                 self.ui.z_status.setText("Enabled")
+                # Delegate motion button enable/disable to the movement mode handler
+                self.updateMovementMode()
                    
         self.updatePosition()
         

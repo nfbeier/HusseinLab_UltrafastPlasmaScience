@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>570</width>
-    <height>768</height>
+    <width>549</width>
+    <height>860</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -282,7 +282,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>192.168.0.254</string>
+     <string>192.168.0.79</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_8">
@@ -395,7 +395,7 @@
      <x>40</x>
      <y>310</y>
      <width>471</width>
-     <height>391</height>
+     <height>631</height>
     </rect>
    </property>
    <widget class="QLabel" name="label_9">
@@ -447,7 +447,7 @@
     <property name="geometry">
      <rect>
       <x>80</x>
-      <y>90</y>
+      <y>140</y>
       <width>141</width>
       <height>41</height>
      </rect>
@@ -463,7 +463,7 @@
     <property name="geometry">
      <rect>
       <x>250</x>
-      <y>90</y>
+      <y>140</y>
       <width>141</width>
       <height>41</height>
      </rect>
@@ -479,7 +479,7 @@
     <property name="geometry">
      <rect>
       <x>80</x>
-      <y>230</y>
+      <y>360</y>
       <width>141</width>
       <height>41</height>
      </rect>
@@ -495,7 +495,7 @@
     <property name="geometry">
      <rect>
       <x>250</x>
-      <y>230</y>
+      <y>360</y>
       <width>141</width>
       <height>41</height>
      </rect>
@@ -531,7 +531,7 @@
     <property name="geometry">
      <rect>
       <x>80</x>
-      <y>140</y>
+      <y>190</y>
       <width>131</width>
       <height>21</height>
      </rect>
@@ -541,7 +541,7 @@
     <property name="geometry">
      <rect>
       <x>250</x>
-      <y>140</y>
+      <y>190</y>
       <width>131</width>
       <height>21</height>
      </rect>
@@ -551,7 +551,7 @@
     <property name="geometry">
      <rect>
       <x>80</x>
-      <y>270</y>
+      <y>400</y>
       <width>131</width>
       <height>21</height>
      </rect>
@@ -561,7 +561,7 @@
     <property name="geometry">
      <rect>
       <x>250</x>
-      <y>270</y>
+      <y>400</y>
       <width>131</width>
       <height>21</height>
      </rect>
@@ -571,7 +571,7 @@
     <property name="geometry">
      <rect>
       <x>80</x>
-      <y>170</y>
+      <y>220</y>
       <width>141</width>
       <height>21</height>
      </rect>
@@ -584,7 +584,7 @@
     <property name="geometry">
      <rect>
       <x>240</x>
-      <y>170</y>
+      <y>220</y>
       <width>141</width>
       <height>21</height>
      </rect>
@@ -600,7 +600,7 @@
     <property name="geometry">
      <rect>
       <x>80</x>
-      <y>200</y>
+      <y>250</y>
       <width>141</width>
       <height>31</height>
      </rect>
@@ -616,7 +616,7 @@
     <property name="geometry">
      <rect>
       <x>240</x>
-      <y>200</y>
+      <y>250</y>
       <width>141</width>
       <height>31</height>
      </rect>
@@ -632,7 +632,7 @@
     <property name="geometry">
      <rect>
       <x>80</x>
-      <y>300</y>
+      <y>430</y>
       <width>141</width>
       <height>31</height>
      </rect>
@@ -648,7 +648,7 @@
     <property name="geometry">
      <rect>
       <x>80</x>
-      <y>340</y>
+      <y>470</y>
       <width>141</width>
       <height>31</height>
      </rect>
@@ -664,7 +664,7 @@
     <property name="geometry">
      <rect>
       <x>240</x>
-      <y>300</y>
+      <y>430</y>
       <width>141</width>
       <height>31</height>
      </rect>
@@ -680,7 +680,7 @@
     <property name="geometry">
      <rect>
       <x>240</x>
-      <y>340</y>
+      <y>470</y>
       <width>141</width>
       <height>31</height>
      </rect>
@@ -689,28 +689,135 @@
      <string>Z Step Backward</string>
     </property>
    </widget>
-  </widget>
-  <widget class="QPushButton" name="stop_bt">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="geometry">
-    <rect>
-     <x>180</x>
-     <y>690</y>
-     <width>171</width>
-     <height>61</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <weight>75</weight>
-     <bold>true</bold>
-    </font>
-   </property>
-   <property name="text">
-    <string>STOP</string>
-   </property>
+   <widget class="QPushButton" name="abs_mv_together_bt">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>120</x>
+      <y>320</y>
+      <width>201</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Abs Move Together</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="step_fwd_together_bt">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>130</x>
+      <y>510</y>
+      <width>201</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Step Forward Togther</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="step_bckwd_together_bt">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>130</x>
+      <y>540</y>
+      <width>201</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Step Backward Togther</string>
+    </property>
+   </widget>
+   <widget class="Line" name="line">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>120</y>
+      <width>431</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="Line" name="line_2">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>350</y>
+      <width>431</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="stage_movement_select">
+    <property name="geometry">
+     <rect>
+      <x>130</x>
+      <y>100</y>
+      <width>181</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <item>
+     <property name="text">
+      <string>Move independently</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Move Together</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QCheckBox" name="together_abs_mv_ck">
+    <property name="geometry">
+     <rect>
+      <x>150</x>
+      <y>290</y>
+      <width>141</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Enable Abs. Move</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="stop_bt">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>100</x>
+      <y>580</y>
+      <width>241</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>STOP</string>
+    </property>
+   </widget>
   </widget>
  </widget>
  <resources/>
