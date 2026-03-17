@@ -97,7 +97,7 @@ class delay_gen_app(QtWidgets.QMainWindow):
         
     #Reads in the json file
     def read_json(self):
-        with open("Software\SolidTargetStage\SolidTargetDelayGenerator\delay_gen_gui_inputs.json", "r") as read_file:
+        with open("delay_gen_gui_inputs.json", "r") as read_file:
             inputs = json.load(read_file)
             print(inputs)
         self.dg_values = {
@@ -269,7 +269,7 @@ class delay_gen_app(QtWidgets.QMainWindow):
               
     def DisconnectBtn(self):
         # First writing the json file to save current settings
-        with open("Software\SolidTargetStage\SolidTargetDelayGenerator\delay_gen_gui_inputs.json", "r+") as write_file:
+        with open("delay_gen_gui_inputs.json", "r+") as write_file:
             inputs = json.load(write_file)
 
             for i in ["A", "B", "C", "D", "E", "F", "G", "H"]:
