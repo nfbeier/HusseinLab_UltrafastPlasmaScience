@@ -48,7 +48,7 @@ class delay_gen_app(QtWidgets.QMainWindow):
         self.ui.setupUi(self)
     
         #Connecting the instrument
-        self.ins_dg = DelayGen("COM5", 9600) # dg645
+        self.ins_dg = DelayGen("COM4", 9600) # dg645
         
         # Reads in previous input for different channel levels 
         self.read_json()
