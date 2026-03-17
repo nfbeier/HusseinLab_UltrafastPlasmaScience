@@ -336,20 +336,37 @@ class delay_gen_app(QtWidgets.QMainWindow):
     
     
     def FireBtn(self):
-        self.ins_dg.single_shot_fire_dg()
-        
-        # If camera is connected and in hardware trigger mode, 
-        # capture the triggered image
-        if self.cam_connected and self.cam.trigger_mode == "hardware":
-            if self.cam.is_acquiring:
-                image = self.cam.capture_triggered_image(timeout_ms=5000)
-                if image is not None:
-                    self.last_saved_image = image
-                    self.image_counter += 1
-                    self.display_image(image, self.ui.CapturedImage)
-                    self.cam_log(f"Captured triggered image #{self.image_counter}")
-                else:
-                    self.cam_log("Failed to capture triggered image.")
+        # Automatically capture an image if the camera is connected
+        if self.cam_connected:
+            # Stop live feed if running
+            if self.video_running:
+                self.stop_video()
+            
+            # Arm the camera FIRST (must be ready before the trigger arrives)
+            self.cam.configure_trigger(source="hardware")
+            self.cam.start_acquisition()
+            
+            # NOW fire the delay generator (sends the trigger pulse)
+            self.ins_dg.single_shot_fire_dg()
+            
+            # Capture the triggered image
+            image = self.cam.capture_triggered_image(timeout_ms=5000)
+            if image is not None:
+                self.last_saved_image = image
+                self.image_counter += 1
+                self.display_image(image, self.ui.CapturedImage)
+                self.cam_log(f"Captured triggered image #{self.image_counter}")
+            else:
+                self.cam_log("Failed to capture triggered image.")
+            
+            # Switch back to continuous mode and resume live feed
+            self.cam.stop_acquisition()
+            self.cam.configure_continuous()
+            self.ui.ModeComboBox.setCurrentIndex(0)
+            self.start_video()
+        else:
+            # No camera connected, just fire the delay generator
+            self.ins_dg.single_shot_fire_dg()
     
     # ==================================================================
     #  Camera Methods
