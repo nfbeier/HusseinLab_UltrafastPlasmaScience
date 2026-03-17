@@ -8,6 +8,12 @@ Created on Wed Mar 12 16:08:00 2026
 BlackflyCamera class for controlling the FLIR BFS-U3-13Y3M-C USB 3.1 Blackfly
 camera via PySpin. Designed to work alongside the DG645 delay generator for 
 hardware-triggered image acquisition.
+
+Requirements:
+    - Python 3.10 environment
+    - PySpin (Spinnaker Python SDK)
+    - numpy < 2  (PySpin was compiled against NumPy 1.x and is incompatible
+      with NumPy 2.x. Install with: pip install "numpy<2")
 """
 
 import PySpin
@@ -311,6 +317,12 @@ class BlackflyCamera:
         ----------
         exposure_us : float
             Exposure time in microseconds.
+
+        Returns
+        -------
+        float
+            The actual exposure time (in us) as accepted by the camera.
+            The camera may round to the nearest valid value.
         """
         self._check_connected()
         nodemap = self.camera.GetNodeMap()
@@ -330,7 +342,11 @@ class BlackflyCamera:
         exposure_us = max(exposure_time_node.GetMin(),
                          min(exposure_us, exposure_time_node.GetMax()))
         exposure_time_node.SetValue(exposure_us)
-        print(f"Exposure time set to {exposure_us:.1f} us")
+
+        # Read back the actual value the camera accepted
+        actual_exposure = exposure_time_node.GetValue()
+        print(f"Exposure time set to {actual_exposure:.1f} us")
+        return actual_exposure
 
     def set_gain(self, gain_db):
         """
@@ -340,6 +356,11 @@ class BlackflyCamera:
         ----------
         gain_db : float
             Gain in dB.
+
+        Returns
+        -------
+        float
+            The actual gain (in dB) as accepted by the camera.
         """
         self._check_connected()
         nodemap = self.camera.GetNodeMap()
@@ -356,7 +377,11 @@ class BlackflyCamera:
         gain_db = max(gain_node.GetMin(),
                       min(gain_db, gain_node.GetMax()))
         gain_node.SetValue(gain_db)
-        print(f"Gain set to {gain_db:.2f} dB")
+
+        # Read back the actual value the camera accepted
+        actual_gain = gain_node.GetValue()
+        print(f"Gain set to {actual_gain:.2f} dB")
+        return actual_gain
 
     # ------------------------------------------------------------------
     #  Disconnect / Cleanup

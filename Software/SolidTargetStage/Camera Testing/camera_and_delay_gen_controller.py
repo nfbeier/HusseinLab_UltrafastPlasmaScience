@@ -8,6 +8,13 @@ Created on Tue Jul 22 16:21:51 2025
 Delay Generator + FLIR Camera Controller GUI.
 Controls the DG645 delay generator and a FLIR Blackfly S USB3 camera.
 The delay generator can trigger the camera in hardware trigger mode.
+
+Requirements:
+    - Python 3.10 environment
+    - PySpin (Spinnaker Python SDK)
+    - numpy < 2  (PySpin was compiled against NumPy 1.x and is incompatible
+      with NumPy 2.x. Install with: pip install "numpy<2")
+    - pyqtgraph
 """
 
 from PyQt5 import QtWidgets, uic, QtGui, QtCore
@@ -19,6 +26,7 @@ from time import sleep
 from delay_gen_w_cam import Ui_MainWindow
 import os
 import cv2
+import pyqtgraph as pg
 
 # Makes sure you are in the right path!
 cwd = os.getcwd()
@@ -114,6 +122,12 @@ class delay_gen_app(QtWidgets.QMainWindow):
         self.last_saved_image = None
         self.image_counter = 0
         
+        # Hide ROI and menu buttons on the promoted ImageView widgets
+        self.ui.LiveFeedLabel.ui.roiBtn.hide()
+        self.ui.LiveFeedLabel.ui.menuBtn.hide()
+        self.ui.CapturedImage.ui.roiBtn.hide()
+        self.ui.CapturedImage.ui.menuBtn.hide()
+        
         # Set up the video feed timer
         self.video_timer = QtCore.QTimer(self)
         self.video_timer.timeout.connect(self.update_video_feed)
@@ -125,6 +139,11 @@ class delay_gen_app(QtWidgets.QMainWindow):
         self.ui.StopVideoButton.clicked.connect(self.stop_video)
         self.ui.DisconnectButton.clicked.connect(self.disconnect_camera)
         self.ui.ModeComboBox.currentIndexChanged.connect(self.change_camera_mode)
+        
+        # Camera settings inputs
+        self.ui.exposure_time_ip.editingFinished.connect(self.apply_exposure_time)
+        self.ui.gain_ip.editingFinished.connect(self.apply_gain)
+        self.ui.save_captured_img.clicked.connect(self.save_captured_image_btn)
 
     # ==================================================================
     #  Delay Generator Methods (unchanged)
@@ -327,21 +346,26 @@ class delay_gen_app(QtWidgets.QMainWindow):
                 if image is not None:
                     self.last_saved_image = image
                     self.image_counter += 1
-                    self.display_image(image, self.ui.SavedImage)
-                    print(f"Captured triggered image #{self.image_counter}")
+                    self.display_image(image, self.ui.CapturedImage)
+                    self.cam_log(f"Captured triggered image #{self.image_counter}")
                 else:
-                    print("Failed to capture triggered image.")
+                    self.cam_log("Failed to capture triggered image.")
     
     # ==================================================================
     #  Camera Methods
     # ==================================================================
+    
+    def cam_log(self, message):
+        """Log a camera message to both the terminal and the GUI display."""
+        print(message)
+        self.ui.cam_disp_messages.setText(str(message))
     
     def find_cameras_btn(self):
         """Find available FLIR cameras and populate the combo box."""
         try:
             serials = self.cam.find_cameras()
             if not serials:
-                print("No FLIR cameras found.")
+                self.cam_log("No FLIR cameras found.")
                 return
             
             # Populate the combo box with found camera serial numbers
@@ -349,16 +373,16 @@ class delay_gen_app(QtWidgets.QMainWindow):
             for serial in serials:
                 self.ui.Found_Cam_ComboBox.addItem(serial)
             
-            print(f"Found {len(serials)} camera(s): {serials}")
+            self.cam_log(f"Found {len(serials)} camera(s): {serials}")
             
         except Exception as e:
-            print(f"Error finding cameras: {e}")
+            self.cam_log(f"Error finding cameras: {e}")
     
     def connect_camera(self):
         """Connect to the camera selected in the Found_Cam_ComboBox."""
         selected_serial = self.ui.Found_Cam_ComboBox.currentText()
         if not selected_serial:
-            print("No camera selected. Click 'Find' first.")
+            self.cam_log("No camera selected. Click 'Find' first.")
             return
         
         try:
@@ -372,15 +396,15 @@ class delay_gen_app(QtWidgets.QMainWindow):
             # Apply the current mode selection
             self.change_camera_mode()
             
-            print(f"Camera connected: {selected_serial}")
+            self.cam_log(f"Camera connected: {selected_serial}")
             
         except Exception as e:
-            print(f"Error connecting to camera: {e}")
+            self.cam_log(f"Error connecting to camera: {e}")
     
     def start_video(self):
         """Start the live video feed."""
         if not self.cam_connected:
-            print("No camera connected.")
+            self.cam_log("No camera connected.")
             return
         
         # Make sure we're in continuous mode for live view
@@ -391,7 +415,7 @@ class delay_gen_app(QtWidgets.QMainWindow):
         self.cam.start_acquisition()
         self.video_running = True
         self.video_timer.start(33)  # ~30 fps update rate
-        print("Live video started.")
+        self.cam_log("Live video started.")
     
     def stop_video(self):
         """Stop the live video feed."""
@@ -401,10 +425,10 @@ class delay_gen_app(QtWidgets.QMainWindow):
         if self.cam_connected and self.cam.is_acquiring:
             self.cam.stop_acquisition()
         
-        print("Live video stopped.")
+        self.cam_log("Live video stopped.")
     
     def update_video_feed(self):
-        """Timer callback: grab a frame and display it in the LiveFeedLabel."""
+        """Timer callback: grab a frame and display it in the live feed."""
         if not self.cam_connected or not self.video_running:
             return
         
@@ -429,7 +453,7 @@ class delay_gen_app(QtWidgets.QMainWindow):
             self.cam.configure_trigger(source="hardware")
             # Start acquisition so camera is armed and waiting for trigger
             self.cam.start_acquisition()
-            print("Camera armed for hardware trigger. Fire the delay generator to capture.")
+            self.cam_log("Camera armed for hardware trigger. Fire the delay generator to capture.")
     
     def disconnect_camera(self):
         """Disconnect the camera and clean up."""
@@ -439,42 +463,91 @@ class delay_gen_app(QtWidgets.QMainWindow):
         if self.cam_connected:
             self.cam.disconnect()
             self.cam_connected = False
-            print("Camera disconnected.")
+            self.cam_log("Camera disconnected.")
     
-    def display_image(self, image_array, label_widget):
+    def apply_exposure_time(self):
+        """Read the exposure time input, send to camera, and update with actual value."""
+        if not self.cam_connected:
+            self.cam_log("No camera connected.")
+            return
+        
+        text = self.ui.exposure_time_ip.text().strip()
+        if not text:
+            return
+        
+        try:
+            requested_us = float(text)
+        except ValueError:
+            self.cam_log("Invalid exposure time. Enter a number in us.")
+            return
+        
+        try:
+            actual_us = self.cam.set_exposure(requested_us)
+            # Update the QLineEdit with the actual value the camera accepted
+            self.ui.exposure_time_ip.setText(f"{actual_us:.1f}")
+            self.cam_log(f"Exposure set to {actual_us:.1f} us")
+        except Exception as e:
+            self.cam_log(f"Error setting exposure: {e}")
+    
+    def apply_gain(self):
+        """Read the gain input, send to camera, and update with actual value."""
+        if not self.cam_connected:
+            self.cam_log("No camera connected.")
+            return
+        
+        text = self.ui.gain_ip.text().strip()
+        if not text:
+            return
+        
+        try:
+            requested_db = float(text)
+        except ValueError:
+            self.cam_log("Invalid gain. Enter a number in dB.")
+            return
+        
+        try:
+            actual_db = self.cam.set_gain(requested_db)
+            # Update the QLineEdit with the actual value the camera accepted
+            self.ui.gain_ip.setText(f"{actual_db:.2f}")
+            self.cam_log(f"Gain set to {actual_db:.2f} dB")
+        except Exception as e:
+            self.cam_log(f"Error setting gain: {e}")
+    
+    def save_captured_image_btn(self):
+        """Save the last captured image with a filename based on image counter and EF delay."""
+        if self.last_saved_image is None:
+            self.cam_log("No captured image to save.")
+            return
+        
+        # Get delay info from channel E (the EF output pair)
+        delay_val = str(self.dg_values["E"][1])    # e.g. "110.0"
+        delay_unit = str(self.dg_values["E"][2])    # e.g. "us"
+        
+        # Replace periods with dashes for the filename
+        delay_str = delay_val.replace(".", "-")
+        
+        filename = f"test_{self.image_counter}_chE_{delay_str}_{delay_unit}.bmp"
+        self.save_image(self.last_saved_image, filename)
+    
+    def display_image(self, image_array, image_view):
         """
-        Display a numpy image array on a QLabel widget.
+        Display a numpy image array on a pyqtgraph ImageView widget.
         
         Parameters
         ----------
         image_array : numpy.ndarray
             The image to display (grayscale or color).
-        label_widget : QLabel
-            The QLabel to display the image on.
+        image_view : pg.ImageView
+            The pyqtgraph ImageView widget to display the image on.
         """
-        # Resize to fit the label
-        label_width = label_widget.width()
-        label_height = label_widget.height()
-        image_resized = cv2.resize(image_array, (label_width, label_height))
-        
-        if len(image_resized.shape) == 2:
-            # Grayscale image
-            height, width = image_resized.shape
-            bytes_per_line = width
-            q_img = QtGui.QImage(
-                image_resized.data, width, height, 
-                bytes_per_line, QtGui.QImage.Format_Grayscale8
-            )
-        else:
-            # Color image
-            height, width, channels = image_resized.shape
-            bytes_per_line = channels * width
-            q_img = QtGui.QImage(
-                image_resized.data, width, height, 
-                bytes_per_line, QtGui.QImage.Format_RGB888
-            ).rgbSwapped()
-        
-        label_widget.setPixmap(QtGui.QPixmap.fromImage(q_img))
+        # pyqtgraph expects (width, height) orientation, so transpose
+        # autoRange=False after first frame to prevent constant re-scaling
+        # autoLevels=False after first frame to keep contrast stable
+        image_view.setImage(
+            image_array.T,
+            autoRange=not self.video_running,
+            autoLevels=not self.video_running
+        )
     
     def save_image(self, image_array, filepath):
         """
@@ -488,7 +561,7 @@ class delay_gen_app(QtWidgets.QMainWindow):
             Path to save the image to (e.g., 'capture_001.png').
         """
         cv2.imwrite(filepath, image_array)
-        print(f"Image saved to {filepath}")
+        self.cam_log(f"Image saved to {filepath}")
     
     # ==================================================================
     #  Window Close Event
