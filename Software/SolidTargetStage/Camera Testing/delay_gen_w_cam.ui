@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1340</width>
-    <height>741</height>
+    <width>1339</width>
+    <height>821</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -49,7 +49,7 @@
      </font>
     </property>
     <property name="text">
-     <string>Disconnect</string>
+     <string>Disconnect Delay Gen</string>
     </property>
    </widget>
    <widget class="QGroupBox" name="groupBox_2">
@@ -724,115 +724,11 @@
      </property>
     </widget>
    </widget>
-   <widget class="QLabel" name="LiveFeedLabel">
-    <property name="geometry">
-     <rect>
-      <x>570</x>
-      <y>40</y>
-      <width>341</width>
-      <height>241</height>
-     </rect>
-    </property>
-    <property name="frameShape">
-     <enum>QFrame::Box</enum>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
-   <widget class="QLabel" name="SavedImage">
-    <property name="geometry">
-     <rect>
-      <x>950</x>
-      <y>40</y>
-      <width>341</width>
-      <height>241</height>
-     </rect>
-    </property>
-    <property name="frameShape">
-     <enum>QFrame::Box</enum>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
-   <widget class="QComboBox" name="ModeComboBox">
-    <property name="geometry">
-     <rect>
-      <x>590</x>
-      <y>290</y>
-      <width>351</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <item>
-     <property name="text">
-      <string>Continous </string>
-     </property>
-    </item>
-    <item>
-     <property name="text">
-      <string>Hardware Trigger</string>
-     </property>
-    </item>
-   </widget>
-   <widget class="QPushButton" name="DisconnectButton">
-    <property name="geometry">
-     <rect>
-      <x>680</x>
-      <y>490</y>
-      <width>191</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Disconnect Camera</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="StartVideoButton">
-    <property name="geometry">
-     <rect>
-      <x>680</x>
-      <y>410</y>
-      <width>191</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Start Video</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="FindButton">
-    <property name="geometry">
-     <rect>
-      <x>590</x>
-      <y>330</y>
-      <width>131</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Find </string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="StopVideoButton">
-    <property name="geometry">
-     <rect>
-      <x>680</x>
-      <y>450</y>
-      <width>191</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Stop Video</string>
-    </property>
-   </widget>
    <widget class="QLabel" name="label_5">
     <property name="geometry">
      <rect>
-      <x>660</x>
-      <y>10</y>
+      <x>680</x>
+      <y>0</y>
       <width>171</width>
       <height>21</height>
      </rect>
@@ -854,8 +750,8 @@
    <widget class="QLabel" name="label_6">
     <property name="geometry">
      <rect>
-      <x>1040</x>
-      <y>10</y>
+      <x>1030</x>
+      <y>0</y>
       <width>171</width>
       <height>21</height>
      </rect>
@@ -868,32 +764,293 @@
      </font>
     </property>
     <property name="text">
-     <string>Saved Image</string>
+     <string>Captured Image</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QPushButton" name="ConnectButton">
+   <widget class="QGroupBox" name="groupBox_5">
     <property name="geometry">
      <rect>
-      <x>680</x>
-      <y>370</y>
-      <width>191</width>
-      <height>31</height>
+      <x>600</x>
+      <y>300</y>
+      <width>471</width>
+      <height>441</height>
      </rect>
     </property>
-    <property name="text">
-     <string>Connect</string>
+    <property name="font">
+     <font>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
     </property>
+    <property name="title">
+     <string>Camera Controls</string>
+    </property>
+    <widget class="QComboBox" name="ModeComboBox">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>50</y>
+       <width>441</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <item>
+      <property name="text">
+       <string>Continous </string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Hardware Trigger</string>
+      </property>
+     </item>
+    </widget>
+    <widget class="QLabel" name="label_14">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>30</y>
+       <width>111</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <weight>50</weight>
+       <bold>false</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>Camera Mode</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="StopVideoButton">
+     <property name="geometry">
+      <rect>
+       <x>250</x>
+       <y>130</y>
+       <width>211</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Stop Video</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="FindButton">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>90</y>
+       <width>131</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Find </string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="ConnectButton">
+     <property name="geometry">
+      <rect>
+       <x>320</x>
+       <y>90</y>
+       <width>141</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Connect</string>
+     </property>
+    </widget>
+    <widget class="QComboBox" name="Found_Cam_ComboBox">
+     <property name="geometry">
+      <rect>
+       <x>150</x>
+       <y>90</y>
+       <width>171</width>
+       <height>31</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="StartVideoButton">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>130</y>
+       <width>221</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Start Video</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_12">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>210</y>
+       <width>101</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>Gain</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="gain_ip">
+     <property name="geometry">
+      <rect>
+       <x>130</x>
+       <y>210</y>
+       <width>231</width>
+       <height>31</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_7">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>175</y>
+       <width>101</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>Exposure Time</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_8">
+     <property name="geometry">
+      <rect>
+       <x>380</x>
+       <y>176</y>
+       <width>60</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>us</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="exposure_time_ip">
+     <property name="geometry">
+      <rect>
+       <x>130</x>
+       <y>170</y>
+       <width>231</width>
+       <height>31</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_13">
+     <property name="geometry">
+      <rect>
+       <x>380</x>
+       <y>220</y>
+       <width>60</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>dB</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="DisconnectButton">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>360</y>
+       <width>421</width>
+       <height>51</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>Disconnect Camera</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="save_captured_img">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>300</y>
+       <width>421</width>
+       <height>51</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Save Current Captured Image</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="cam_disp_messages">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>250</y>
+       <width>411</width>
+       <height>41</height>
+      </rect>
+     </property>
+    </widget>
    </widget>
-   <widget class="QComboBox" name="Found_Cam_ComboBox">
+   <widget class="ImageView" name="LiveFeedLabel">
     <property name="geometry">
      <rect>
-      <x>720</x>
-      <y>330</y>
-      <width>221</width>
-      <height>31</height>
+      <x>610</x>
+      <y>30</y>
+      <width>320</width>
+      <height>256</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="ImageView" name="CapturedImage">
+    <property name="geometry">
+     <rect>
+      <x>960</x>
+      <y>30</y>
+      <width>320</width>
+      <height>256</height>
      </rect>
     </property>
    </widget>
@@ -903,7 +1060,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1340</width>
+     <width>1339</width>
      <height>33</height>
     </rect>
    </property>
@@ -916,6 +1073,13 @@
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ImageView</class>
+   <extends>QGraphicsView</extends>
+   <header location="global">pyqtgraph</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
