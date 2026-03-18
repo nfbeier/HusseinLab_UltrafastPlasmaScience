@@ -357,7 +357,7 @@ class delay_gen_app(QtWidgets.QMainWindow):
                 self.display_image(image, self.ui.CapturedImage)
                 self.cam_log(f"Captured triggered image #{self.image_counter}")
             else:
-                self.cam_log("Failed to capture triggered image.")
+                self.cam_log("Failed to capture triggered image.", is_error=True)
             
             # Switch back to continuous mode and resume live feed
             self.cam.stop_acquisition()
@@ -372,9 +372,10 @@ class delay_gen_app(QtWidgets.QMainWindow):
     #  Camera Methods
     # ==================================================================
     
-    def cam_log(self, message):
-        """Log a camera message to both the terminal and the GUI display."""
-        print(message)
+    def cam_log(self, message, is_error=False):
+        """Log a camera message to the GUI display, and to the terminal only for errors."""
+        if is_error:
+            print(message)
         self.ui.cam_disp_messages.setText(str(message))
     
     def find_cameras_btn(self):
@@ -393,7 +394,7 @@ class delay_gen_app(QtWidgets.QMainWindow):
             self.cam_log(f"Found {len(serials)} camera(s): {serials}")
             
         except Exception as e:
-            self.cam_log(f"Error finding cameras: {e}")
+            self.cam_log(f"Error finding cameras: {e}", is_error=True)
     
     def connect_camera(self):
         """Connect to the camera selected in the Found_Cam_ComboBox."""
@@ -416,7 +417,7 @@ class delay_gen_app(QtWidgets.QMainWindow):
             self.cam_log(f"Camera connected: {selected_serial}")
             
         except Exception as e:
-            self.cam_log(f"Error connecting to camera: {e}")
+            self.cam_log(f"Error connecting to camera: {e}", is_error=True)
     
     def start_video(self):
         """Start the live video feed."""
@@ -495,7 +496,7 @@ class delay_gen_app(QtWidgets.QMainWindow):
         try:
             requested_us = float(text)
         except ValueError:
-            self.cam_log("Invalid exposure time. Enter a number in us.")
+            self.cam_log("Invalid exposure time. Enter a number in us.", is_error=True)
             return
         
         try:
@@ -504,7 +505,7 @@ class delay_gen_app(QtWidgets.QMainWindow):
             self.ui.exposure_time_ip.setText(f"{actual_us:.1f}")
             self.cam_log(f"Exposure set to {actual_us:.1f} us")
         except Exception as e:
-            self.cam_log(f"Error setting exposure: {e}")
+            self.cam_log(f"Error setting exposure: {e}", is_error=True)
     
     def apply_gain(self):
         """Read the gain input, send to camera, and update with actual value."""
@@ -519,7 +520,7 @@ class delay_gen_app(QtWidgets.QMainWindow):
         try:
             requested_db = float(text)
         except ValueError:
-            self.cam_log("Invalid gain. Enter a number in dB.")
+            self.cam_log("Invalid gain. Enter a number in dB.", is_error=True)
             return
         
         try:
@@ -528,13 +529,18 @@ class delay_gen_app(QtWidgets.QMainWindow):
             self.ui.gain_ip.setText(f"{actual_db:.2f}")
             self.cam_log(f"Gain set to {actual_db:.2f} dB")
         except Exception as e:
-            self.cam_log(f"Error setting gain: {e}")
+            self.cam_log(f"Error setting gain: {e}", is_error=True)
     
     def save_captured_image_btn(self):
         """Save the last captured image with a filename based on image counter and EF delay."""
         if self.last_saved_image is None:
             self.cam_log("No captured image to save.")
             return
+        
+        # Build save path relative to this script's directory
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        save_dir = os.path.join(script_dir, "Camera Images")
+        os.makedirs(save_dir, exist_ok=True)
         
         # Get delay info from channel E (the EF output pair)
         delay_val = str(self.dg_values["E"][1])    # e.g. "110.0"
@@ -544,7 +550,8 @@ class delay_gen_app(QtWidgets.QMainWindow):
         delay_str = delay_val.replace(".", "-")
         
         filename = f"test_{self.image_counter}_chE_{delay_str}_{delay_unit}.bmp"
-        self.save_image(self.last_saved_image, filename)
+        filepath = os.path.join(save_dir, filename)
+        self.save_image(self.last_saved_image, filepath)
     
     def display_image(self, image_array, image_view):
         """

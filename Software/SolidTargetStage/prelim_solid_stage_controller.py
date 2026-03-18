@@ -15,6 +15,14 @@ import json
 import os
 import socket
 
+# Script directory for saved position files
+script_dir = os.path.dirname(os.path.abspath(__file__))
+
+# Add Camera Widget directory to path so the GUI can import camera_controller
+camera_widget_dir = os.path.join(script_dir, "Camera Widget")
+if camera_widget_dir not in sys.path:
+    sys.path.insert(0, camera_widget_dir)
+
 
 # Makes sure you are in the right path!
 cwd = os.getcwd()
@@ -197,6 +205,28 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         self.ui.z_step_f_bt.clicked.connect(lambda: self.xpsMotionBtn("ForwardZ"))
         self.ui.z_step_b_bt.clicked.connect(lambda: self.xpsMotionBtn("BackwardZ"))
         
+        #Moving together buttons
+        self.ui.abs_mv_together_bt.clicked.connect(lambda: self.xpsMotionBtn("AbsoluteTogether"))
+        self.ui.step_fwd_together_bt.clicked.connect(lambda: self.xpsMotionBtn("ForwardTogether"))
+        self.ui.step_bckwd_together_bt.clicked.connect(lambda: self.xpsMotionBtn("BackwardTogether"))
+        
+        #Movement mode combo box
+        self.ui.stage_movement_select.currentIndexChanged.connect(self.updateMovementMode)
+        
+        # Start in independent mode — disable together widgets
+        self.updateMovementMode()
+        
+        #Save and recall position buttons (two experiments: objective and target)
+        self.saved_positions_files = {
+            "objective": os.path.join(script_dir, "saved_positions_objective.json"),
+            "target": os.path.join(script_dir, "saved_positions_target.json")
+        }
+        self._initSavedPositions()
+        self.ui.save_current_pos_obj_bt.clicked.connect(lambda: self.savePosition("objective"))
+        self.ui.recall_obj_saved_bt.clicked.connect(lambda: self.recallPosition("objective"))
+        self.ui.save_current_pos_target_bt.clicked.connect(lambda: self.savePosition("target"))
+        self.ui.recall_target_saved_bt.clicked.connect(lambda: self.recallPosition("target"))
+        
         
         ####### COMBINED FUNCTIONS ########
         # Setting the Start Button
@@ -374,7 +404,7 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
      
     #Reads in the json file
     def read_json(self):
-        with open("delay_gen_gui_inputs.json", "r") as read_file:
+        with open(os.path.join(script_dir, "delay_gen_gui_inputs.json"), "r") as read_file:
             inputs = json.load(read_file)
         self.dg_values = {
             "A" : [inputs["A_ch"], inputs["A_delay"], inputs["A_delay_unit"]],
@@ -553,6 +583,10 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
             self.ui.enable_dis_xps_bt.setEnabled(True)
             self.ui.init_xps_bt.setEnabled(True)
             self.ui.stop_bt.setEnabled(True)
+            self.ui.save_current_pos_obj_bt.setEnabled(True)
+            self.ui.recall_obj_saved_bt.setEnabled(True)
+            self.ui.save_current_pos_target_bt.setEnabled(True)
+            self.ui.recall_target_saved_bt.setEnabled(True)
             
             #Selecting the different stages
             self.ui.x_stage_select.currentIndexChanged.connect(lambda: self.updateGroup(0))
@@ -595,6 +629,34 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         self.updateGUIStatus()
         
     
+    def updateMovementMode(self):
+        """Enable/disable widgets based on the selected movement mode."""
+        mode = self.ui.stage_movement_select.currentIndex()  # 0 = independent, 1 = together
+        independent = (mode == 0)
+        together = (mode == 1)
+        
+        # Check whether stages are ready (motion buttons should only be active if ready)
+        ready = False
+        if self.xps and hasattr(self, 'xpsStageStatus'):
+            if self.xpsStageStatus[0][:11].upper() == "Ready state".upper():
+                ready = True
+        
+        # Independent-mode widgets
+        self.ui.x_abs_mv_bt.setEnabled(independent and ready)
+        self.ui.x_step_f_bt.setEnabled(independent and ready)
+        self.ui.x_step_b_bt.setEnabled(independent and ready)
+        self.ui.z_abs_mv_bt.setEnabled(independent and ready)
+        self.ui.z_step_f_bt.setEnabled(independent and ready)
+        self.ui.z_step_b_bt.setEnabled(independent and ready)
+        self.ui.x_abs_mv_ck.setEnabled(independent)
+        self.ui.z_abs_mv_ck.setEnabled(independent)
+        
+        # Together-mode widgets
+        self.ui.abs_mv_together_bt.setEnabled(together and ready)
+        self.ui.step_fwd_together_bt.setEnabled(together and ready)
+        self.ui.step_bckwd_together_bt.setEnabled(together and ready)
+        self.ui.together_abs_mv_ck.setEnabled(together)
+
     # XPS Motion Control
 
     def xpsMotionBtn(self, btn):
@@ -683,11 +745,47 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                     self.clear_error_message()
                 self.updatePosition()
 
-        else:
-            error_msg = f"XPS stage motion failed: Stage not in ready state. Current status - X: {self.xpsStageStatus[0]}, Z: {self.xpsStageStatus[1]}"
+        # --- Together mode: move both axes simultaneously ---
+        if self.xpsStageStatus[0][:11].upper() == "Ready state".upper() and self.xpsStageStatus[1][:11].upper() == "Ready state".upper():
+            if btn == "AbsoluteTogether" and self.ui.together_abs_mv_ck.isChecked():
+                x_ok = limit_min_x <= posX_abs <= limit_max_x
+                z_ok = limit_min_z <= posZ_abs <= limit_max_z
+                if not x_ok or not z_ok:
+                    error_msg = "Together absolute move failed: One or both target positions are outside travel limits"
+                    self.display_error_message(error_msg, "ERROR")
+                else:
+                    self.xps.moveAbsolute(self.xpsAxes[0], posX_abs)
+                    self.xps.moveAbsolute(self.xpsAxes[1], posZ_abs)
+                    self.clear_error_message()
+                self.updatePosition()
+                
+            elif btn == "ForwardTogether":
+                x_ok = limit_min_x <= (posX_current + posX_rel) <= limit_max_x
+                z_ok = limit_min_z <= (posZ_current + posZ_rel) <= limit_max_z
+                if not x_ok or not z_ok:
+                    error_msg = "Together forward step failed: One or both new positions would exceed travel limits"
+                    self.display_error_message(error_msg, "ERROR")
+                else:
+                    self.xps.moveRelative(self.xpsAxes[0], posX_rel)
+                    self.xps.moveRelative(self.xpsAxes[1], posZ_rel)
+                    self.clear_error_message()
+                self.updatePosition()
+                
+            elif btn == "BackwardTogether":
+                x_ok = limit_min_x <= (posX_current - posX_rel) <= limit_max_x
+                z_ok = limit_min_z <= (posZ_current - posZ_rel) <= limit_max_z
+                if not x_ok or not z_ok:
+                    error_msg = "Together backward step failed: One or both new positions would exceed travel limits"
+                    self.display_error_message(error_msg, "ERROR")
+                else:
+                    self.xps.moveRelative(self.xpsAxes[0], -1*posX_rel)
+                    self.xps.moveRelative(self.xpsAxes[1], -1*posZ_rel)
+                    self.clear_error_message()
+                self.updatePosition()
+        elif btn in ("AbsoluteTogether", "ForwardTogether", "BackwardTogether"):
+            error_msg = f"Together mode failed: Both stages must be in ready state. Current status - X: {self.xpsStageStatus[0]}, Z: {self.xpsStageStatus[1]}"
             self.display_error_message(error_msg, "ERROR")
-            self.ui.status_label_z.setText('Stage not ready') 
-            self.ui.status_label_x.setText('Stage not ready') 
+
         #GUI Interface
         self.updateGUIStatus()
     
@@ -705,6 +803,9 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                 self.ui.z_abs_mv_bt.setEnabled(False)
                 self.ui.z_step_f_bt.setEnabled(False)
                 self.ui.z_step_b_bt.setEnabled(False)
+                self.ui.abs_mv_together_bt.setEnabled(False)
+                self.ui.step_fwd_together_bt.setEnabled(False)
+                self.ui.step_bckwd_together_bt.setEnabled(False)
                 self.ui.x_status.setText("Not Initialized")
                 self.ui.z_status.setText("Not Initialized")
                 
@@ -717,6 +818,9 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                 self.ui.z_abs_mv_bt.setEnabled(False)
                 self.ui.z_step_f_bt.setEnabled(False)
                 self.ui.z_step_b_bt.setEnabled(False)
+                self.ui.abs_mv_together_bt.setEnabled(False)
+                self.ui.step_fwd_together_bt.setEnabled(False)
+                self.ui.step_bckwd_together_bt.setEnabled(False)
                 self.ui.x_status.setText("Not Homed")
                 self.ui.z_status.setText("Not Homed")
                 
@@ -730,6 +834,9 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                 self.ui.z_abs_mv_bt.setEnabled(False)
                 self.ui.z_step_f_bt.setEnabled(False)
                 self.ui.z_step_b_bt.setEnabled(False)
+                self.ui.abs_mv_together_bt.setEnabled(False)
+                self.ui.step_fwd_together_bt.setEnabled(False)
+                self.ui.step_bckwd_together_bt.setEnabled(False)
                 self.ui.x_status.setText("Disabled")
                 self.ui.z_status.setText("Disabled")
                 
@@ -737,14 +844,10 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                 self.ui.enable_dis_xps_bt.setEnabled(True)
                 self.ui.init_xps_bt.setEnabled(False)
                 self.ui.home_xps_bt.setEnabled(False)
-                self.ui.x_abs_mv_bt.setEnabled(True)
-                self.ui.x_step_f_bt.setEnabled(True)
-                self.ui.x_step_b_bt.setEnabled(True)
-                self.ui.z_abs_mv_bt.setEnabled(True)
-                self.ui.z_step_f_bt.setEnabled(True)
-                self.ui.z_step_b_bt.setEnabled(True)
                 self.ui.x_status.setText("Enabled")
                 self.ui.z_status.setText("Enabled")
+                # Delegate motion button enable/disable to the movement mode handler
+                self.updateMovementMode()
                    
         self.updatePosition()
     
@@ -814,6 +917,58 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
             except:
                 pass
             
+    
+    def _initSavedPositions(self):
+        """Create saved positions files with defaults if they don't exist."""
+        default = {"x_pos": 0.1, "z_pos": 0.1}
+        for filepath in self.saved_positions_files.values():
+            if not os.path.exists(filepath):
+                with open(filepath, 'w') as f:
+                    json.dump(default, f, indent=2)
+    
+    def savePosition(self, experiment):
+        """Save the current stage positions to the experiment's JSON file."""
+        if self.xps:
+            try:
+                x_pos = float(self.xps.getStagePosition(self.xpsAxes[0]))
+                z_pos = float(self.xps.getStagePosition(self.xpsAxes[1]))
+                positions = {"x_pos": x_pos, "z_pos": z_pos}
+                with open(self.saved_positions_files[experiment], 'w') as f:
+                    json.dump(positions, f, indent=2)
+                info_msg = f"Saved {experiment} positions: X={x_pos} mm, Z={z_pos} mm"
+                self.display_error_message(info_msg, "INFO")
+            except Exception as e:
+                error_msg = f"Error saving {experiment} positions: {e}"
+                self.display_error_message(error_msg, "ERROR")
+    
+    def recallPosition(self, experiment):
+        """Recall saved positions and move stages to those positions."""
+        if self.xps:
+            try:
+                with open(self.saved_positions_files[experiment], 'r') as f:
+                    positions = json.load(f)
+                x_pos = positions["x_pos"]
+                z_pos = positions["z_pos"]
+                
+                # Update the absolute move inputs to show where we're going
+                self.ui.x_abs_mv_ip.setText(str(x_pos))
+                self.ui.z_abs_mv_ip.setText(str(z_pos))
+                
+                # Move both stages to saved positions
+                if self.xpsStageStatus[0][:11].upper() == "Ready state".upper():
+                    self.xps.moveAbsolute(self.xpsAxes[0], x_pos)
+                if self.xpsStageStatus[1][:11].upper() == "Ready state".upper():
+                    self.xps.moveAbsolute(self.xpsAxes[1], z_pos)
+                
+                self.updatePosition()
+                info_msg = f"Recalled {experiment} positions: X={x_pos} mm, Z={z_pos} mm"
+                self.display_error_message(info_msg, "INFO")
+            except FileNotFoundError:
+                error_msg = f"No saved {experiment} positions file found"
+                self.display_error_message(error_msg, "ERROR")
+            except Exception as e:
+                error_msg = f"Error recalling {experiment} positions: {e}"
+                self.display_error_message(error_msg, "ERROR")
         
     ### COMBINED FCNS #######
     
@@ -1113,7 +1268,7 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         
         #Shutdown Delay generator
         # First writing the json file to save current settings
-        with open("delay_gen_gui_inputs.json", "r+") as write_file:
+        with open(os.path.join(script_dir, "delay_gen_gui_inputs.json"), "r+") as write_file:
             inputs = json.load(write_file)
             
             for i in ["A", "B", "C", "D", "E", "F", "G", "H"]:
