@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1920</width>
-    <height>1080</height>
+    <width>1433</width>
+    <height>827</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -3438,8 +3438,8 @@ p, li { white-space: pre-wrap; }
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1920</width>
-     <height>30</height>
+     <width>1433</width>
+     <height>33</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuSolid_Target_Stage_Controller">

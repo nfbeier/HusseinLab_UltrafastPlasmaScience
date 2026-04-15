@@ -336,17 +336,14 @@ class delay_gen_app(QtWidgets.QMainWindow):
     
     
     def FireBtn(self):
-        # Automatically capture an image if the camera is connected
-        if self.cam_connected:
-            # Stop live feed if running
-            if self.video_running:
-                self.stop_video()
+        # Check if the camera is in hardware trigger mode via the combo box
+        mode = self.ui.ModeComboBox.currentText().strip()
+        
+        if self.cam_connected and mode == "Hardware Trigger":
+            # Camera is already armed in hardware trigger mode
+            # (set up by change_camera_mode when user selected Hardware Trigger)
             
-            # Arm the camera FIRST (must be ready before the trigger arrives)
-            self.cam.configure_trigger(source="hardware")
-            self.cam.start_acquisition()
-            
-            # NOW fire the delay generator (sends the trigger pulse)
+            # Fire the delay generator (sends the trigger pulse)
             self.ins_dg.single_shot_fire_dg()
             
             # Capture the triggered image
@@ -358,14 +355,9 @@ class delay_gen_app(QtWidgets.QMainWindow):
                 self.cam_log(f"Captured triggered image #{self.image_counter}")
             else:
                 self.cam_log("Failed to capture triggered image.", is_error=True)
-            
-            # Switch back to continuous mode and resume live feed
-            self.cam.stop_acquisition()
-            self.cam.configure_continuous()
-            self.ui.ModeComboBox.setCurrentIndex(0)
-            self.start_video()
         else:
-            # No camera connected, just fire the delay generator
+            # No camera connected or not in hardware trigger mode,
+            # just fire the delay generator
             self.ins_dg.single_shot_fire_dg()
     
     # ==================================================================

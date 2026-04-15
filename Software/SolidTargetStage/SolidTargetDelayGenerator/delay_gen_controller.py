@@ -54,7 +54,7 @@ class delay_gen_app(QtWidgets.QMainWindow):
          
         #Adjusting and updating the delay values 
         self.ui.delay_disp.textChanged.connect(lambda: self.updateDelayvals("Delay_Val"))
-        self.ui.unit_disp.textChanged.connect(lambda: self.updateDelayvals("Delay_Units"))
+        self.ui.delay_select_units.currentIndexChanged.connect(lambda: self.updateDelayvals("Delay_Units"))
         
         #Adjusting and updating the voltage values
         self.ui.offset_v.textChanged.connect(lambda: self.updateVoltvals("Offset_Val"))
@@ -80,6 +80,9 @@ class delay_gen_app(QtWidgets.QMainWindow):
         
         self.ui.star_dg_bt.clicked.connect(self.FireBtn)
         
+        # Setting the relative delay
+        self.ui.set_rel_delay_bt.clicked.connect(self.SetRelativeDelayBt)
+        
         # #Buttons for displaying on the delay generator
         self.ui.T0_bt.clicked.connect(lambda: self.change_display_bt("T0"))
         self.ui.T1_bt.clicked.connect(lambda: self.change_display_bt("T1"))
@@ -92,12 +95,21 @@ class delay_gen_app(QtWidgets.QMainWindow):
         self.ui.G_bt.clicked.connect(lambda: self.change_display_bt("G"))
         self.ui.H_bt.clicked.connect(lambda: self.change_display_bt("H"))
         
-  
         
+        # Unit conversion factors to seconds
+        self.unit_to_seconds = {
+            "s"  : 1.0,
+            "ms" : 1e-3,
+            "us" : 1e-6,
+            "ns" : 1e-9,
+            "ps" : 1e-12,
+        }
         
     #Reads in the json file
     def read_json(self):
-        with open("delay_gen_gui_inputs.json", "r") as read_file:
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        json_path = os.path.join(script_dir, "delay_gen_gui_inputs.json")
+        with open(json_path, "r") as read_file:
             inputs = json.load(read_file)
             print(inputs)
         self.dg_values = {
@@ -122,12 +134,12 @@ class delay_gen_app(QtWidgets.QMainWindow):
             channel = self.ui.delay_select.currentText()
             self.ui.channel_link.setText(self.dg_values[channel][0])
             self.ui.delay_disp.setText(str(self.dg_values[channel][1]))   
-            self.ui.unit_disp.setText(self.dg_values[channel][2])
+            self.ui.delay_select_units.setCurrentText(self.dg_values[channel][2])
             
             channel_select =  str(self.ui.delay_select.currentText())
             channel = str(self.ui.channel_link.text())
             delay = float(self.ui.delay_disp.text())
-            delay_units = str(self.ui.unit_disp.text())
+            delay_units = str(self.ui.delay_select_units.currentText())
             self.ins_dg.get_delay(channel_select, channel, delay, delay_units)
             
             
@@ -149,15 +161,15 @@ class delay_gen_app(QtWidgets.QMainWindow):
         if widget == "Delay_Val" and (self.ui.delay_disp.text() != ''):
             delay = float(self.ui.delay_disp.text())
             self.dg_values[channel][1] = delay
-        elif widget == "Delay_Units" and (self.ui.unit_disp.text() != ''):
-            delay_units = str(self.ui.unit_disp.text())
+        elif widget == "Delay_Units" and (self.ui.delay_select_units.currentText() != ''):
+            delay_units = str(self.ui.delay_select_units.currentText())
             self.dg_values[channel][2] = delay_units
          
-        if self.ui.channel_link.text() != "" and self.ui.delay_disp.text() != "" and self.ui.unit_disp.text() != "":
+        if self.ui.channel_link.text() != "" and self.ui.delay_disp.text() != "" and self.ui.delay_select_units.currentText() != "":
             channel_select =  str(self.ui.delay_select.currentText())
             channel = str(self.ui.channel_link.text())
             delay = float(self.ui.delay_disp.text())
-            delay_units = str(self.ui.unit_disp.text())
+            delay_units = str(self.ui.delay_select_units.currentText())
             self.ins_dg.get_delay(channel_select, channel, delay, delay_units)
             
             
@@ -244,7 +256,7 @@ class delay_gen_app(QtWidgets.QMainWindow):
         
         #Now setting the delay
         sleep(0.2)
-        if self.ui.channel_link.text() != "" and self.ui.delay_disp.text() != "" and self.ui.unit_disp.text() != "":
+        if self.ui.channel_link.text() != "" and self.ui.delay_disp.text() != "" and self.ui.delay_select_units.currentText() != "":
             self.ins_dg.set_delay()
         
             #Then displays the change on the delay generator
@@ -262,9 +274,71 @@ class delay_gen_app(QtWidgets.QMainWindow):
             #Then displays the change on the delay generator
             sleep(0.2)      
             self.ins_dg.display_amplitdue(voltage_select)
+    
+    
+    def SetRelativeDelayBt(self):
+        """Add or subtract a relative delay from the currently selected channel."""
+        # Get the currently selected channel
+        channel_key = str(self.ui.delay_select.currentText())
         
+        # Get the current delay value and units for this channel
+        current_delay = self.dg_values[channel_key][1]
+        current_units = self.dg_values[channel_key][2]
         
+        # Get the relative offset value and units from the UI
+        rel_text = self.ui.rel_delay_disp.text().strip()
+        if rel_text == "":
+            print("Relative delay value is empty.")
+            return
         
+        try:
+            rel_value = float(rel_text)
+        except ValueError:
+            print(f"Invalid relative delay value: {rel_text}")
+            return
+        
+        rel_units = str(self.ui.rel_delay_select_units.currentText())
+        direction = str(self.ui.rel_delay_select_step.currentText())  # "Increase" or "Decrease"
+        
+        # Convert both to seconds
+        current_in_seconds = float(current_delay) * self.unit_to_seconds[current_units]
+        rel_in_seconds = rel_value * self.unit_to_seconds[rel_units]
+        
+        # Add or subtract
+        if direction == "Increase":
+            new_in_seconds = current_in_seconds + rel_in_seconds
+        elif direction == "Decrease":
+            new_in_seconds = current_in_seconds - rel_in_seconds
+        else:
+            print(f"Unknown direction: {direction}")
+            return
+        
+        # Convert back to the channel's current units
+        new_delay = new_in_seconds / self.unit_to_seconds[current_units]
+        
+        # Update the stored value
+        self.dg_values[channel_key][1] = new_delay
+        
+        # Update the delay display
+        self.ui.delay_disp.setText(str(new_delay))
+        
+        # Build and send the delay command
+        channel_ref = self.dg_values[channel_key][0]
+        self.ins_dg.get_delay(channel_key, channel_ref, new_delay, current_units)
+        
+        # Set the channel link in case there was a change
+        self.ins_dg.change_delay_link(channel_key, channel_ref)
+        sleep(0.2)
+        
+        # Send the delay to the instrument
+        self.ins_dg.set_delay()
+        
+        # Update the display on the delay generator
+        sleep(0.2)
+        self.ins_dg.change_display(channel_key)
+        
+        print(f"Relative delay applied: {direction} {rel_value} {rel_units} -> New delay: {new_delay} {current_units}")
+    
     
               
     def DisconnectBtn(self):

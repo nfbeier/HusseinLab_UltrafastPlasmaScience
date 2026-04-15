@@ -18,10 +18,14 @@ import socket
 # Script directory for saved position files
 script_dir = os.path.dirname(os.path.abspath(__file__))
 
-# Add Camera Widget directory to path so the GUI can import camera_controller
-camera_widget_dir = os.path.join(script_dir, "Camera Widget")
-if camera_widget_dir not in sys.path:
-    sys.path.insert(0, camera_widget_dir)
+# Add FLIR Camera Code directory to path for BlackflyCamera import
+flir_code_dir = os.path.join(
+    script_dir, "Camera Testing", "FLIR Camera Code"
+)
+if flir_code_dir not in sys.path:
+    sys.path.insert(0, flir_code_dir)
+from blackfly_camera import BlackflyCamera
+import cv2
 
 
 # Makes sure you are in the right path!
@@ -228,7 +232,35 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         self.ui.recall_target_saved_bt.clicked.connect(lambda: self.recallPosition("target"))
         
         
-        ####### COMBINED FUNCTIONS ########
+        ####### CAMERA SETUP ########
+        self.cam = BlackflyCamera()
+        self.cam_connected = False
+        self.video_running = False
+        self.last_saved_image = None
+        self.image_counter = 0
+        
+        # Hide ROI and menu buttons on the promoted ImageView widgets
+        self.ui.LiveFeedLabel.ui.roiBtn.hide()
+        self.ui.LiveFeedLabel.ui.menuBtn.hide()
+        self.ui.CapturedImage.ui.roiBtn.hide()
+        self.ui.CapturedImage.ui.menuBtn.hide()
+        
+        # Set up the video feed timer
+        self.video_timer = QtCore.QTimer(self)
+        self.video_timer.timeout.connect(self.update_video_feed)
+        
+        # Connect camera buttons
+        self.ui.FindButton.clicked.connect(self.find_cameras_btn)
+        self.ui.ConnectButton.clicked.connect(self.connect_camera)
+        self.ui.StartVideoButton.clicked.connect(self.start_video)
+        self.ui.StopVideoButton.clicked.connect(self.stop_video)
+        self.ui.DisconnectButton.clicked.connect(self.disconnect_camera)
+        self.ui.ModeComboBox.currentIndexChanged.connect(self.change_camera_mode)
+        
+        # Camera settings inputs
+        self.ui.exposure_time_ip.editingFinished.connect(self.apply_exposure_time)
+        self.ui.gain_ip.editingFinished.connect(self.apply_gain)
+        self.ui.save_captured_img.clicked.connect(self.save_captured_image_btn)
         # Setting the Start Button
         self.ui.fire_dg_bt.clicked.connect(self.StartRot)
         
@@ -555,7 +587,29 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         
     # Fires Delay Generator / sends a single trigger    
     def FireIns(self):
-        self.ins_dg.single_shot_fire_dg()
+        # Check if the camera is in hardware trigger mode via the combo box
+        mode = self.ui.ModeComboBox.currentText().strip()
+        
+        if self.cam_connected and mode == "Hardware Trigger":
+            # Camera is already armed in hardware trigger mode
+            # (set up by change_camera_mode when user selected Hardware Trigger)
+            
+            # Fire the delay generator (sends the trigger pulse)
+            self.ins_dg.single_shot_fire_dg()
+            
+            # Capture the triggered image
+            image = self.cam.capture_triggered_image(timeout_ms=5000)
+            if image is not None:
+                self.last_saved_image = image
+                self.image_counter += 1
+                self.display_camera_image(image, self.ui.CapturedImage)
+                self.cam_log(f"Captured triggered image #{self.image_counter}")
+            else:
+                self.cam_log("Failed to capture triggered image.", is_error=True)
+        else:
+            # No camera connected or not in hardware trigger mode,
+            # just fire the delay generator
+            self.ins_dg.single_shot_fire_dg()
     
     
     ############## XPS STAGE  FUNCTIONS ##########################
@@ -970,6 +1024,163 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                 error_msg = f"Error recalling {experiment} positions: {e}"
                 self.display_error_message(error_msg, "ERROR")
         
+    ### CAMERA METHODS #######
+    
+    def cam_log(self, message, is_error=False):
+        """Log a camera message to the GUI display, and to the terminal only for errors."""
+        if is_error:
+            print(message)
+        self.ui.cam_disp_messages.setText(str(message))
+    
+    def find_cameras_btn(self):
+        """Find available FLIR cameras and populate the combo box."""
+        try:
+            serials = self.cam.find_cameras()
+            if not serials:
+                self.cam_log("No FLIR cameras found.")
+                return
+            self.ui.Found_Cam_ComboBox.clear()
+            for serial in serials:
+                self.ui.Found_Cam_ComboBox.addItem(serial)
+            self.cam_log(f"Found {len(serials)} camera(s): {serials}")
+        except Exception as e:
+            self.cam_log(f"Error finding cameras: {e}", is_error=True)
+    
+    def connect_camera(self):
+        """Connect to the camera selected in Found_Cam_ComboBox."""
+        selected_serial = self.ui.Found_Cam_ComboBox.currentText()
+        if not selected_serial:
+            self.cam_log("No camera selected. Click 'Find' first.")
+            return
+        try:
+            if self.cam_connected:
+                self.disconnect_camera()
+            self.cam.connect(selected_serial)
+            self.cam_connected = True
+            self.change_camera_mode()
+            self.cam_log(f"Camera connected: {selected_serial}")
+        except Exception as e:
+            self.cam_log(f"Error connecting to camera: {e}", is_error=True)
+    
+    def start_video(self):
+        """Start the live video feed."""
+        if not self.cam_connected:
+            self.cam_log("No camera connected.")
+            return
+        if self.cam.trigger_mode != "continuous":
+            self.cam.configure_continuous()
+            self.ui.ModeComboBox.setCurrentIndex(0)
+        self.cam.start_acquisition()
+        self.video_running = True
+        self.video_timer.start(33)  # ~30 fps
+        self.cam_log("Live video started.")
+    
+    def stop_video(self):
+        """Stop the live video feed."""
+        self.video_running = False
+        self.video_timer.stop()
+        if self.cam_connected and self.cam.is_acquiring:
+            self.cam.stop_acquisition()
+        self.cam_log("Live video stopped.")
+    
+    def update_video_feed(self):
+        """Timer callback: grab a frame and display it in the live feed."""
+        if not self.cam_connected or not self.video_running:
+            return
+        image = self.cam.get_image(timeout_ms=1000)
+        if image is not None:
+            self.display_camera_image(image, self.ui.LiveFeedLabel)
+    
+    def change_camera_mode(self):
+        """Handle camera mode change from the ModeComboBox."""
+        if not self.cam_connected:
+            return
+        if self.video_running:
+            self.stop_video()
+        mode = self.ui.ModeComboBox.currentText().strip()
+        if mode in ("Continous", "Continuous"):
+            self.cam.configure_continuous()
+        elif "Hardware Trigger" in mode:
+            self.cam.configure_trigger(source="hardware")
+            self.cam.start_acquisition()
+            self.cam_log("Camera armed for hardware trigger. Fire the delay generator to capture.")
+    
+    def disconnect_camera(self):
+        """Disconnect the camera and clean up."""
+        if self.video_running:
+            self.stop_video()
+        if self.cam_connected:
+            self.cam.disconnect()
+            self.cam_connected = False
+            self.cam_log("Camera disconnected.")
+    
+    def apply_exposure_time(self):
+        """Read the exposure time input, send to camera, update with actual value."""
+        if not self.cam_connected:
+            self.cam_log("No camera connected.")
+            return
+        text = self.ui.exposure_time_ip.text().strip()
+        if not text:
+            return
+        try:
+            requested_us = float(text)
+        except ValueError:
+            self.cam_log("Invalid exposure time. Enter a number in us.", is_error=True)
+            return
+        try:
+            actual_us = self.cam.set_exposure(requested_us)
+            self.ui.exposure_time_ip.setText(f"{actual_us:.1f}")
+            self.cam_log(f"Exposure set to {actual_us:.1f} us")
+        except Exception as e:
+            self.cam_log(f"Error setting exposure: {e}", is_error=True)
+    
+    def apply_gain(self):
+        """Read the gain input, send to camera, update with actual value."""
+        if not self.cam_connected:
+            self.cam_log("No camera connected.")
+            return
+        text = self.ui.gain_ip.text().strip()
+        if not text:
+            return
+        try:
+            requested_db = float(text)
+        except ValueError:
+            self.cam_log("Invalid gain. Enter a number in dB.", is_error=True)
+            return
+        try:
+            actual_db = self.cam.set_gain(requested_db)
+            self.ui.gain_ip.setText(f"{actual_db:.2f}")
+            self.cam_log(f"Gain set to {actual_db:.2f} dB")
+        except Exception as e:
+            self.cam_log(f"Error setting gain: {e}", is_error=True)
+    
+    def save_captured_image_btn(self):
+        """Save the last captured image with a filename based on image counter and EF delay."""
+        if self.last_saved_image is None:
+            self.cam_log("No captured image to save.")
+            return
+        save_dir = os.path.join(script_dir, "FLIR Camera Images")
+        os.makedirs(save_dir, exist_ok=True)
+        delay_val = str(self.dg_values["E"][1])
+        delay_unit = str(self.dg_values["E"][2])
+        delay_str = delay_val.replace(".", "-")
+        filename = f"test_{self.image_counter}_chE_{delay_str}_{delay_unit}.bmp"
+        filepath = os.path.join(save_dir, filename)
+        self.save_camera_image(self.last_saved_image, filepath)
+    
+    def display_camera_image(self, image_array, image_view):
+        """Display a numpy image array on a pyqtgraph ImageView widget."""
+        image_view.setImage(
+            image_array.T,
+            autoRange=not self.video_running,
+            autoLevels=not self.video_running
+        )
+    
+    def save_camera_image(self, image_array, filepath):
+        """Save a numpy image array to a file."""
+        cv2.imwrite(filepath, image_array)
+        self.cam_log(f"Image saved to {filepath}")
+
     ### COMBINED FCNS #######
     
     def setDelaysDG(self):
@@ -997,6 +1208,17 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         self.ins_dg.set_voltage()
         #Then displays the change on the delay generator    
         self.ins_dg.display_amplitdue('CD')
+        
+        # Camera trigger - channel EF
+        #Sets the offset value and amplitude value
+        offset_val = 0
+        self.dg_values['EF'][0] = offset_val
+        amp_val = 2.8 
+        self.dg_values['EF'][1] = amp_val
+        self.ins_dg.get_voltage('EF', offset_val, amp_val)
+        self.ins_dg.set_voltage()
+        #Then displays the change on the delay generator    
+        self.ins_dg.display_amplitdue('EF')
         
         if self.shot_mode == 'Single Rotation':
             #Calculates the delay for the delay generator
@@ -1028,7 +1250,16 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
               
             self.dg_values['C'][1] = float(self.ref_delay_dg)
             self.dg_values['C'][2] = 'ms'
-            self.ins_dg.get_delay('C', 'A', float(self.ref_delay_dg), 'ms')
+            self.ins_dg.get_delay('C', 'A', (float(self.ref_delay_dg)), 'ms')
+            self.ins_dg.set_delay()
+            
+            # Camera trigger - channel E linked to A
+            #set the new channel link in case there was a change 
+            self.ins_dg.change_delay_link('E', 'A')
+              
+            self.dg_values['E'][1] = float(self.ref_delay_dg)
+            self.dg_values['E'][2] = 'ms'
+            self.ins_dg.get_delay('E', 'A', (-1*float(self.ref_delay_dg)), 'ms')
             self.ins_dg.set_delay()
             
         else:
@@ -1060,6 +1291,15 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
             self.dg_values['C'][1] = float(self.ref_delay_dg)
             self.dg_values['C'][2] = 'ms'
             self.ins_dg.get_delay('C', 'A', float(self.ref_delay_dg), 'ms')
+            self.ins_dg.set_delay()
+            
+            # Camera trigger - channel E linked to A
+            #set the new channel link in case there was a change 
+            self.ins_dg.change_delay_link('E', 'A')
+              
+            self.dg_values['E'][1] = float(self.ref_delay_dg)
+            self.dg_values['E'][2] = 'ms'
+            self.ins_dg.get_delay('E', 'A', float(self.ref_delay_dg), 'ms')
             self.ins_dg.set_delay()
             
     
@@ -1289,6 +1529,13 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
             
         #Disconnecting the device now
         self.ins_dg.disconnect_dg()
+        
+        # Clean up camera resources
+        if self.video_running:
+            self.stop_video()
+        if self.cam_connected:
+            self.cam.disconnect()
+        self.cam.release_system()
         
         #Disconnecting the app now 
         QtWidgets.QApplication.quit()
