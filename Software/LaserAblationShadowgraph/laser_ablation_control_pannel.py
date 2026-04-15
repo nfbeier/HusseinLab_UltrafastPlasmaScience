@@ -6,6 +6,13 @@ Created on Tue Apr 14 16:41:38 2026
 @author: christina
 
 i dedicate this gui to lisa vanderpump xx 
+
+Requirements:
+    - Python 3.10 environment
+    - PySpin (Spinnaker Python SDK)
+    - numpy < 2  (PySpin was compiled against NumPy 1.x and is incompatible
+      with NumPy 2.x. Install with: pip install "numpy<2")
+    - pyqtgraph
 """
 
 from PyQt5 import QtWidgets, uic, QtGui, QtCore
