@@ -64,7 +64,7 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         self.ui.setupUi(self)
         
         ### ROTATION STAGE SETUP #######
-        self.shot_sep = float(self.ui.shot_sep_ip.text())*1e-6
+        self.shot_sep = float(self.ui.shot_sep_ip.text())
 
         #Setting the start and stop values to -1 until the buttons are clicked
         self.x_start = -1
@@ -119,6 +119,9 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         # Button for setting T_zero
         self.ui.set_to_time.clicked.connect(self.SetT_Zero)
         
+        # Button for resetting back to T_zero
+        self.ui.set_time_2_to.clicked.connect(self.SetTime2T0)
+        
         #Button for setting the scan paramters
         self.ui.set_scan_param.clicked.connect(self.SetScanParam)
         
@@ -144,6 +147,7 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         self.ui.voltage_select.currentIndexChanged.connect(lambda: self.disp_ch("voltage"))
          
         #Adjusting and updating the delay values 
+        self.ui.channel_link.textChanged.connect(lambda: self.updateDelayvals("Channel_Link"))
         self.ui.delay_disp.textChanged.connect(lambda: self.updateDelayvals("Delay_Val"))
         self.ui.delay_select_units.currentIndexChanged.connect(lambda: self.updateDelayvals("Delay_Units"))
         
@@ -317,7 +321,7 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
     def SetStartXPos(self):
         # Sets the value
         self.x_start = float(self.ui.x_pos_disp.toPlainText())
-    
+
     def SetStartYPos(self):
         # Sets the value
         self.y_start = float(self.ui.y_pos_disp.toPlainText())
@@ -325,10 +329,10 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
     def SetStopXPos(self):
         # Sets the value
         self.x_stop = float(self.ui.x_pos_disp.toPlainText())
-    
+        
     def SetStopYPos(self):
         # Sets the value
-        self.y_stop = float(self.ui.x_pos_disp.toPlainText())
+        self.y_stop = float(self.ui.y_pos_disp.toPlainText())
         
     def CalcShotsAvail(self):
         # Check that all start/stop positions have been set
@@ -354,7 +358,7 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         
         # Calculating the effective shot area (shot_sep already in m, convert to mm)
         shot_sep_mm = self.shot_sep * 1e3
-        self.shot_area = shot_sep_mm ** 2
+        self.shot_area = shot_sep_mm ** 2 
         
         if self.shot_area == 0:
             self.ui.raster_calc_disp.setText("Error: Shot separation is zero")
@@ -388,6 +392,33 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         print(f"T0 set: channel {self.t_zero_channel}, "
               f"delay {self.t_zero_delay} {self.t_zero_units} "
               f"({self.t_zero_seconds} s), direction: {self.t_zero_step_dir}")
+              
+    def SetTime2T0(self):
+        if not hasattr(self, 't_zero_channel'):
+            self.ui.raster_overview_disp_2.setText("Error: T0 not set. Cannot reset.")
+            return
+            
+        channel = self.t_zero_channel
+        channel_ref = self.dg_values[channel][0]
+        delay = self.t_zero_delay
+        delay_units = self.t_zero_units
+        
+        # Restore into memory
+        self.dg_values[channel][1] = delay
+        self.dg_values[channel][2] = delay_units
+        
+        # Update hardware
+        self.ins_dg.get_delay(channel, channel_ref, delay, delay_units)
+        sleep(0.1)
+        self.ins_dg.set_delay()
+        sleep(0.1)
+        
+        # Refresh the UI if that channel happens to be currently selected
+        if self.ui.delay_select.currentText() == channel:
+            self.disp_ch("delay")
+            
+        self.ui.raster_overview_disp_2.setText(f"Reset {channel} back to T0 ({delay} {delay_units})")
+        print(f"Reset channel {channel} back to T0 time: {delay} {delay_units}")
     
     def SetScanParam(self):
         # First check if T0 has been properly assigned
@@ -487,7 +518,10 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         if widget == "delay":
             channel = self.ui.delay_select.currentText()
             self.ui.channel_link.setText(self.dg_values[channel][0])
-            self.ui.delay_disp.setText(str(self.dg_values[channel][1]))   
+            
+            # Clean floating point artifacts when displaying
+            delay_val_rounded = round(float(self.dg_values[channel][1]), 8)
+            self.ui.delay_disp.setText(str(delay_val_rounded))   
             self.ui.delay_select_units.setCurrentText(self.dg_values[channel][2])
             
             channel_ref = self.dg_values[channel][0]
@@ -507,8 +541,9 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
      
     def updateDelayvals(self, widget):
         channel = self.ui.delay_select.currentText()
-        self.ui.channel_link.setText(self.dg_values[channel][0])      
-        if widget == "Delay_Val" and (self.ui.delay_disp.text() != ''):
+        if widget == "Channel_Link" and (self.ui.channel_link.text() != ''):
+            self.dg_values[channel][0] = str(self.ui.channel_link.text())
+        elif widget == "Delay_Val" and (self.ui.delay_disp.text() != ''):
             delay = float(self.ui.delay_disp.text())
             self.dg_values[channel][1] = delay
         elif widget == "Delay_Units" and (self.ui.delay_select_units.currentText() != ''):
@@ -1227,8 +1262,7 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         
         # --- Raster scan setup ---
         # Convert shot separation from meters to mm (XPS positions are in mm)
-        shot_sep_mm = self.shot_sep * 1e-3
-        print(shot_sep_mm)
+        shot_sep_mm = self.shot_sep 
         # Determine step directions
         y_step = shot_sep_mm if self.y_stop >= self.y_start else -shot_sep_mm
         x_step = shot_sep_mm if self.x_stop >= self.x_start else -shot_sep_mm
@@ -1264,11 +1298,24 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
             self.scan_resume_pos = None
             return
         
-        # Move to the starting position
-        self.xps.moveAbsolute(self.xpsAxes[0], scan_x_start)
-        self.xps.moveAbsolute(self.xpsAxes[1], scan_y_start)
-        sleep(0.5)
-        
+        # Move to the starting position using relative moves
+        try:
+            x_current = float(self.xps.getStagePosition(self.xpsAxes[0]))
+            y_current = float(self.xps.getStagePosition(self.xpsAxes[1]))
+            
+            dx_start = scan_x_start - x_current
+            dy_start = scan_y_start - y_current
+            
+            if abs(dx_start) > 1e-4:
+                self.xps.moveRelative(self.xpsAxes[0], dx_start)
+                sleep(0.5)
+            if abs(dy_start) > 1e-4:
+                self.xps.moveRelative(self.xpsAxes[1], dy_start)
+                sleep(0.5)
+        except Exception as e:
+            self.display_error_message(f"Error reading position or moving to start: {e}", "ERROR")
+            return
+            
         # Get the T0 channel info
         channel_key = self.t_zero_channel
         channel_ref = self.dg_values[channel_key][0]
@@ -1284,103 +1331,124 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         # Create or append to the CSV log file for scan data
         csv_filepath = os.path.join(self.save_directory, "scan_log.csv")
         file_is_new = not os.path.exists(csv_filepath)
-        self.csv_file = open(csv_filepath, 'a', newline='')
-        self.csv_writer = csv.writer(self.csv_file)
-        if file_is_new:
-            self.csv_writer.writerow([
-                "Shot #", "Filename", 
-                "Relative Time (s)", "Absolute Delay", "Delay Units",
-                "X Position (mm)", "Y Position (mm)",
-                "Channel"
-            ])
+        
+        # Test file access and write header if new
+        try:
+            with open(csv_filepath, 'a', newline='') as f:
+                writer = csv.writer(f)
+                if file_is_new:
+                    writer.writerow([
+                        "Shot #", "Filename", 
+                        "Relative Time (s)", "Absolute Delay", "Delay Units",
+                        "X Position (mm)", "Y Position (mm)",
+                        "Channel"
+                    ])
+        except PermissionError:
+            self.display_error_message(f"Permission denied: Please close 'scan_log.csv' (e.g. in Excel) before scanning.", "ERROR")
+            return
+        except Exception as e:
+            self.display_error_message(f"Error accessing CSV: {e}", "ERROR")
+            return
         
         self.display_error_message("Scan started...", "INFO")
         QtWidgets.QApplication.processEvents()
         
+        # Create a flattened list of all delays needed for the scan
+        delays_needed = []
+        for time_offset in self.scan_time_steps:
+            for _ in range(self.shot_per_time_step):
+                delays_needed.append(time_offset)
+                
         # --- Begin raster scan ---
+        shot_idx = 0
         for ix_offset in range(num_x_remaining):
             ix = start_ix + ix_offset
-            x_pos = self.x_start + ix * x_step
             
-            # Move to X position (skip on first iteration, already there)
+            # Step in X (skip on first iteration, already jumped to start)
             if ix_offset > 0:
-                self.xps.moveAbsolute(self.xpsAxes[0], x_pos)
+                self.xps.moveRelative(self.xpsAxes[0], x_step)
                 sleep(0.3)
             
             # Determine Y traversal order for serpentine pattern
             if y_direction == 1:
                 y_range = range(total_y_steps)
+                step_y = y_step
             else:
                 y_range = range(total_y_steps - 1, -1, -1)
+                step_y = -y_step
             
-            for iy in y_range:
-                # Move to the current Y position
-                y_pos = self.y_start + iy * y_step
-                self.xps.moveAbsolute(self.xpsAxes[1], y_pos)
+            for iy_offset, iy in enumerate(y_range):
+                # Move to the current Y position (Relative strategy)
+                # Skip moving Y on the 0th item inside the column, because we
+                # only shifted X from the previous column's last Y position!
+                if iy_offset > 0:
+                    self.xps.moveRelative(self.xpsAxes[1], step_y)
+                    sleep(0.2)
+                
+                # Get the delay needed for this specific shot
+                time_offset = delays_needed[shot_idx]
+                
+                # Calculate the absolute delay for this time step
+                new_delay_seconds = self.t_zero_seconds + (self.t_zero_step_dir * time_offset)
+                
+                # Convert back to the channel's display units and round to 8 decimals to prevent float artifacts
+                new_delay_value = round(new_delay_seconds / self.unit_to_seconds[current_units], 8)
+                
+                # Update the delay on the instrument
+                self.dg_values[channel_key][1] = new_delay_value
+                self.ins_dg.get_delay(channel_key, channel_ref, new_delay_value, current_units)
+                sleep(0.2)
+                self.ins_dg.set_delay()
                 sleep(0.2)
                 
-                # Loop through each time step
-                for time_offset in self.scan_time_steps:
-                    # Calculate the absolute delay for this time step
-                    new_delay_seconds = self.t_zero_seconds + (self.t_zero_step_dir * time_offset)
+                overall_shot += 1
+                
+                # 1. Fire the delay generator (triggers the camera)
+                self.ins_dg.single_shot_fire_dg()
+                
+                # 2. Capture the triggered image
+                image = self.cam.capture_triggered_image(timeout_ms=5000)
+                if image is not None:
+                    self.last_saved_image = image
+                    self.image_counter += 1
+                    self.display_camera_image(image, self.ui.CapturedImage)
                     
-                    # Convert back to the channel's display units
-                    new_delay_value = new_delay_seconds / self.unit_to_seconds[current_units]
+                    # Save with shot number and delay info
+                    delay_str = str(new_delay_value).replace(".", "-")
+                    filename = f"scan_{self.image_counter}_ch{channel_key}_{delay_str}_{current_units}.bmp"
+                    filepath = os.path.join(self.save_directory, filename)
+                    self.save_camera_image(image, filepath)
                     
-                    # Update the delay on the instrument
-                    self.dg_values[channel_key][1] = new_delay_value
-                    self.ins_dg.get_delay(channel_key, channel_ref, new_delay_value, current_units)
-                    sleep(0.2)
-                    self.ins_dg.set_delay()
-                    sleep(0.2)
-                    
-                    # Take the required number of shots at this time step
-                    for shot in range(self.shot_per_time_step):
-                        overall_shot += 1
-                        
-                        # 1. Fire the delay generator (triggers the camera)
-                        self.ins_dg.single_shot_fire_dg()
-                        
-                        # 2. Capture the triggered image
-                        image = self.cam.capture_triggered_image(timeout_ms=5000)
-                        if image is not None:
-                            self.last_saved_image = image
-                            self.image_counter += 1
-                            self.display_camera_image(image, self.ui.CapturedImage)
-                            
-                            # Save with shot number and delay info
-                            delay_str = str(new_delay_value).replace(".", "-")
-                            filename = f"scan_{self.image_counter}_ch{channel_key}_{delay_str}_{current_units}.bmp"
-                            filepath = os.path.join(self.save_directory, filename)
-                            self.save_camera_image(image, filepath)
-                            
-                            # Log to CSV
-                            x_current = float(self.xps.getStagePosition(self.xpsAxes[0]))
-                            y_current = float(self.xps.getStagePosition(self.xpsAxes[1]))
-                            self.csv_writer.writerow([
+                    # Log to CSV
+                    x_current = float(self.xps.getStagePosition(self.xpsAxes[0]))
+                    y_current = float(self.xps.getStagePosition(self.xpsAxes[1]))
+                    try:
+                        with open(csv_filepath, 'a', newline='') as f:
+                            writer = csv.writer(f)
+                            writer.writerow([
                                 self.image_counter, filename,
                                 time_offset, new_delay_value, current_units,
                                 x_current, y_current,
                                 channel_key
                             ])
-                        else:
-                            self.cam_log(f"Failed to capture image at shot {overall_shot}", is_error=True)
-                        
-                        # 3. Update status display
-                        self.ui.status_label.setText(
-                            f"Shot {overall_shot}/{self.total_scan_shots} | "
-                            f"X:{ix+1}/{total_x_steps} Y:{iy+1}/{total_y_steps}"
-                        )
-                        QtWidgets.QApplication.processEvents()
-                        sleep(0.1)
-                        
-                        # Check if we've taken all the shots needed
-                        if overall_shot >= self.total_scan_shots:
-                            scan_complete = True
-                            break
-                    if scan_complete:
-                        break
-                if scan_complete:
+                    except Exception as e:
+                        self.cam_log(f"Warning: Failed to log row {self.image_counter} to CSV: {e}", is_error=True)
+                else:
+                    self.cam_log(f"Failed to capture image at shot {overall_shot}", is_error=True)
+                
+                # 3. Update status display
+                self.ui.status_label.setText(
+                    f"Shot {overall_shot}/{self.total_scan_shots} | "
+                    f"X:{ix+1}/{total_x_steps} Y:{iy+1}/{total_y_steps}"
+                )
+                QtWidgets.QApplication.processEvents()
+                sleep(0.1)
+                
+                shot_idx += 1
+                
+                # Check if we've taken all the shots needed
+                if shot_idx >= len(delays_needed):
+                    scan_complete = True
                     break
             
             # Flip Y direction for serpentine pattern
@@ -1412,8 +1480,7 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         self.ui.status_label.setText(f"Scan complete: {overall_shot} total shots")
         self.ui.ShotCounter_disp.setText(str(self.image_counter))
         
-        # Close the CSV log file
-        self.csv_file.close()
+        # (CSV file was written to iteratively, no need to keep an open handle)
         self.cam_log(f"Scan log saved to {csv_filepath}")
         
         # Display the current time relative to T0
@@ -1436,7 +1503,7 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
             display_val, display_unit = last_rel_time / 1e-12, "ps"
         
         self.ui.rel_time_disp.setText(f"{display_val:.4g}")
-        self.ui.rel_time_unit_disp.setText(display_unit)
+        self.ui.rel_time_unit_disp.setCurrentText(display_unit)
     
    
     def DisconnectBtn(self):
