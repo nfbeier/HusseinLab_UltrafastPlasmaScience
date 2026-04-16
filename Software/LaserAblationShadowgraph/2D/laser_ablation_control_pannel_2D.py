@@ -6,6 +6,7 @@ Created on Tue Apr 14 16:41:38 2026
 @author: christina
 
 i dedicate this gui to lisa vanderpump xx 
+like her this gui is a bit of a mess but it works
 
 Requirements:
     - Python 3.10 environment
