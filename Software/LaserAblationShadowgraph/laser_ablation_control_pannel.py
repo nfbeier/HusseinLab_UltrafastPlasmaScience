@@ -316,19 +316,19 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
     
     def SetStartXPos(self):
         # Sets the value
-        self.x_start = self.ui.x_pos_disp.currentText()
+        self.x_start = float(self.ui.x_pos_disp.toPlainText())
     
     def SetStartYPos(self):
         # Sets the value
-        self.y_start = self.ui.y_pos_disp.currentText()
+        self.y_start = float(self.ui.y_pos_disp.toPlainText())
         
     def SetStopXPos(self):
         # Sets the value
-        self.x_stop = self.ui.x_pos_disp.currentText()
+        self.x_stop = float(self.ui.x_pos_disp.toPlainText())
     
     def SetStopYPos(self):
         # Sets the value
-        self.y_stop = self.ui.x_pos_disp.currentText()
+        self.y_stop = float(self.ui.x_pos_disp.toPlainText())
         
     def CalcShotsAvail(self):
         # Check that all start/stop positions have been set
@@ -488,7 +488,7 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
             channel = self.ui.delay_select.currentText()
             self.ui.channel_link.setText(self.dg_values[channel][0])
             self.ui.delay_disp.setText(str(self.dg_values[channel][1]))   
-            self.ui.delay_select_units_2.setCurrentText(self.dg_values[channel][2])
+            self.ui.delay_select_units.setCurrentText(self.dg_values[channel][2])
             
             channel_ref = self.dg_values[channel][0]
             delay = self.dg_values[channel][1]
@@ -511,14 +511,14 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         if widget == "Delay_Val" and (self.ui.delay_disp.text() != ''):
             delay = float(self.ui.delay_disp.text())
             self.dg_values[channel][1] = delay
-        elif widget == "Delay_Units" and (self.ui.delay_select_units_2.currentText() != ''):
-            delay_units = str(self.ui.delay_select_units_2.currentText())
+        elif widget == "Delay_Units" and (self.ui.delay_select_units.currentText() != ''):
+            delay_units = str(self.ui.delay_select_units.currentText())
             self.dg_values[channel][2] = delay_units
          
-        if self.ui.channel_link.text() != "" and self.ui.delay_disp.text() != "" and self.ui.delay_select_units_2.currentText() != "":
+        if self.ui.channel_link.text() != "" and self.ui.delay_disp.text() != "" and self.ui.delay_select_units.currentText() != "":
             channel_ref = self.ui.channel_link.text()
             delay = float(self.ui.delay_disp.text())
-            delay_units = str(self.ui.delay_select_units_2.currentText())
+            delay_units = str(self.ui.delay_select_units.currentText())
             self.ins_dg.get_delay(channel, channel_ref, delay, delay_units)
             
             
@@ -593,7 +593,7 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         
         #Now setting the delay
         sleep(0.2)
-        if self.ui.channel_link.text() != "" and self.ui.delay_disp.text() != "" and self.ui.delay_select_units_2.currentText() != "":
+        if self.ui.channel_link.text() != "" and self.ui.delay_disp.text() != "" and self.ui.delay_select_units.currentText() != "":
             self.ins_dg.set_delay()
         
             #Then displays the change on the delay generator
@@ -742,25 +742,21 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
             self.ui.y_stage_select.addItems(list(self.xpsGroupNames.keys()))
             self.ui.y_stage_select.setCurrentIndex(1)
             self.xpsAxes = [self.ui.x_stage_select.currentText(), self.ui.y_stage_select.currentText()]
-            
             self.xps.setGroup(self.xpsAxes[0])
             self.xps.setGroup(self.xpsAxes[1])
             self.xpsStageStatus = [self.xps.getStageStatus(axis) for axis in self.xpsAxes]
-            
             self.ui.home_xps_bt.setEnabled(True)
             self.ui.enable_dis_xps_bt.setEnabled(True)
             self.ui.init_xps_bt.setEnabled(True)
             self.ui.stop_bt.setEnabled(True)
-            self.ui.save_current_pos_obj_bt.setEnabled(True)
-            self.ui.recall_obj_saved_bt.setEnabled(True)
-            self.ui.save_current_pos_target_bt.setEnabled(True)
-            self.ui.recall_target_saved_bt.setEnabled(True)
+         
             
             #Selecting the different stages
             self.ui.x_stage_select.currentIndexChanged.connect(lambda: self.updateGroup(0))
             self.ui.y_stage_select.currentIndexChanged.connect(lambda: self.updateGroup(1))
-            
+        
         except AttributeError:
+            print("Error!")
             self.xps = None
         #GUI Interface
         self.updateGUIStatus()
@@ -781,7 +777,8 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
     # Functions that corresponds to the intialize, home and enable / disable fcns
     def xpsStatusBtn(self,btn):
         if btn == "Initialize":
-            self.xps.initializeStage(self.xpsAxes[0])
+            print(self.xps)
+            self.xps.initializeStage(str(self.xpsAxes[0]))
             self.xps.initializeStage(self.xpsAxes[1])
         elif btn == "Home":
             self.xps.homeStage(self.xpsAxes[0])
@@ -813,8 +810,8 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         self.ui.y_abs_mv_bt.setEnabled(ready)
         self.ui.y_step_f_bt.setEnabled(ready)
         self.ui.y_step_b_bt.setEnabled(ready)
-        self.ui.x_abs_mv_ck.setEnabled(0)
-        self.ui.y_abs_mv_ck.setEnabled(0)
+        self.ui.x_abs_mv_ck.setEnabled(1)
+        self.ui.y_abs_mv_ck.setEnabled(1)
         
 
 
@@ -1230,8 +1227,8 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         
         # --- Raster scan setup ---
         # Convert shot separation from meters to mm (XPS positions are in mm)
-        shot_sep_mm = self.shot_sep * 1e3
-        
+        shot_sep_mm = self.shot_sep * 1e-3
+        print(shot_sep_mm)
         # Determine step directions
         y_step = shot_sep_mm if self.y_stop >= self.y_start else -shot_sep_mm
         x_step = shot_sep_mm if self.x_stop >= self.x_start else -shot_sep_mm
@@ -1239,7 +1236,7 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         # Calculate total number of steps across the full target area
         total_y_steps = int(abs(self.y_stop - self.y_start) / shot_sep_mm) + 1
         total_x_steps = int(abs(self.x_stop - self.x_start) / shot_sep_mm) + 1
-        
+        print(total_x_steps)
         # Determine starting position and Y direction
         # If we have a resume position from a previous scan, use that
         if self.scan_resume_pos is not None:
