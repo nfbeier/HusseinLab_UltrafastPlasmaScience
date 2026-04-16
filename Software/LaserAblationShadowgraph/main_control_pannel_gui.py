@@ -1532,7 +1532,7 @@ class Ui_MainWindow(object):
         self.label_61.setText(_translate("MainWindow", "Minimum Travel (mm)"))
         self.label_62.setText(_translate("MainWindow", "Maximum Travel (mm)"))
         self.label_63.setText(_translate("MainWindow", "IP address"))
-        self.ip_address_ip.setText(_translate("MainWindow", "192.168.0.79"))
+        self.ip_address_ip.setText(_translate("MainWindow", "192.168.0.254"))
         self.label_64.setText(_translate("MainWindow", "Status"))
         self.connect_xps_bt.setText(_translate("MainWindow", "Connect \n"
 " XPS"))

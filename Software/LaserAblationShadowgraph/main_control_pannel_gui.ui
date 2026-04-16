@@ -1586,7 +1586,7 @@
         </font>
        </property>
        <property name="text">
-        <string>192.168.0.79</string>
+        <string>192.168.0.254</string>
        </property>
       </widget>
       <widget class="QLabel" name="label_64">
