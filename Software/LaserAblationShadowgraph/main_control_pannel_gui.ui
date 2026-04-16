@@ -40,7 +40,7 @@
      <enum>QTabWidget::Rounded</enum>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <property name="elideMode">
      <enum>Qt::ElideRight</enum>
@@ -2480,7 +2480,7 @@
         <string>Set Start Y Pos.</string>
        </property>
       </widget>
-      <widget class="QPushButton" name="set_x_end_bt">
+      <widget class="QPushButton" name="set_x_stop_bt">
        <property name="enabled">
         <bool>true</bool>
        </property>
@@ -2503,7 +2503,7 @@
         <string>Set End X Pos.</string>
        </property>
       </widget>
-      <widget class="QPushButton" name="set_y_end_bt">
+      <widget class="QPushButton" name="set_y_stop_bt">
        <property name="enabled">
         <bool>true</bool>
        </property>
