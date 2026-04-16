@@ -40,7 +40,7 @@
      <enum>QTabWidget::Rounded</enum>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>0</number>
     </property>
     <property name="elideMode">
      <enum>Qt::ElideRight</enum>
@@ -52,8 +52,8 @@
      <widget class="QGroupBox" name="groupBox_14">
       <property name="geometry">
        <rect>
-        <x>400</x>
-        <y>510</y>
+        <x>370</x>
+        <y>550</y>
         <width>290</width>
         <height>91</height>
        </rect>
@@ -95,8 +95,8 @@
      <widget class="QPushButton" name="start_scan_bt">
       <property name="geometry">
        <rect>
-        <x>100</x>
-        <y>610</y>
+        <x>70</x>
+        <y>660</y>
         <width>260</width>
         <height>61</height>
        </rect>
@@ -114,8 +114,8 @@
      <widget class="QPushButton" name="stop_bt">
       <property name="geometry">
        <rect>
-        <x>410</x>
-        <y>610</y>
+        <x>380</x>
+        <y>660</y>
         <width>260</width>
         <height>61</height>
        </rect>
@@ -133,8 +133,8 @@
      <widget class="QGroupBox" name="groupBox_10">
       <property name="geometry">
        <rect>
-        <x>90</x>
-        <y>510</y>
+        <x>60</x>
+        <y>550</y>
         <width>290</width>
         <height>91</height>
        </rect>
@@ -545,10 +545,10 @@
      <widget class="QGroupBox" name="groupBox_11">
       <property name="geometry">
        <rect>
-        <x>90</x>
+        <x>40</x>
         <y>90</y>
-        <width>601</width>
-        <height>381</height>
+        <width>651</width>
+        <height>441</height>
        </rect>
       </property>
       <property name="font">
@@ -588,14 +588,14 @@
        <property name="geometry">
         <rect>
          <x>110</x>
-         <y>60</y>
+         <y>70</y>
          <width>71</width>
          <height>21</height>
         </rect>
        </property>
        <property name="font">
         <font>
-         <pointsize>12</pointsize>
+         <pointsize>11</pointsize>
          <weight>50</weight>
          <bold>false</bold>
         </font>
@@ -611,7 +611,7 @@
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>200</y>
+         <y>240</y>
          <width>551</width>
          <height>21</height>
         </rect>
@@ -646,7 +646,7 @@
        <property name="geometry">
         <rect>
          <x>190</x>
-         <y>90</y>
+         <y>100</y>
          <width>71</width>
          <height>31</height>
         </rect>
@@ -689,9 +689,9 @@
        </property>
        <property name="geometry">
         <rect>
-         <x>300</x>
-         <y>140</y>
-         <width>261</width>
+         <x>310</x>
+         <y>150</y>
+         <width>290</width>
          <height>51</height>
         </rect>
        </property>
@@ -710,7 +710,7 @@
        <property name="geometry">
         <rect>
          <x>110</x>
-         <y>90</y>
+         <y>100</y>
          <width>71</width>
          <height>31</height>
         </rect>
@@ -733,8 +733,8 @@
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>140</y>
-         <width>261</width>
+         <y>150</y>
+         <width>290</width>
          <height>51</height>
         </rect>
        </property>
@@ -753,14 +753,14 @@
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>50</y>
+         <y>60</y>
          <width>101</width>
          <height>41</height>
         </rect>
        </property>
        <property name="font">
         <font>
-         <pointsize>12</pointsize>
+         <pointsize>11</pointsize>
          <weight>50</weight>
          <bold>false</bold>
         </font>
@@ -776,8 +776,8 @@
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>230</y>
-         <width>581</width>
+         <y>270</y>
+         <width>631</width>
          <height>61</height>
         </rect>
        </property>
@@ -799,14 +799,14 @@
        <property name="geometry">
         <rect>
          <x>200</x>
-         <y>60</y>
+         <y>70</y>
          <width>71</width>
          <height>21</height>
         </rect>
        </property>
        <property name="font">
         <font>
-         <pointsize>12</pointsize>
+         <pointsize>11</pointsize>
          <weight>50</weight>
          <bold>false</bold>
         </font>
@@ -822,7 +822,7 @@
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>90</y>
+         <y>100</y>
          <width>81</width>
          <height>31</height>
         </rect>
@@ -842,14 +842,14 @@
        <property name="geometry">
         <rect>
          <x>280</x>
-         <y>60</y>
+         <y>70</y>
          <width>71</width>
          <height>21</height>
         </rect>
        </property>
        <property name="font">
         <font>
-         <pointsize>12</pointsize>
+         <pointsize>11</pointsize>
          <weight>50</weight>
          <bold>false</bold>
         </font>
@@ -865,14 +865,14 @@
        <property name="geometry">
         <rect>
          <x>440</x>
-         <y>60</y>
+         <y>70</y>
          <width>71</width>
          <height>21</height>
         </rect>
        </property>
        <property name="font">
         <font>
-         <pointsize>12</pointsize>
+         <pointsize>11</pointsize>
          <weight>50</weight>
          <bold>false</bold>
         </font>
@@ -888,7 +888,7 @@
        <property name="geometry">
         <rect>
          <x>360</x>
-         <y>90</y>
+         <y>100</y>
          <width>71</width>
          <height>31</height>
         </rect>
@@ -929,7 +929,7 @@
        <property name="geometry">
         <rect>
          <x>280</x>
-         <y>90</y>
+         <y>100</y>
          <width>71</width>
          <height>31</height>
         </rect>
@@ -942,14 +942,14 @@
        <property name="geometry">
         <rect>
          <x>370</x>
-         <y>60</y>
+         <y>70</y>
          <width>71</width>
          <height>21</height>
         </rect>
        </property>
        <property name="font">
         <font>
-         <pointsize>12</pointsize>
+         <pointsize>11</pointsize>
          <weight>50</weight>
          <bold>false</bold>
         </font>
@@ -965,7 +965,7 @@
        <property name="geometry">
         <rect>
          <x>520</x>
-         <y>90</y>
+         <y>100</y>
          <width>71</width>
          <height>31</height>
         </rect>
@@ -1006,14 +1006,14 @@
        <property name="geometry">
         <rect>
          <x>530</x>
-         <y>60</y>
+         <y>70</y>
          <width>71</width>
          <height>21</height>
         </rect>
        </property>
        <property name="font">
         <font>
-         <pointsize>12</pointsize>
+         <pointsize>11</pointsize>
          <weight>50</weight>
          <bold>false</bold>
         </font>
@@ -1029,7 +1029,7 @@
        <property name="geometry">
         <rect>
          <x>440</x>
-         <y>90</y>
+         <y>100</y>
          <width>71</width>
          <height>31</height>
         </rect>
@@ -1089,8 +1089,8 @@
       <widget class="QLabel" name="label_78">
        <property name="geometry">
         <rect>
-         <x>120</x>
-         <y>290</y>
+         <x>180</x>
+         <y>330</y>
          <width>101</width>
          <height>41</height>
         </rect>
@@ -1112,8 +1112,8 @@
       <widget class="QLineEdit" name="ShotCounter_disp">
        <property name="geometry">
         <rect>
-         <x>120</x>
-         <y>330</y>
+         <x>180</x>
+         <y>380</y>
          <width>101</width>
          <height>31</height>
         </rect>
@@ -1129,8 +1129,8 @@
       <widget class="QLabel" name="label_79">
        <property name="geometry">
         <rect>
-         <x>230</x>
-         <y>290</y>
+         <x>290</x>
+         <y>330</y>
          <width>101</width>
          <height>41</height>
         </rect>
@@ -1152,8 +1152,8 @@
       <widget class="QLineEdit" name="rel_time_disp">
        <property name="geometry">
         <rect>
-         <x>230</x>
-         <y>330</y>
+         <x>290</x>
+         <y>380</y>
          <width>141</width>
          <height>31</height>
         </rect>
@@ -1169,8 +1169,8 @@
       <widget class="QLabel" name="label_80">
        <property name="geometry">
         <rect>
-         <x>400</x>
-         <y>300</y>
+         <x>460</x>
+         <y>340</y>
          <width>71</width>
          <height>21</height>
         </rect>
@@ -1192,8 +1192,8 @@
       <widget class="QComboBox" name="rel_time_unit_disp">
        <property name="geometry">
         <rect>
-         <x>390</x>
-         <y>330</y>
+         <x>450</x>
+         <y>380</y>
          <width>71</width>
          <height>31</height>
         </rect>
@@ -2243,9 +2243,9 @@
        </property>
        <property name="font">
         <font>
-         <pointsize>12</pointsize>
-         <weight>75</weight>
-         <bold>true</bold>
+         <pointsize>11</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
         </font>
        </property>
        <property name="text">
@@ -2445,9 +2445,9 @@
        </property>
        <property name="font">
         <font>
-         <pointsize>12</pointsize>
-         <weight>75</weight>
-         <bold>true</bold>
+         <pointsize>11</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
         </font>
        </property>
        <property name="text">
@@ -2565,7 +2565,7 @@
        <property name="geometry">
         <rect>
          <x>160</x>
-         <y>590</y>
+         <y>600</y>
          <width>111</width>
          <height>41</height>
         </rect>
@@ -2621,7 +2621,7 @@
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>590</y>
+         <y>600</y>
          <width>151</width>
          <height>41</height>
         </rect>
@@ -2647,7 +2647,7 @@
        <property name="geometry">
         <rect>
          <x>280</x>
-         <y>590</y>
+         <y>610</y>
          <width>141</width>
          <height>61</height>
         </rect>
@@ -2667,7 +2667,7 @@
        <property name="geometry">
         <rect>
          <x>160</x>
-         <y>630</y>
+         <y>660</y>
          <width>111</width>
          <height>31</height>
         </rect>
@@ -2693,7 +2693,7 @@
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>630</y>
+         <y>660</y>
          <width>151</width>
          <height>41</height>
         </rect>
@@ -2760,7 +2760,7 @@ availble shots</string>
         <rect>
          <x>280</x>
          <y>50</y>
-         <width>141</width>
+         <width>191</width>
          <height>81</height>
         </rect>
        </property>
@@ -3503,6 +3503,13 @@ availble shots</string>
           <height>51</height>
          </rect>
         </property>
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
         <property name="text">
          <string>Set Relative
 Delay</string>
@@ -3681,14 +3688,14 @@ Delay</string>
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>30</y>
+          <y>40</y>
           <width>121</width>
           <height>41</height>
          </rect>
         </property>
         <property name="font">
          <font>
-          <pointsize>13</pointsize>
+          <pointsize>10</pointsize>
           <weight>75</weight>
           <bold>true</bold>
          </font>
@@ -3705,14 +3712,14 @@ Set to 4V</string>
         <property name="geometry">
          <rect>
           <x>160</x>
-          <y>30</y>
+          <y>40</y>
           <width>121</width>
           <height>51</height>
          </rect>
         </property>
         <property name="font">
          <font>
-          <pointsize>13</pointsize>
+          <pointsize>10</pointsize>
           <weight>75</weight>
           <bold>true</bold>
          </font>
@@ -3756,14 +3763,14 @@ Maximum 30 V</string>
         <property name="geometry">
          <rect>
           <x>340</x>
-          <y>30</y>
+          <y>40</y>
           <width>121</width>
           <height>51</height>
          </rect>
         </property>
         <property name="font">
          <font>
-          <pointsize>13</pointsize>
+          <pointsize>10</pointsize>
           <weight>75</weight>
           <bold>true</bold>
          </font>
