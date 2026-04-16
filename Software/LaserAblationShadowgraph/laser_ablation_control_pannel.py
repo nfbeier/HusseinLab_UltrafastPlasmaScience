@@ -29,7 +29,7 @@ script_dir = os.path.dirname(os.path.abspath(__file__))
 
 # Add FLIR Camera Code directory to path for BlackflyCamera import
 flir_code_dir = os.path.join(
-    script_dir, "Camera Testing", "FLIR Camera Code"
+    script_dir, os.pardir, "SolidTargetStage", "Camera Testing", "FLIR Camera Code"
 )
 if flir_code_dir not in sys.path:
     sys.path.insert(0, flir_code_dir)
