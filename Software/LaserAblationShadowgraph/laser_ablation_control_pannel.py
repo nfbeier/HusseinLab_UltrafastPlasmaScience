@@ -256,6 +256,10 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         # Setting the Start Button
         self.ui.start_scan_bt.clicked.connect(self.StartScan)
         
+        # Test fire buttons (fire DG + capture image, no save/count)
+        self.ui.fire_dg_bt_1.clicked.connect(self.TestFireDG)
+        self.ui.fire_dg_bt_2.clicked.connect(self.TestFireDG)
+        
         #Setting the  disconnect
         self.ui.stop_bt.clicked.connect(self.DisconnectBtn)
         
@@ -698,6 +702,28 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
             # No camera connected or not in hardware trigger mode,
             # just fire the delay generator
             self.ins_dg.single_shot_fire_dg()
+    
+    
+    def TestFireDG(self):
+        """Fire the delay generator for testing. Captures and displays image but
+        does NOT increment shot counter or save the image."""
+        mode = self.ui.ModeComboBox.currentText().strip()
+        
+        if self.cam_connected and mode == "Hardware Trigger":
+            # Fire the delay generator
+            self.ins_dg.single_shot_fire_dg()
+            
+            # Capture and display only (no save, no counter increment)
+            image = self.cam.capture_triggered_image(timeout_ms=5000)
+            if image is not None:
+                self.display_camera_image(image, self.ui.CapturedImage)
+                self.cam_log("Test fire: image captured (not saved)")
+            else:
+                self.cam_log("Test fire: failed to capture image.", is_error=True)
+        else:
+            # No camera or not in hardware trigger mode, just fire
+            self.ins_dg.single_shot_fire_dg()
+            self.cam_log("Test fire: DG fired (no camera capture)")
     
     
     ############## XPS STAGE  FUNCTIONS ##########################

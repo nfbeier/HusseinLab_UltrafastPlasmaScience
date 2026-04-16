@@ -40,7 +40,7 @@
      <enum>QTabWidget::Rounded</enum>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <property name="elideMode">
      <enum>Qt::ElideRight</enum>
@@ -114,8 +114,8 @@
      <widget class="QPushButton" name="stop_bt">
       <property name="geometry">
        <rect>
-        <x>380</x>
-        <y>660</y>
+        <x>220</x>
+        <y>750</y>
         <width>260</width>
         <height>61</height>
        </rect>
@@ -1230,6 +1230,25 @@
         </property>
        </item>
       </widget>
+     </widget>
+     <widget class="QPushButton" name="fire_dg_bt_2">
+      <property name="geometry">
+       <rect>
+        <x>380</x>
+        <y>660</y>
+        <width>260</width>
+        <height>61</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Fire Delay Generator!</string>
+      </property>
      </widget>
     </widget>
     <widget class="QWidget" name="tab">
@@ -2743,7 +2762,7 @@ availble shots</string>
         <x>960</x>
         <y>10</y>
         <width>511</width>
-        <height>751</height>
+        <height>831</height>
        </rect>
       </property>
       <property name="font">
@@ -3783,6 +3802,19 @@ Maximum 2.0 V</string>
          <bool>true</bool>
         </property>
        </widget>
+      </widget>
+      <widget class="QPushButton" name="fire_dg_bt_1">
+       <property name="geometry">
+        <rect>
+         <x>150</x>
+         <y>750</y>
+         <width>201</width>
+         <height>51</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Fire Delay Generator!</string>
+       </property>
       </widget>
      </widget>
     </widget>
