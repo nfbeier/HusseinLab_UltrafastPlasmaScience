@@ -2270,12 +2270,12 @@
          <x>10</x>
          <y>60</y>
          <width>411</width>
-         <height>61</height>
+         <height>51</height>
         </rect>
        </property>
        <property name="font">
         <font>
-         <pointsize>11</pointsize>
+         <pointsize>10</pointsize>
          <weight>50</weight>
          <bold>false</bold>
         </font>
@@ -2454,7 +2454,7 @@
        </property>
        <property name="font">
         <font>
-         <pointsize>11</pointsize>
+         <pointsize>10</pointsize>
          <weight>50</weight>
          <bold>false</bold>
         </font>
@@ -3068,9 +3068,9 @@ availble shots</string>
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>80</y>
+          <y>90</y>
           <width>241</width>
-          <height>51</height>
+          <height>41</height>
          </rect>
         </property>
         <property name="sizePolicy">
@@ -3529,7 +3529,7 @@ availble shots</string>
        <widget class="QPushButton" name="set_rel_delay_bt">
         <property name="geometry">
          <rect>
-          <x>330</x>
+          <x>350</x>
           <y>120</y>
           <width>101</width>
           <height>51</height>
