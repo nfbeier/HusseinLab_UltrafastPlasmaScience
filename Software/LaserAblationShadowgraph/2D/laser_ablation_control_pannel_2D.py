@@ -315,7 +315,7 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
     def updateEffSep(self):   
         self.shot_sep_prelim = self.ui.shot_sep_ip.text()
         if  self.shot_sep_prelim != '':
-            self.shot_sep = float(self.shot_sep_prelim)*1e-6
+            self.shot_sep = float(self.shot_sep_prelim)
     
             
     
@@ -357,9 +357,8 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         self.y_dim = abs(self.y_stop - self.y_start)
         self.target_area = self.x_dim * self.y_dim
         
-        # Calculating the effective shot area (shot_sep already in m, convert to mm)
-        shot_sep_mm = self.shot_sep * 1e3
-        self.shot_area = shot_sep_mm ** 2 
+        # Calculating the effective shot area (shot_sep already in mm)
+        self.shot_area = self.shot_sep ** 2 
         
         if self.shot_area == 0:
             self.ui.raster_calc_disp.setText("Error: Shot separation is zero")
@@ -520,8 +519,8 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
             channel = self.ui.delay_select.currentText()
             self.ui.channel_link.setText(self.dg_values[channel][0])
             
-            # Clean floating point artifacts when displaying
-            delay_val_rounded = round(float(self.dg_values[channel][1]), 8)
+            # Clean floating point artifacts when displaying (preserve up to 14 decimals for ps precision in seconds)
+            delay_val_rounded = round(float(self.dg_values[channel][1]), 14)
             self.ui.delay_disp.setText(str(delay_val_rounded))   
             self.ui.delay_select_units.setCurrentText(self.dg_values[channel][2])
             
@@ -1392,8 +1391,8 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                 # Calculate the absolute delay for this time step
                 new_delay_seconds = self.t_zero_seconds + (self.t_zero_step_dir * time_offset)
                 
-                # Convert back to the channel's display units and round to 8 decimals to prevent float artifacts
-                new_delay_value = round(new_delay_seconds / self.unit_to_seconds[current_units], 8)
+                # Convert back to the channel's display units and round to 14 decimals to prevent float artifacts while preserving ps precision
+                new_delay_value = round(new_delay_seconds / self.unit_to_seconds[current_units], 14)
                 
                 # Update the delay on the instrument
                 self.dg_values[channel_key][1] = new_delay_value
