@@ -1327,13 +1327,13 @@
        </property>
        <property name="font">
         <font>
-         <pointsize>14</pointsize>
+         <pointsize>12</pointsize>
          <weight>75</weight>
          <bold>true</bold>
         </font>
        </property>
        <property name="autoFillBackground">
-        <bool>true</bool>
+        <bool>false</bool>
        </property>
        <property name="text">
         <string>XPS Setup</string>
@@ -2310,15 +2310,15 @@
       <widget class="QLabel" name="label_56">
        <property name="geometry">
         <rect>
-         <x>30</x>
-         <y>230</y>
-         <width>91</width>
-         <height>31</height>
+         <x>20</x>
+         <y>220</y>
+         <width>101</width>
+         <height>51</height>
         </rect>
        </property>
        <property name="font">
         <font>
-         <pointsize>9</pointsize>
+         <pointsize>8</pointsize>
          <weight>75</weight>
          <bold>true</bold>
         </font>
