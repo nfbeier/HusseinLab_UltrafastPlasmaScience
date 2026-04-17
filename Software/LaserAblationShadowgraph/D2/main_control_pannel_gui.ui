@@ -40,7 +40,7 @@
      <enum>QTabWidget::Rounded</enum>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <property name="elideMode">
      <enum>Qt::ElideRight</enum>
@@ -2472,9 +2472,9 @@
        </property>
        <property name="geometry">
         <rect>
-         <x>20</x>
+         <x>220</x>
          <y>140</y>
-         <width>381</width>
+         <width>171</width>
          <height>31</height>
         </rect>
        </property>
@@ -2495,9 +2495,9 @@
        </property>
        <property name="geometry">
         <rect>
-         <x>20</x>
+         <x>220</x>
          <y>180</y>
-         <width>381</width>
+         <width>171</width>
          <height>31</height>
         </rect>
        </property>
@@ -2720,6 +2720,52 @@
        <property name="text">
         <string>Calculate # 
 availble shots</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="set_x_start_bt">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="geometry">
+        <rect>
+         <x>30</x>
+         <y>140</y>
+         <width>171</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Set Start X Pos.</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="set_x_stop_bt">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="geometry">
+        <rect>
+         <x>30</x>
+         <y>180</y>
+         <width>171</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Set End X Pos.</string>
        </property>
       </widget>
      </widget>
