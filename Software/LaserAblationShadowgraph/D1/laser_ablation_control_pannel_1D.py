@@ -5,8 +5,9 @@ Created on Tue Apr 14 16:41:38 2026
 
 @author: christina
 
-i dedicate this gui to lisa vanderpump xx 
-like her this gui is a bit of a mess but it works
+the 1d scan is dedicated to the ladies of RHOSLC
+like lisa barlow says this gui is baby gorgeous
+
 
 Requirements:
     - Python 3.10 environment
@@ -70,12 +71,10 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         self.shot_sep = float(self.ui.shot_sep_ip.text())
 
         #Setting the start and stop values to -1 until the buttons are clicked
-        self.x_start = -1
-        self.x_stop = -1
         self.y_start = -1
         self.y_stop = -1
         
-        # Tracks where the next scan should resume (None = start from x_start, y_start)
+        # Tracks where the next scan should resume (None = start from y_start)
         self.scan_resume_pos = None
         
         
@@ -91,16 +90,11 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         self.xpsAxes = [None, None]
         
         # XPS GUI Setup
-        self.ui.x_min_trav_ip.setText('0')
-        self.ui.x_max_trav_ip.setText('46')
-        
         self.ui.y_min_trav_ip.setText('0')
         self.ui.y_max_trav_ip.setText('25')
         
-        self.ui.x_abs_mv_ip.setText('0')
         self.ui.y_abs_mv_ip.setText('0')
         
-        self.ui.x_step_ip.setText('0')
         self.ui.y_step_ip.setText('0')
         
   
@@ -111,9 +105,7 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         
         
         #Buttons for clicing the start and stop buttons
-        self.ui.set_x_start_bt.clicked.connect(self.SetStartXPos)
         self.ui.set_y_start_bt.clicked.connect(self.SetStartYPos)
-        self.ui.set_x_stop_bt.clicked.connect(self.SetStopXPos)
         self.ui.set_y_stop_bt.clicked.connect(self.SetStopYPos)
         
         #Button for calculating the availble shots
@@ -208,18 +200,11 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         self.ui.home_xps_bt.clicked.connect(lambda: self.xpsStatusBtn("Home"))
         self.ui.enable_dis_xps_bt.clicked.connect(lambda: self.xpsStatusBtn("EnableDisable"))
         
-        #Adjusting the minimum and maximum travel limits for the two stages
-        self.ui.x_min_trav_ip.textChanged.connect(lambda: self.updateTravelLimits("minXPSX"))
-        self.ui.x_max_trav_ip.textChanged.connect(lambda: self.updateTravelLimits("maxXPSX"))
-        
+        #Adjusting the minimum and maximum travel limits for the stage
         self.ui.y_min_trav_ip.textChanged.connect(lambda: self.updateTravelLimits("minXPSY"))
         self.ui.y_min_trav_ip.textChanged.connect(lambda: self.updateTravelLimits("maxXPSY"))
         
-        #Moving the two stages
-        self.ui.x_abs_mv_bt.clicked.connect(lambda: self.xpsMotionBtn("AbsoluteX"))
-        self.ui.x_step_f_bt.clicked.connect(lambda: self.xpsMotionBtn("ForwardX"))
-        self.ui.x_step_b_bt.clicked.connect(lambda: self.xpsMotionBtn("BackwardX"))
-        
+        #Moving the stage
         self.ui.y_abs_mv_bt.clicked.connect(lambda: self.xpsMotionBtn("AbsoluteY"))
         self.ui.y_step_f_bt.clicked.connect(lambda: self.xpsMotionBtn("ForwardY"))
         self.ui.y_step_b_bt.clicked.connect(lambda: self.xpsMotionBtn("BackwardY"))
@@ -321,17 +306,9 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
     
             
     
-    def SetStartXPos(self):
-        # Sets the value
-        self.x_start = float(self.ui.x_pos_disp.toPlainText())
-
     def SetStartYPos(self):
         # Sets the value
         self.y_start = float(self.ui.y_pos_disp.toPlainText())
-        
-    def SetStopXPos(self):
-        # Sets the value
-        self.x_stop = float(self.ui.x_pos_disp.toPlainText())
         
     def SetStopYPos(self):
         # Sets the value
@@ -340,10 +317,6 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
     def CalcShotsAvail(self):
         # Check that all start/stop positions have been set
         unset = []
-        if self.x_start == -1:
-            unset.append("X Start")
-        if self.x_stop == -1:
-            unset.append("X Stop")
         if self.y_start == -1:
             unset.append("Y Start")
         if self.y_stop == -1:
@@ -355,12 +328,11 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
             return
         
         # Calculating the available target area (positions in mm)
-        self.x_dim = abs(self.x_stop - self.x_start)
         self.y_dim = abs(self.y_stop - self.y_start)
-        self.target_area = self.x_dim * self.y_dim
+        self.target_area = self.y_dim
         
         # Calculating the effective shot area (shot_sep already in mm)
-        self.shot_area = self.shot_sep ** 2 
+        self.shot_area = self.shot_sep 
         
         if self.shot_area == 0:
             self.ui.raster_calc_disp.setText("Error: Shot separation is zero")
@@ -428,12 +400,8 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
             self.ui.raster_overview_disp_2.setText("Error: Set T0 first before configuring scan.")
             return
         
-        # Then check if scan area has been defined (x_start, x_stop, y_start, y_stop)
+        # Then check if scan area has been defined (y_start, y_stop)
         unset = []
-        if self.x_start == -1:
-            unset.append("X Start")
-        if self.x_stop == -1:
-            unset.append("X Stop")
         if self.y_start == -1:
             unset.append("Y Start")
         if self.y_stop == -1:
@@ -773,14 +741,11 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
             self.xps_ipaddress = self.ui.ip_address_ip.text()
             self.xps = XPS(self.xps_ipaddress)
             self.xpsGroupNames = self.xps.getXPSStatus()
-            self.ui.x_stage_select.clear()
             self.ui.y_stage_select.clear()
-            self.ui.x_stage_select.addItems(list(self.xpsGroupNames.keys()))
             self.ui.y_stage_select.addItems(list(self.xpsGroupNames.keys()))
-            self.ui.y_stage_select.setCurrentIndex(1)
-            self.xpsAxes = [self.ui.x_stage_select.currentText(), self.ui.y_stage_select.currentText()]
+            self.ui.y_stage_select.setCurrentIndex(0)
+            self.xpsAxes = [self.ui.y_stage_select.currentText()]
             self.xps.setGroup(self.xpsAxes[0])
-            self.xps.setGroup(self.xpsAxes[1])
             self.xpsStageStatus = [self.xps.getStageStatus(axis) for axis in self.xpsAxes]
             self.ui.home_xps_bt.setEnabled(True)
             self.ui.enable_dis_xps_bt.setEnabled(True)
@@ -788,9 +753,8 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
             self.ui.stop_bt.setEnabled(True)
          
             
-            #Selecting the different stages
-            self.ui.x_stage_select.currentIndexChanged.connect(lambda: self.updateGroup(0))
-            self.ui.y_stage_select.currentIndexChanged.connect(lambda: self.updateGroup(1))
+            #Selecting the stage
+            self.ui.y_stage_select.currentIndexChanged.connect(lambda: self.updateGroup(0))
         
         except AttributeError:
             print("Error!")
@@ -799,14 +763,11 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         self.updateGUIStatus()
         
     
-    # Function to update the x and y info 
+    # Function to update the stage info 
     def updateGroup(self, axis):
         if axis == 0:
-            self.xpsAxes[0] = self.ui.x_stage_select.currentText()
+            self.xpsAxes[0] = self.ui.y_stage_select.currentText()
             self.xps.setGroup(self.xpsAxes[0])
-        if axis == 1:
-            self.xpsAxes[1] = self.ui.y_stage_select.currentText()
-            self.xps.setGroup(self.xpsAxes[1])
         
         self.xpsStageStatus = [self.xps.getStageStatus(axis) for axis in self.xpsAxes]
         self.updateGUIStatus()
@@ -816,16 +777,12 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         if btn == "Initialize":
             print(self.xps)
             self.xps.initializeStage(str(self.xpsAxes[0]))
-            self.xps.initializeStage(self.xpsAxes[1])
         elif btn == "Home":
             self.xps.homeStage(self.xpsAxes[0])
-            self.xps.homeStage(self.xpsAxes[1])
         elif btn == "EnableDisable" and self.xpsStageStatus[0].upper() == "Disabled state".upper():
             self.xps.enableGroup(self.xpsAxes[0])
-            self.xps.enableGroup(self.xpsAxes[1])
         elif btn == "EnableDisable" and self.xpsStageStatus[0][:11].upper() == "Ready state".upper():
             self.xps.disableGroup(self.xpsAxes[0])
-            self.xps.disableGroup(self.xpsAxes[1])
             
         self.xpsStageStatus = [self.xps.getStageStatus(axis) for axis in self.xpsAxes]
         self.updateGUIStatus()
@@ -841,13 +798,9 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                 ready = True
         
         # Independent-mode widgets
-        self.ui.x_abs_mv_bt.setEnabled(ready)
-        self.ui.x_step_f_bt.setEnabled(ready)
-        self.ui.x_step_b_bt.setEnabled(ready)
         self.ui.y_abs_mv_bt.setEnabled(ready)
         self.ui.y_step_f_bt.setEnabled(ready)
         self.ui.y_step_b_bt.setEnabled(ready)
-        self.ui.x_abs_mv_ck.setEnabled(1)
         self.ui.y_abs_mv_ck.setEnabled(1)
         
 
@@ -855,64 +808,23 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
     # XPS Motion Control
 
     def xpsMotionBtn(self, btn):
-        posX_current = float(self.xps.getStagePosition(self.xpsAxes[0]))
-        posY_current = float(self.xps.getStagePosition(self.xpsAxes[1]))
+        posY_current = float(self.xps.getStagePosition(self.xpsAxes[0]))
         
-        posX_abs = float(self.ui.x_abs_mv_ip.text())
         posY_abs = float(self.ui.y_abs_mv_ip.text())
         
-        posX_rel = float(self.ui.x_step_ip.text())
         posY_rel = float(self.ui.y_step_ip.text())
-        
-        limit_max_x = float(self.ui.x_max_trav_ip.text())
-        limit_min_x = float(self.ui.x_min_trav_ip.text())
         
         limit_max_y = float(self.ui.y_max_trav_ip.text())
         limit_min_y = float(self.ui.y_min_trav_ip.text())
         
         if self.xpsStageStatus[0][:11].upper() == "Ready state".upper():
-            if btn == "AbsoluteX" and self.ui.x_abs_mv_ck.isChecked():
-                if posX_abs < limit_min_x or posX_abs > limit_max_x:
-                    error_msg = f"X-axis absolute move failed: Target position {posX_abs:.2f} mm is outside travel limits [{limit_min_x:.2f}, {limit_max_x:.2f}] mm"
-                    self.display_error_message(error_msg, "ERROR")
-                    self.ui.status_label_x.setText('Position out of range')                  
-                else:
-                    self.xps.moveAbsolute(self.xpsAxes[0],posX_abs)
-                    self.ui.status_label_x.setText('')
-                    self.clear_error_message()
-                self.updatePosition()
-            elif btn == "ForwardX":
-                if (posX_rel+posX_current) < limit_min_x or (posX_current+posX_rel) > limit_max_x:
-                    new_pos = posX_current + posX_rel
-                    error_msg = f"X-axis forward step failed: New position {new_pos:.2f} mm would exceed travel limits [{limit_min_x:.2f}, {limit_max_x:.2f}] mm. Current position: {posX_current:.2f} mm, Step: {posX_rel:.2f} mm"
-                    self.display_error_message(error_msg, "ERROR")
-                    self.ui.status_label_x.setText('Step exceeds limits')                 
-                else:
-                    self.xps.moveRelative(self.xpsAxes[0],posX_rel)
-                    self.ui.status_label_x.setText('')
-                    self.clear_error_message()
-                self.updatePosition()
-                
-            elif btn == "BackwardX":
-                if (posX_current-posX_rel) < limit_min_x or (posX_current-posX_rel) > limit_max_x:
-                    new_pos = posX_current - posX_rel
-                    error_msg = f"X-axis backward step failed: New position {new_pos:.2f} mm would exceed travel limits [{limit_min_x:.2f}, {limit_max_x:.2f}] mm. Current position: {posX_current:.2f} mm, Step: {posX_rel:.2f} mm"
-                    self.display_error_message(error_msg, "ERROR")
-                    self.ui.status_label_x.setText('Step exceeds limits')                  
-                else:
-                    self.xps.moveRelative(self.xpsAxes[0],-1*posX_rel)
-                    self.ui.status_label_x.setText('')
-                    self.clear_error_message()
-                self.updatePosition()
-                
-        if self.xpsStageStatus[1][:11].upper() == "Ready state".upper():
             if btn == "AbsoluteY" and self.ui.y_abs_mv_ck.isChecked():
                 if posY_abs < limit_min_y or posY_abs > limit_max_y:
                     error_msg = f"Y-axis absolute move failed: Target position {posY_abs:.2f} mm is outside travel limits [{limit_min_y:.2f}, {limit_max_y:.2f}] mm"
                     self.display_error_message(error_msg, "ERROR")
                     self.ui.status_label_y.setText('Position out of range')                  
                 else:
-                    self.xps.moveAbsolute(self.xpsAxes[1],posY_abs)
+                    self.xps.moveAbsolute(self.xpsAxes[0],posY_abs)
                     self.ui.status_label_y.setText('')
                     self.clear_error_message()
                 self.updatePosition()
@@ -923,7 +835,7 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                     self.display_error_message(error_msg, "ERROR")
                     self.ui.status_label_y.setText('Step exceeds limits')                   
                 else:
-                    self.xps.moveRelative(self.xpsAxes[1],posY_rel)
+                    self.xps.moveRelative(self.xpsAxes[0],posY_rel)
                     self.ui.status_label_y.setText('')
                     self.clear_error_message()
                 self.updatePosition()
@@ -935,7 +847,7 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                     self.display_error_message(error_msg, "ERROR")
                     self.ui.status_label_y.setText('Step exceeds limits')                   
                 else:
-                    self.xps.moveRelative(self.xpsAxes[1],-1*posY_rel)
+                    self.xps.moveRelative(self.xpsAxes[0],-1*posY_rel)
                     self.ui.status_label_y.setText('')
                     self.clear_error_message()
                 self.updatePosition()
@@ -951,45 +863,32 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
             if self.xpsStageStatus[0] == "Not initialized state" or self.xpsStageStatus[0] == "Not initialized state due to a GroupKill or KillAll command":
                 self.ui.home_xps_bt.setEnabled(False)
                 self.ui.enable_dis_xps_bt.setEnabled(False)
-                self.ui.x_abs_mv_bt.setEnabled(False)
-                self.ui.x_step_f_bt.setEnabled(False)
-                self.ui.x_step_b_bt.setEnabled(False)
                 self.ui.y_abs_mv_bt.setEnabled(False)
                 self.ui.y_step_f_bt.setEnabled(False)
                 self.ui.y_step_b_bt.setEnabled(False)
-                self.ui.x_status.setText("Not Initialized")
                 self.ui.y_status.setText("Not Initialized")
                 
             elif self.xpsStageStatus[0] == "Not referenced state":
                 self.ui.home_xps_bt.setEnabled(True)
                 self.ui.enable_dis_xps_bt.setEnabled(False)
-                self.ui.x_abs_mv_bt.setEnabled(False)
-                self.ui.x_step_f_bt.setEnabled(False)
-                self.ui.x_step_b_bt.setEnabled(False)
                 self.ui.y_abs_mv_bt.setEnabled(False)
                 self.ui.y_step_f_bt.setEnabled(False)
                 self.ui.y_step_b_bt.setEnabled(False)
-                self.ui.x_status.setText("Not Homed")
                 self.ui.y_status.setText("Not Homed")
                 
             elif self.xpsStageStatus[0] == "Disabled state":
                 self.ui.enable_dis_xps_bt.setEnabled(True)
                 self.ui.init_xps_bt.setEnabled(False)
                 self.ui.home_xps_bt.setEnabled(False)
-                self.ui.x_abs_mv_bt.setEnabled(False)
-                self.ui.x_step_f_bt.setEnabled(False)
-                self.ui.x_step_b_bt.setEnabled(False)
                 self.ui.y_abs_mv_bt.setEnabled(False)
                 self.ui.y_step_f_bt.setEnabled(False)
                 self.ui.y_step_b_bt.setEnabled(False)
-                self.ui.x_status.setText("Disabled")
                 self.ui.y_status.setText("Disabled")
                 
             elif self.xpsStageStatus[0][:11].upper() == "Ready state".upper():
                 self.ui.enable_dis_xps_bt.setEnabled(True)
                 self.ui.init_xps_bt.setEnabled(False)
                 self.ui.home_xps_bt.setEnabled(False)
-                self.ui.x_status.setText("Enabled")
                 self.ui.y_status.setText("Enabled")
                 # Delegate motion button enable/disable to the movement mode handler
                 self.updateMovementMode()
@@ -999,65 +898,36 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
     
     def updatePosition(self):
         if self.xps:
-            self.ui.x_pos_disp.setText(str(self.xps.getStagePosition(self.xpsAxes[0])))         
-            self.ui.y_pos_disp.setText(str(self.xps.getStagePosition(self.xpsAxes[1])))
+            self.ui.y_pos_disp.setText(str(self.xps.getStagePosition(self.xpsAxes[0])))
             self.xpsStageStatus = [self.xps.getStageStatus(axis) for axis in self.xpsAxes]
      
     
     def updateTravelLimits(self, lim):
         time.sleep(.5)
-        if lim == "minXPSX":   
-            try:
-                limit = float(self.ui.x_min_trav_ip.text())
-                if limit < 0 or limit > 50:
-                    error_msg = f"X-axis minimum limit invalid: {limit:.2f} mm is outside allowed range [0, 50] mm"
-                    self.display_error_message(error_msg, "ERROR")
-                    self.ui.status_label_x.setText('Invalid minimum limit')
-                    self.ui.x_min_trav_ip.setText(str(self.xps.getminLimit(self.xpsAxes[0])))
-                else:
-                    self.xps.setminLimit(self.xpsAxes[0],limit)
-                    self.clear_error_message()
-            except:
-                pass
-            
-        elif lim == "maxXPSX":
-            try:
-                limit = float(self.ui.x_max_trav_ip.text())
-                if limit < 0 or limit > 50:
-                    error_msg = f"X-axis maximum limit invalid: {limit:.2f} mm is outside allowed range [0, 50] mm"
-                    self.display_error_message(error_msg, "ERROR")
-                    self.ui.status_label_x.setText('Invalid maximum limit')
-                    self.ui.x_max_trav_ip.setText(str(self.xps.getmaxLimit(self.xpsAxes[0])))
-                else:
-                    self.xps.setmaxLimit(self.xpsAxes[0],limit)
-                    self.clear_error_message()
-            except:
-                pass
-            
-        elif lim == "minXPSY":
+        if lim == "minXPSY":
             try:
                 limit = float(self.ui.y_min_trav_ip.text())
                 if limit < 0 or limit > 50:
                     error_msg = f"Y-axis minimum limit invalid: {limit:.2f} mm is outside allowed range [0, 50] mm"
                     self.display_error_message(error_msg, "ERROR")
                     self.ui.status_label_y.setText('Invalid minimum limit')
-                    self.ui.y_min_trav_ip.setText(str(self.xps.getminLimit(self.xpsAxes[1])))
+                    self.ui.y_min_trav_ip.setText(str(self.xps.getminLimit(self.xpsAxes[0])))
                 else:
-                    self.xps.setminLimit(self.xpsAxes[1],limit)
+                    self.xps.setminLimit(self.xpsAxes[0],limit)
                     self.clear_error_message()
             except:
                 pass
             
         elif lim == "maxXPSY":
             try:
-                limit = float(self.ui.z_max_trav_ip.text())
+                limit = float(self.ui.y_max_trav_ip.text())
                 if limit < 0 or limit > 50:
                     error_msg = f"Y-axis maximum limit invalid: {limit:.2f} mm is outside allowed range [0, 50] mm"
                     self.display_error_message(error_msg, "ERROR")
                     self.ui.status_label_y.setText('Invalid maximum limit')
-                    self.ui.y_max_trav_ip.setText(str(self.xps.getmaxLimit(self.xpsAxes[1])))
+                    self.ui.y_max_trav_ip.setText(str(self.xps.getmaxLimit(self.xpsAxes[0])))
                 else:
-                    self.xps.setmaxLimit(self.xpsAxes[1],limit)
+                    self.xps.setmaxLimit(self.xpsAxes[0],limit)
                     self.clear_error_message()
             except:
                 pass
@@ -1262,57 +1132,47 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
             self.display_error_message("Set camera to Hardware Trigger mode first.", "ERROR")
             return
         
-        # --- Raster scan setup ---
+        # --- 1D Linear scan setup ---
         # Convert shot separation from meters to mm (XPS positions are in mm)
         shot_sep_mm = self.shot_sep 
-        # Determine step directions
+        # Determine step direction
         y_step = shot_sep_mm if self.y_stop >= self.y_start else -shot_sep_mm
-        x_step = shot_sep_mm if self.x_stop >= self.x_start else -shot_sep_mm
         
-        # Calculate total number of steps across the full target area
+        # Calculate total number of steps across the full Y target area
         total_y_steps = int(abs(self.y_stop - self.y_start) / shot_sep_mm) + 1
-        total_x_steps = int(abs(self.x_stop - self.x_start) / shot_sep_mm) + 1
-        print(total_x_steps)
-        # Determine starting position and Y direction
+        
+        # Determine starting position
         # If we have a resume position from a previous scan, use that
         if self.scan_resume_pos is not None:
-            scan_x_start = self.scan_resume_pos['x']
             scan_y_start = self.scan_resume_pos['y']
-            y_direction = self.scan_resume_pos['y_dir']
-            start_ix = self.scan_resume_pos['ix']
+            start_iy = self.scan_resume_pos['iy']
         else:
-            scan_x_start = self.x_start
             scan_y_start = self.y_start
-            y_direction = 1
-            start_ix = 0
-        
-        # Calculate how many X columns remain from the resume point
-        num_x_remaining = total_x_steps - start_ix
+            start_iy = 0
+            
+        # Calculate how many Y positions remain from the resume point
+        num_y_remaining = total_y_steps - start_iy
         
         # Calculate how many positions we need for this scan
         # (shots per position = shots_per_time_step * num_time_steps)
         shots_per_position = self.shot_per_time_step * len(self.scan_time_steps)
         positions_needed = int(np.ceil(self.total_scan_shots / shots_per_position))
-        positions_available = num_x_remaining * total_y_steps
         
-        if positions_available <= 0:
+        if num_y_remaining <= 0:
             self.display_error_message("Target area exhausted. Set new start/stop positions.", "ERROR")
             self.scan_resume_pos = None
             return
-        
-        # Move to the starting position using relative moves
-        try:
-            x_current = float(self.xps.getStagePosition(self.xpsAxes[0]))
-            y_current = float(self.xps.getStagePosition(self.xpsAxes[1]))
             
-            dx_start = scan_x_start - x_current
+        if positions_needed > num_y_remaining:
+            self.display_error_message(f"Warning: Scan requires {positions_needed} positions but only {num_y_remaining} remain along Y.", "WARNING")
+        
+        # Move to the starting position using relative moves (Y only)
+        try:
+            y_current = float(self.xps.getStagePosition(self.xpsAxes[0]))
             dy_start = scan_y_start - y_current
             
-            if abs(dx_start) > 1e-4:
-                self.xps.moveRelative(self.xpsAxes[0], dx_start)
-                sleep(0.5)
             if abs(dy_start) > 1e-4:
-                self.xps.moveRelative(self.xpsAxes[1], dy_start)
+                self.xps.moveRelative(self.xpsAxes[0], dy_start)
                 sleep(0.5)
         except Exception as e:
             self.display_error_message(f"Error reading position or moving to start: {e}", "ERROR")
@@ -1342,7 +1202,7 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                     writer.writerow([
                         "Shot #", "Filename", 
                         "Relative Time (s)", "Absolute Delay", "Delay Units",
-                        "X Position (mm)", "Y Position (mm)",
+                        "Y Position (mm)",
                         "Channel"
                     ])
         except PermissionError:
@@ -1352,7 +1212,7 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
             self.display_error_message(f"Error accessing CSV: {e}", "ERROR")
             return
         
-        self.display_error_message("Scan started...", "INFO")
+        self.display_error_message("1D Scan started...", "INFO")
         QtWidgets.QApplication.processEvents()
         
         # Create a flattened list of all delays needed for the scan
@@ -1361,123 +1221,98 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
             for _ in range(self.shot_per_time_step):
                 delays_needed.append(time_offset)
                 
-        # --- Begin raster scan ---
+        # --- Begin 1D linear scan ---
         shot_idx = 0
-        for ix_offset in range(num_x_remaining):
-            ix = start_ix + ix_offset
+        for iy_offset in range(num_y_remaining):
+            iy = start_iy + iy_offset
             
-            # Step in X (skip on first iteration, already jumped to start)
-            if ix_offset > 0:
-                self.xps.moveRelative(self.xpsAxes[0], x_step)
+            # Step in Y (skip on first iteration, already jumped to start)
+            if iy_offset > 0:
+                self.xps.moveRelative(self.xpsAxes[0], y_step)
                 sleep(0.3)
+                
+            # Get the delay needed for this specific shot
+            time_offset = delays_needed[shot_idx]
             
-            # Determine Y traversal order for serpentine pattern
-            if y_direction == 1:
-                y_range = range(total_y_steps)
-                step_y = y_step
+            # Calculate the absolute delay for this time step
+            new_delay_seconds = self.t_zero_seconds + (self.t_zero_step_dir * time_offset)
+            
+            # Convert back to the channel's display units and round to 14 decimals
+            new_delay_value = round(new_delay_seconds / self.unit_to_seconds[current_units], 14)
+            
+            # Update the delay on the instrument
+            self.dg_values[channel_key][1] = new_delay_value
+            self.ins_dg.get_delay(channel_key, channel_ref, new_delay_value, current_units)
+            sleep(0.2)
+            self.ins_dg.set_delay()
+            sleep(0.2)
+            
+            overall_shot += 1
+            
+            # 1. Fire the delay generator (triggers the camera)
+            self.ins_dg.single_shot_fire_dg()
+            
+            # 2. Capture the triggered image
+            image = self.cam.capture_triggered_image(timeout_ms=5000)
+            if image is not None:
+                self.last_saved_image = image
+                self.image_counter += 1
+                self.display_camera_image(image, self.ui.CapturedImage)
+                
+                # Save with shot number and delay info
+                delay_str = str(new_delay_value).replace(".", "-")
+                filename = f"scan_{self.image_counter}_ch{channel_key}_{delay_str}_{current_units}.bmp"
+                filepath = os.path.join(self.save_directory, filename)
+                self.save_camera_image(image, filepath)
+                
+                # Log to CSV
+                y_current = float(self.xps.getStagePosition(self.xpsAxes[0]))
+                try:
+                    with open(csv_filepath, 'a', newline='') as f:
+                        writer = csv.writer(f)
+                        writer.writerow([
+                            self.image_counter, filename,
+                            time_offset, new_delay_value, current_units,
+                            y_current,
+                            channel_key
+                        ])
+                except Exception as e:
+                    self.cam_log(f"Warning: Failed to log row {self.image_counter} to CSV: {e}", is_error=True)
             else:
-                y_range = range(total_y_steps - 1, -1, -1)
-                step_y = -y_step
+                self.cam_log(f"Failed to capture image at shot {overall_shot}", is_error=True)
             
-            for iy_offset, iy in enumerate(y_range):
-                # Move to the current Y position (Relative strategy)
-                # Skip moving Y on the 0th item inside the column, because we
-                # only shifted X from the previous column's last Y position!
-                if iy_offset > 0:
-                    self.xps.moveRelative(self.xpsAxes[1], step_y)
-                    sleep(0.2)
-                
-                # Get the delay needed for this specific shot
-                time_offset = delays_needed[shot_idx]
-                
-                # Calculate the absolute delay for this time step
-                new_delay_seconds = self.t_zero_seconds + (self.t_zero_step_dir * time_offset)
-                
-                # Convert back to the channel's display units and round to 14 decimals to prevent float artifacts while preserving ps precision
-                new_delay_value = round(new_delay_seconds / self.unit_to_seconds[current_units], 14)
-                
-                # Update the delay on the instrument
-                self.dg_values[channel_key][1] = new_delay_value
-                self.ins_dg.get_delay(channel_key, channel_ref, new_delay_value, current_units)
-                sleep(0.2)
-                self.ins_dg.set_delay()
-                sleep(0.2)
-                
-                overall_shot += 1
-                
-                # 1. Fire the delay generator (triggers the camera)
-                self.ins_dg.single_shot_fire_dg()
-                
-                # 2. Capture the triggered image
-                image = self.cam.capture_triggered_image(timeout_ms=5000)
-                if image is not None:
-                    self.last_saved_image = image
-                    self.image_counter += 1
-                    self.display_camera_image(image, self.ui.CapturedImage)
-                    
-                    # Save with shot number and delay info
-                    delay_str = str(new_delay_value).replace(".", "-")
-                    filename = f"scan_{self.image_counter}_ch{channel_key}_{delay_str}_{current_units}.bmp"
-                    filepath = os.path.join(self.save_directory, filename)
-                    self.save_camera_image(image, filepath)
-                    
-                    # Log to CSV
-                    x_current = float(self.xps.getStagePosition(self.xpsAxes[0]))
-                    y_current = float(self.xps.getStagePosition(self.xpsAxes[1]))
-                    try:
-                        with open(csv_filepath, 'a', newline='') as f:
-                            writer = csv.writer(f)
-                            writer.writerow([
-                                self.image_counter, filename,
-                                time_offset, new_delay_value, current_units,
-                                x_current, y_current,
-                                channel_key
-                            ])
-                    except Exception as e:
-                        self.cam_log(f"Warning: Failed to log row {self.image_counter} to CSV: {e}", is_error=True)
-                else:
-                    self.cam_log(f"Failed to capture image at shot {overall_shot}", is_error=True)
-                
-                # 3. Update status display
-                self.ui.status_label.setText(
-                    f"Shot {overall_shot}/{self.total_scan_shots} | "
-                    f"X:{ix+1}/{total_x_steps} Y:{iy+1}/{total_y_steps}"
-                )
-                QtWidgets.QApplication.processEvents()
-                sleep(0.1)
-                
-                shot_idx += 1
-                
-                # Check if we've taken all the shots needed
-                if shot_idx >= len(delays_needed):
-                    scan_complete = True
-                    break
+            # 3. Update status display
+            self.ui.status_label.setText(
+                f"Shot {overall_shot}/{self.total_scan_shots} | "
+                f"Y:{iy+1}/{total_y_steps}"
+            )
+            QtWidgets.QApplication.processEvents()
+            sleep(0.1)
             
-            # Flip Y direction for serpentine pattern
-            y_direction *= -1
+            shot_idx += 1
             
-            if scan_complete:
+            # Check if we've taken all the shots needed
+            if shot_idx >= len(delays_needed):
+                scan_complete = True
                 break
         
         # Save the resume position for the next scan
         # The next scan should start at the next unused position
-        next_ix = ix + 1 if scan_complete else ix + 1
-        if next_ix >= total_x_steps:
+        next_iy = iy + 1 if scan_complete else iy + 1
+        if next_iy >= total_y_steps:
             # Target area fully exhausted
             self.scan_resume_pos = None
             self.display_error_message(
                 f"Scan complete! {overall_shot} shots taken. Target area fully used.", "INFO")
         else:
-            next_x = self.x_start + next_ix * x_step
+            next_y = self.y_start + next_iy * y_step
             self.scan_resume_pos = {
-                'x': next_x,
-                'y': self.y_start,
-                'y_dir': y_direction,
-                'ix': next_ix
+                'y': next_y,
+                'iy': next_iy
             }
             self.display_error_message(
                 f"Scan complete! {overall_shot} shots taken. "
-                f"Next scan resumes at X={next_x:.3f} mm (column {next_ix+1}/{total_x_steps}).", "INFO")
+                f"Next scan resumes at Y={next_y:.3f} mm (position {next_iy+1}/{total_y_steps}).", "INFO")
         
         self.ui.status_label.setText(f"Scan complete: {overall_shot} total shots")
         self.ui.ShotCounter_disp.setText(str(self.image_counter))
@@ -1513,8 +1348,6 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         if self.xps:
             if self.xpsStageStatus[0][:11].upper() == "Ready state".upper():
                 self.xps.disableGroup(self.xpsAxes[0])
-            if self.xpsStageStatus[1][:11].upper() == "Ready state".upper():
-                self.xps.disableGroup(self.xpsAxes[1])
             self.updateGUIStatus()
         
         

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1512</width>
-    <height>866</height>
+    <height>949</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -40,7 +40,7 @@
      <enum>QTabWidget::Rounded</enum>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <property name="elideMode">
      <enum>Qt::ElideRight</enum>
@@ -1283,7 +1283,7 @@
        <rect>
         <x>30</x>
         <y>20</y>
-        <width>401</width>
+        <width>431</width>
         <height>281</height>
        </rect>
       </property>
@@ -1303,13 +1303,13 @@
         <rect>
          <x>10</x>
          <y>50</y>
-         <width>81</width>
+         <width>101</width>
          <height>31</height>
         </rect>
        </property>
        <property name="font">
         <font>
-         <pointsize>11</pointsize>
+         <pointsize>10</pointsize>
         </font>
        </property>
        <property name="text">
@@ -1327,13 +1327,13 @@
        </property>
        <property name="font">
         <font>
-         <pointsize>14</pointsize>
+         <pointsize>12</pointsize>
          <weight>75</weight>
          <bold>true</bold>
         </font>
        </property>
        <property name="autoFillBackground">
-        <bool>true</bool>
+        <bool>false</bool>
        </property>
        <property name="text">
         <string>XPS Setup</string>
@@ -1345,7 +1345,7 @@
         <bool>false</bool>
        </property>
        <property name="alignment">
-        <set>Qt::AlignCenter</set>
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
        </property>
        <property name="textInteractionFlags">
         <set>Qt::LinksAccessibleByMouse</set>
@@ -1354,7 +1354,7 @@
       <widget class="QLabel" name="label_60">
        <property name="geometry">
         <rect>
-         <x>100</x>
+         <x>130</x>
          <y>30</y>
          <width>271</width>
          <height>21</height>
@@ -1362,7 +1362,7 @@
        </property>
        <property name="font">
         <font>
-         <pointsize>11</pointsize>
+         <pointsize>10</pointsize>
          <weight>75</weight>
          <bold>true</bold>
         </font>
@@ -1386,7 +1386,7 @@
       <widget class="QComboBox" name="y_stage_select">
        <property name="geometry">
         <rect>
-         <x>100</x>
+         <x>130</x>
          <y>50</y>
          <width>281</width>
          <height>31</height>
@@ -1405,19 +1405,24 @@
          <string>Y Stage</string>
         </property>
        </item>
+       <item>
+        <property name="text">
+         <string>X Stage</string>
+        </property>
+       </item>
       </widget>
       <widget class="QLabel" name="label_61">
        <property name="geometry">
         <rect>
          <x>10</x>
          <y>80</y>
-         <width>81</width>
+         <width>101</width>
          <height>41</height>
         </rect>
        </property>
        <property name="font">
         <font>
-         <pointsize>11</pointsize>
+         <pointsize>10</pointsize>
         </font>
        </property>
        <property name="autoFillBackground">
@@ -1433,7 +1438,7 @@
       <widget class="QLineEdit" name="y_min_trav_ip">
        <property name="geometry">
         <rect>
-         <x>100</x>
+         <x>130</x>
          <y>90</y>
          <width>271</width>
          <height>21</height>
@@ -1450,13 +1455,13 @@
         <rect>
          <x>10</x>
          <y>120</y>
-         <width>81</width>
+         <width>101</width>
          <height>41</height>
         </rect>
        </property>
        <property name="font">
         <font>
-         <pointsize>11</pointsize>
+         <pointsize>10</pointsize>
         </font>
        </property>
        <property name="autoFillBackground">
@@ -1472,7 +1477,7 @@
       <widget class="QLineEdit" name="y_max_trav_ip">
        <property name="geometry">
         <rect>
-         <x>100</x>
+         <x>130</x>
          <y>130</y>
          <width>271</width>
          <height>21</height>
@@ -1489,13 +1494,13 @@
         <rect>
          <x>10</x>
          <y>170</y>
-         <width>81</width>
+         <width>101</width>
          <height>21</height>
         </rect>
        </property>
        <property name="font">
         <font>
-         <pointsize>11</pointsize>
+         <pointsize>10</pointsize>
         </font>
        </property>
        <property name="text">
@@ -1505,7 +1510,7 @@
       <widget class="QLineEdit" name="ip_address_ip">
        <property name="geometry">
         <rect>
-         <x>100</x>
+         <x>130</x>
          <y>170</y>
          <width>271</width>
          <height>21</height>
@@ -1525,13 +1530,13 @@
         <rect>
          <x>10</x>
          <y>200</y>
-         <width>81</width>
+         <width>101</width>
          <height>21</height>
         </rect>
        </property>
        <property name="font">
         <font>
-         <pointsize>11</pointsize>
+         <pointsize>10</pointsize>
         </font>
        </property>
        <property name="text">
@@ -1549,7 +1554,7 @@
        </property>
        <property name="font">
         <font>
-         <pointsize>11</pointsize>
+         <pointsize>10</pointsize>
          <weight>75</weight>
          <bold>true</bold>
         </font>
@@ -1576,7 +1581,7 @@
        </property>
        <property name="font">
         <font>
-         <pointsize>11</pointsize>
+         <pointsize>10</pointsize>
         </font>
        </property>
        <property name="autoFillBackground">
@@ -1600,7 +1605,7 @@
        </property>
        <property name="font">
         <font>
-         <pointsize>11</pointsize>
+         <pointsize>10</pointsize>
         </font>
        </property>
        <property name="text">
@@ -1621,7 +1626,7 @@
        </property>
        <property name="font">
         <font>
-         <pointsize>11</pointsize>
+         <pointsize>10</pointsize>
         </font>
        </property>
        <property name="text">
@@ -1632,7 +1637,7 @@
       <widget class="QTextBrowser" name="y_status">
        <property name="geometry">
         <rect>
-         <x>100</x>
+         <x>130</x>
          <y>200</y>
          <width>271</width>
          <height>21</height>
@@ -1651,7 +1656,7 @@
         <x>30</x>
         <y>310</y>
         <width>401</width>
-        <height>501</height>
+        <height>551</height>
        </rect>
       </property>
       <property name="font">
@@ -1666,8 +1671,8 @@
       <widget class="QGroupBox" name="groupBox_19">
        <property name="geometry">
         <rect>
-         <x>120</x>
-         <y>360</y>
+         <x>130</x>
+         <y>420</y>
          <width>161</width>
          <height>71</height>
         </rect>
@@ -1706,8 +1711,8 @@
       <widget class="QLabel" name="label_33">
        <property name="geometry">
         <rect>
-         <x>120</x>
-         <y>230</y>
+         <x>130</x>
+         <y>250</y>
          <width>161</width>
          <height>41</height>
         </rect>
@@ -1729,8 +1734,8 @@
       <widget class="QCheckBox" name="y_abs_mv_ck">
        <property name="geometry">
         <rect>
-         <x>120</x>
-         <y>160</y>
+         <x>130</x>
+         <y>170</y>
          <width>161</width>
          <height>21</height>
         </rect>
@@ -1752,9 +1757,9 @@
        </property>
        <property name="geometry">
         <rect>
-         <x>20</x>
-         <y>440</y>
-         <width>361</width>
+         <x>90</x>
+         <y>500</y>
+         <width>251</width>
          <height>41</height>
         </rect>
        </property>
@@ -1771,7 +1776,7 @@
       <widget class="QLabel" name="label_32">
        <property name="geometry">
         <rect>
-         <x>120</x>
+         <x>130</x>
          <y>90</y>
          <width>161</width>
          <height>31</height>
@@ -1797,8 +1802,8 @@
        </property>
        <property name="geometry">
         <rect>
-         <x>120</x>
-         <y>190</y>
+         <x>130</x>
+         <y>210</y>
          <width>161</width>
          <height>41</height>
         </rect>
@@ -1811,13 +1816,13 @@
         </font>
        </property>
        <property name="text">
-        <string>Z Abs Move</string>
+        <string>Y Abs Move</string>
        </property>
       </widget>
       <widget class="QLabel" name="label_30">
        <property name="geometry">
         <rect>
-         <x>120</x>
+         <x>130</x>
          <y>30</y>
          <width>141</width>
          <height>16</height>
@@ -1837,10 +1842,10 @@
       <widget class="QTextBrowser" name="y_pos_disp">
        <property name="geometry">
         <rect>
-         <x>120</x>
-         <y>50</y>
+         <x>130</x>
+         <y>60</y>
          <width>161</width>
-         <height>31</height>
+         <height>21</height>
         </rect>
        </property>
       </widget>
@@ -1850,8 +1855,8 @@
        </property>
        <property name="geometry">
         <rect>
-         <x>120</x>
-         <y>330</y>
+         <x>130</x>
+         <y>370</y>
          <width>161</width>
          <height>31</height>
         </rect>
@@ -1870,7 +1875,7 @@
       <widget class="QLineEdit" name="y_abs_mv_ip">
        <property name="geometry">
         <rect>
-         <x>120</x>
+         <x>130</x>
          <y>130</y>
          <width>161</width>
          <height>21</height>
@@ -1880,8 +1885,8 @@
       <widget class="QLineEdit" name="y_step_ip">
        <property name="geometry">
         <rect>
-         <x>120</x>
-         <y>270</y>
+         <x>130</x>
+         <y>290</y>
          <width>161</width>
          <height>21</height>
         </rect>
@@ -1893,8 +1898,8 @@
        </property>
        <property name="geometry">
         <rect>
-         <x>120</x>
-         <y>300</y>
+         <x>130</x>
+         <y>330</y>
          <width>161</width>
          <height>31</height>
         </rect>
@@ -1914,7 +1919,7 @@
      <widget class="QGroupBox" name="groupBox_2">
       <property name="geometry">
        <rect>
-        <x>480</x>
+        <x>490</x>
         <y>10</y>
         <width>431</width>
         <height>751</height>
@@ -1940,7 +1945,7 @@
        </property>
        <property name="font">
         <font>
-         <pointsize>11</pointsize>
+         <pointsize>10</pointsize>
          <weight>50</weight>
          <bold>false</bold>
         </font>
@@ -1975,15 +1980,15 @@
       <widget class="QLabel" name="label_56">
        <property name="geometry">
         <rect>
-         <x>30</x>
-         <y>230</y>
-         <width>91</width>
-         <height>31</height>
+         <x>20</x>
+         <y>220</y>
+         <width>101</width>
+         <height>51</height>
         </rect>
        </property>
        <property name="font">
         <font>
-         <pointsize>10</pointsize>
+         <pointsize>8</pointsize>
          <weight>75</weight>
          <bold>true</bold>
         </font>
@@ -1999,7 +2004,7 @@
        <property name="geometry">
         <rect>
          <x>20</x>
-         <y>290</y>
+         <y>320</y>
          <width>381</width>
          <height>131</height>
         </rect>
@@ -2119,7 +2124,7 @@
        </property>
        <property name="font">
         <font>
-         <pointsize>11</pointsize>
+         <pointsize>10</pointsize>
          <weight>50</weight>
          <bold>false</bold>
         </font>
@@ -2137,9 +2142,9 @@
        </property>
        <property name="geometry">
         <rect>
-         <x>20</x>
+         <x>60</x>
          <y>140</y>
-         <width>381</width>
+         <width>281</width>
          <height>31</height>
         </rect>
        </property>
@@ -2160,9 +2165,9 @@
        </property>
        <property name="geometry">
         <rect>
-         <x>20</x>
+         <x>60</x>
          <y>180</y>
-         <width>381</width>
+         <width>281</width>
          <height>31</height>
         </rect>
        </property>
@@ -2687,9 +2692,9 @@ availble shots</string>
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>80</y>
+          <y>90</y>
           <width>241</width>
-          <height>51</height>
+          <height>41</height>
          </rect>
         </property>
         <property name="sizePolicy">
@@ -3148,7 +3153,7 @@ availble shots</string>
        <widget class="QPushButton" name="set_rel_delay_bt">
         <property name="geometry">
          <rect>
-          <x>330</x>
+          <x>350</x>
           <y>120</y>
           <width>101</width>
           <height>51</height>
