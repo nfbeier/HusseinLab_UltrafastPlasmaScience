@@ -1260,8 +1260,7 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                 self.display_camera_image(image, self.ui.CapturedImage)
                 
                 # Save with shot number and delay info
-                delay_str = str(new_delay_value).replace(".", "-")
-                filename = f"scan_{self.image_counter}_ch{channel_key}_{delay_str}_{current_units}.bmp"
+                filename = f"scan_{self.image_counter}.bmp"
                 filepath = os.path.join(self.save_directory, filename)
                 self.save_camera_image(image, filepath)
                 
