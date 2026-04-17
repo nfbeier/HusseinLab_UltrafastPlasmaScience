@@ -50,7 +50,9 @@ os.chdir(cwd)
 sys.path.insert(0, cwd)
 
 # Importing the control window
-from Software.LaserAblationShadowgraph.D2.main_control_pannel_gui import Ui_MainWindow
+if script_dir not in sys.path:
+    sys.path.insert(0, script_dir)
+from main_control_pannel_gui import Ui_MainWindow
 
 #Importing the Delay generator class 
 from Hardware.DG645.dg645 import DelayGen
@@ -1414,7 +1416,8 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                     self.display_camera_image(image, self.ui.CapturedImage)
                     
                     # Save with shot number and delay info
-                    filename = f"shot_{self.image_counter}.bmp"
+                    delay_str = str(new_delay_value).replace(".", "-")
+                    filename = f"scan_{self.image_counter}_ch{channel_key}_{delay_str}_{current_units}.bmp"
                     filepath = os.path.join(self.save_directory, filename)
                     self.save_camera_image(image, filepath)
                     
