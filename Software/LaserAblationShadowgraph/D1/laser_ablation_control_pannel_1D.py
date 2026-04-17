@@ -1259,7 +1259,7 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                 self.image_counter += 1
                 self.display_camera_image(image, self.ui.CapturedImage)
                 
-                # Save with shot number and delay info
+                # Save with shot number
                 filename = f"scan_{self.image_counter}.bmp"
                 filepath = os.path.join(self.save_directory, filename)
                 self.save_camera_image(image, filepath)
@@ -1302,22 +1302,26 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
             # Target area fully exhausted
             self.scan_resume_pos = None
             self.display_error_message(
-                f"Scan complete! {overall_shot} shots taken. Target area fully used.", "INFO")
+                f"Scan complete! {overall_shot} shots taken. Target area fully used (0 shots left).", "INFO")
         else:
             next_y = self.y_start + next_iy * y_step
             self.scan_resume_pos = {
                 'y': next_y,
                 'iy': next_iy
             }
+            shots_left = total_y_steps - next_iy
             self.display_error_message(
                 f"Scan complete! {overall_shot} shots taken. "
-                f"Next scan resumes at Y={next_y:.3f} mm (position {next_iy+1}/{total_y_steps}).", "INFO")
+                f"Next scan resumes at Y={next_y:.3f} mm (position {next_iy+1}/{total_y_steps}). {shots_left} available shots left.", "INFO")
         
-        self.ui.status_label.setText(f"Scan complete: {overall_shot} total shots")
+        self.ui.status_label.setText(f"Scan complete: {overall_shot} total shots. {max(0, total_y_steps - next_iy)} left.")
         self.ui.ShotCounter_disp.setText(str(self.image_counter))
         
         # (CSV file was written to iteratively, no need to keep an open handle)
         self.cam_log(f"Scan log saved to {csv_filepath}")
+        
+        # Update stage position display at the end of the scan
+        self.updatePosition()
         
         # Display the current time relative to T0
         # Use the last time_offset from the scan (in seconds)
