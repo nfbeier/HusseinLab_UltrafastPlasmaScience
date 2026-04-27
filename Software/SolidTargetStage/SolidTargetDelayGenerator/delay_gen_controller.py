@@ -55,6 +55,7 @@ class delay_gen_app(QtWidgets.QMainWindow):
         #Adjusting and updating the delay values 
         self.ui.delay_disp.textChanged.connect(lambda: self.updateDelayvals("Delay_Val"))
         self.ui.delay_select_units.currentIndexChanged.connect(lambda: self.updateDelayvals("Delay_Units"))
+        self.ui.channel_link.textChanged.connect(lambda: self.updateDelayvals("Channel_Link"))
         
         #Adjusting and updating the voltage values
         self.ui.offset_v.textChanged.connect(lambda: self.updateVoltvals("Offset_Val"))
@@ -157,8 +158,11 @@ class delay_gen_app(QtWidgets.QMainWindow):
     
     def updateDelayvals(self, widget):
         channel = self.ui.delay_select.currentText()
-        self.ui.channel_link.setText(self.dg_values[channel][0])      
-        if widget == "Delay_Val" and (self.ui.delay_disp.text() != ''):
+        if widget == "Channel_Link":
+            # Save the user-edited channel link back into dg_values
+            new_link = self.ui.channel_link.text()
+            self.dg_values[channel][0] = new_link
+        elif widget == "Delay_Val" and (self.ui.delay_disp.text() != ''):
             delay = float(self.ui.delay_disp.text())
             self.dg_values[channel][1] = delay
         elif widget == "Delay_Units" and (self.ui.delay_select_units.currentText() != ''):
@@ -167,10 +171,10 @@ class delay_gen_app(QtWidgets.QMainWindow):
          
         if self.ui.channel_link.text() != "" and self.ui.delay_disp.text() != "" and self.ui.delay_select_units.currentText() != "":
             channel_select =  str(self.ui.delay_select.currentText())
-            channel = str(self.ui.channel_link.text())
+            channel_ref = str(self.ui.channel_link.text())
             delay = float(self.ui.delay_disp.text())
             delay_units = str(self.ui.delay_select_units.currentText())
-            self.ins_dg.get_delay(channel_select, channel, delay, delay_units)
+            self.ins_dg.get_delay(channel_select, channel_ref, delay, delay_units)
             
             
     def updateVoltvals(self, widget):
