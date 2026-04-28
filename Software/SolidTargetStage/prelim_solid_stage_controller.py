@@ -85,7 +85,7 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         ### DELAY GENERATOR SETUP #######
         
         #Connecting the delay generator instrument
-        self.ins_dg = DelayGen("COM4", 9600) # dg645
+        self.ins_dg = DelayGen("COM5", 9600) # dg645
         
         
         ##### XPS STAGE SETUP ######
