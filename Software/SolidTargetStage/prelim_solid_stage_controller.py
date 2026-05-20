@@ -129,6 +129,10 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         # Calculating the RPM button
         self.ui.rpm_bt.clicked.connect(self.CalculateRPMButton)
         
+        # Complete rotation button (N Shot mode only)
+        self.ui.complete_rot_bt.setEnabled(False)  # disabled until N Shot mode is selected
+        self.ui.complete_rot_bt.clicked.connect(self.CompleteRotBtn)
+        
         
         
         ######## DELAY GENERATOR FUNCTIONS ##########
@@ -317,9 +321,12 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         if self.shot_mode == 'Single Rotation':
             self.ui.single_rot_fw_ck.setEnabled(True)
             self.ui.single_rot_bw_ck.setEnabled(True)
+            self.ui.complete_rot_bt.setEnabled(False)
         else:
             self.ui.single_rot_fw_ck.setEnabled(False)
             self.ui.single_rot_bw_ck.setEnabled(False)
+            # Enable complete rotation button only in N Shot mode
+            self.ui.complete_rot_bt.setEnabled(self.shot_mode == 'N Shot')
             
     
     def updateEffSep(self):   
@@ -410,6 +417,37 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
 
 
         
+    def CompleteRotBtn(self):
+        """
+        Set the shot number so that a full rotation is completed from the
+        current position.  Requires that RPM (and therefore shot_per_rot) has
+        already been calculated.
+        """
+        if self.rpm == '':
+            self.display_error_message(
+                "Cannot calculate remaining shots: RPM not yet calculated. "
+                "Click 'Calculate RPM' first.",
+                "WARNING"
+            )
+            return
+        
+        shots_remaining = self.shot_per_rot - self.num_shot_taken
+        if shots_remaining <= 0:
+            self.display_error_message(
+                "A full rotation has already been completed. "
+                "Reset shot count before continuing.",
+                "WARNING"
+            )
+            return
+        
+        # Update the shot number input field – this also triggers update_shot_no
+        self.ui.shot_no_ip.setText(str(shots_remaining))
+        self.display_error_message(
+            f"Shot number set to {shots_remaining} to complete the current rotation "
+            f"({self.num_shot_taken}/{self.shot_per_rot} shots already taken).",
+            "INFO"
+        )
+
     def updateShotNo(self):
         if (self.step_num+ self.step_taken) <= self.step_per_rev:
             self.step_taken = self.step_taken + self.step_num
