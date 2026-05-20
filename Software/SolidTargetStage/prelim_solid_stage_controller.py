@@ -391,6 +391,8 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         rep_rate = float(self.ui.rep_rate_select.currentText()) 
         if (self.diam_target != ''): 
             self.radius = float(self.diam_target) * 0.5
+            # RPM formula:  sep (m) / radius (m)  ×  rep_rate (kHz × 1000 → Hz)  ×  60/(2π)
+            # Note: ×1000 converts rep_rate from kHz to Hz; ×1e-3 converts radius from mm to m
             self.rpm = (self.sep/(self.radius*1e-3))*(1/(2*np.pi))*60*1000*rep_rate
             
             # Calculating how many shots one can take in one rotation 
