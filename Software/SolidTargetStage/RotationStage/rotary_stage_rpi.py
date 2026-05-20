@@ -9,7 +9,7 @@ Created on Wed Jul  9 09:40:02 2025
 from guizero import App, Box, Text, TextBox, Combo, PushButton
 import numpy as np
 import RPi.GPIO as io
-import sys, tty, termios, time
+import sys, tty, termios, time, signal
 from time import sleep
 import socket
 
@@ -62,6 +62,31 @@ freq = 0
 shot_mode = ''
 step_per_rev = 1600
 extra_step = 0
+
+# Flag set to True when a clean DISCONNECT is requested
+shutdown_requested = False
+
+
+def gpio_cleanup():
+    """Ensure motor is disabled and GPIO is released."""
+    try:
+        io.output(ENA, True)   # disable motor driver
+    except Exception:
+        pass
+    io.cleanup()
+    print("GPIO cleaned up.")
+
+
+def signal_handler(sig, frame):
+    """Handle SIGINT (Ctrl-C) and SIGTERM cleanly."""
+    print(f"Signal {sig} received – cleaning up GPIO and exiting.")
+    gpio_cleanup()
+    sys.exit(0)
+
+# Register signal handlers so Ctrl-C / kill always cleans up
+signal.signal(signal.SIGINT,  signal_handler)
+signal.signal(signal.SIGTERM, signal_handler)
+
 
 def start_measurement():
     # Timeout for waiting for the trigger signal (in seconds)
@@ -128,6 +153,7 @@ def start_measurement():
                 
 
 def handle_connection(conn):
+    global shutdown_requested
     with conn:
         print("Client connected.")
         while True:
@@ -156,9 +182,9 @@ def handle_connection(conn):
                 elif message == "START":
                     start_measurement()
                 elif message == "DISCONNECT":
-                    #io.cleanup()
-                    sys.exit()
-                    break
+                    print("Disconnect requested – cleaning up GPIO.")
+                    shutdown_requested = True
+                    break          # exit the recv loop cleanly
                 
                 else:
                     message_1 = message.split('+')[0]
@@ -186,19 +212,21 @@ def handle_connection(conn):
           
     
 def start_server():
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        s.bind((HOST, PORT))
-        s.listen()
-        print(f"Server listening on {HOST}:{PORT}")
-        while True:
-            global conn
-            conn, addr = s.accept()
-            print(f"Connected by {addr}")
-            handle_connection(conn)
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.bind((HOST, PORT))
+            s.listen()
+            print(f"Server listening on {HOST}:{PORT}")
+            while not shutdown_requested:
+                global conn
+                conn, addr = s.accept()
+                print(f"Connected by {addr}")
+                handle_connection(conn)
+                if shutdown_requested:
+                    break
+    finally:
+        # Always runs: clean shutdown whether DISCONNECT, Ctrl-C, or crash
+        gpio_cleanup()
 
 if __name__ == "__main__":
     start_server()
-
-        
-
-io.cleanup()         

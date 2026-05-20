@@ -413,7 +413,14 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                 self.rpm = ''
             else:
                 self.rpm = str(self.rpm)
-                self.clear_error_message()
+                time_per_rot = 60.0 / float(self.rpm)
+                info_msg = (
+                    f"RPM: {float(self.rpm):.2f} | "
+                    f"Time per rotation: {time_per_rot:.3f} s | "
+                    f"Shots per rotation: {self.shot_per_rot}"
+                )
+                self.display_error_message(info_msg, "INFO")
+                self.ui.status_label.setText(f"RPM: {float(self.rpm):.2f}  |  T_rot: {time_per_rot:.3f} s")
 
 
         
@@ -1224,43 +1231,14 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
     def setDelaysDG(self):
         self.shot_mode = self.ui.shot_mode_select.currentText()
         
-        #Setting the offset and amplitude vaslues 
+        # As a reminder:
         # Rotation stage - channel AB
-        #Sets the offset value and amplitude value
-        offset_val = 0
-        self.dg_values['AB'][0] = offset_val
-        amp_val = 3 
-        self.dg_values['AB'][1] = amp_val
-        self.ins_dg.get_voltage('AB', offset_val, amp_val)
-        self.ins_dg.set_voltage()
-        #Then displays the change on the delay generator    
-        self.ins_dg.display_amplitdue('AB')
-        
         # Laser IP - channel CD
-        #Sets the offset value and amplitude value
-        offset_val = 0
-        self.dg_values['CD'][0] = offset_val
-        amp_val = 1.5 
-        self.dg_values['CD'][1] = amp_val
-        self.ins_dg.get_voltage('CD', offset_val, amp_val)
-        self.ins_dg.set_voltage()
-        #Then displays the change on the delay generator    
-        self.ins_dg.display_amplitdue('CD')
-        
         # Camera trigger - channel EF
-        #Sets the offset value and amplitude value
-        offset_val = 0
-        self.dg_values['EF'][0] = offset_val
-        amp_val = 2.8 
-        self.dg_values['EF'][1] = amp_val
-        self.ins_dg.get_voltage('EF', offset_val, amp_val)
-        self.ins_dg.set_voltage()
-        #Then displays the change on the delay generator    
-        self.ins_dg.display_amplitdue('EF')
         
         if self.shot_mode == 'Single Rotation':
             #Calculates the delay for the delay generator
-            self.dg_delay = ((self.step_per_rev)/self.freq)
+            self.dg_delay = (60/self.rpm)
             self.dg_delay_rot = round((self.dg_delay + self.ref_delay),6)
             self.dg_delay_laser = round((self.dg_delay),6)
             
