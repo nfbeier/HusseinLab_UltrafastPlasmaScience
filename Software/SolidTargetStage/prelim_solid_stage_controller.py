@@ -1202,7 +1202,7 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         #Sets the offset value and amplitude value
         offset_val = 0
         self.dg_values['CD'][0] = offset_val
-        amp_val = 1.5 
+        amp_val = 2.0
         self.dg_values['CD'][1] = amp_val
         self.ins_dg.get_voltage('CD', offset_val, amp_val)
         self.ins_dg.set_voltage()
