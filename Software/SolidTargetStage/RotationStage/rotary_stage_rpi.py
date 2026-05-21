@@ -97,7 +97,9 @@ def start_measurement():
         triggered = False
         
         if shot_mode == "Single Rotation":
-            steps_2_take = int(extra_steps_2_take) + (step_per_rev * 2)
+            # extra_steps_2_take: steps during the ref_delay pre-window (laser gate not yet open)
+            # step_per_rev:        exactly one full rotation while the DG645 laser gate is open
+            steps_2_take = int(extra_steps_2_take) + step_per_rev
             # Turning on the system
             io.output(ENA, False)
             
@@ -182,9 +184,12 @@ def handle_connection(conn):
                 elif message == "START":
                     start_measurement()
                 elif message == "DISCONNECT":
-                    print("Disconnect requested – cleaning up GPIO.")
-                    shutdown_requested = True
-                    break          # exit the recv loop cleanly
+                    # Close this client session and loop back to accept a new
+                    # connection. Do NOT set shutdown_requested — the server
+                    # stays running so the PC can reconnect without restarting
+                    # the RPi script. Use SIGTERM/Ctrl-C to fully stop the server.
+                    print("Client disconnected cleanly. Waiting for next connection.")
+                    break
                 
                 else:
                     message_1 = message.split('+')[0]
@@ -214,6 +219,9 @@ def handle_connection(conn):
 def start_server():
     try:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            # Allow immediate reuse of the port after a close (avoids
+            # "Address already in use" when restarting quickly)
+            s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             s.bind((HOST, PORT))
             s.listen()
             print(f"Server listening on {HOST}:{PORT}")
