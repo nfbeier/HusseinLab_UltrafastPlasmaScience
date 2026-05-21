@@ -92,7 +92,8 @@ def start_measurement():
     # Timeout for waiting for the trigger signal (in seconds)
     TRIGGER_TIMEOUT = 5.0
     
-    if (freq != 0) and (extra_step != 0):    
+    # freq must be set (DELAY command received); extra_step may legitimately be 0
+    if freq != 0:
         extra_steps_2_take = (extra_step) * freq
         triggered = False
         

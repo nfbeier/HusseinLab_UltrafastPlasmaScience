@@ -1265,6 +1265,9 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
             self.ins_dg.get_delay('D', 'C', self.dg_delay_laser, 's')
             self.ins_dg.set_delay()
             
+            # Read ref_delay safely — default to 0.0 if field is empty
+            ref_delay_ms = float(self.ref_delay_dg) if self.ref_delay_dg not in ('', None) else 0.0
+
             #set the new channel link in case there was a change 
             self.ins_dg.change_delay_link('C', 'A')
               
@@ -1341,6 +1344,12 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         if (self.shot_mode == 'Single Rotation') and (self.rpm != ''):
             # Recalculate RPM in case rep rate or other parameters changed
             self.CalculateRPM()
+            # Guard: if recalculation failed (e.g. RPM > 500), abort cleanly
+            if self.rpm == '':
+                return
+            # Build commands with freshly-calculated values (must be after CalculateRPM)
+            self.delay_cmd     = 'DELAY+'    + str(self.delay_value_rot)
+            self.rot_delay_cmd = 'DELAYROT+' + str(self.ref_delay)
             # Set up the delay generator with current values
             self.setDelaysDG()
             if self.ui.single_rot_fw_ck.isChecked():
@@ -1356,8 +1365,18 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                     self.s.sendall(self.start_command.encode())
                     self.FireIns()
                                         
-                    # Checking for a signal back 
-                    self.done_sig = self.s.recv(1024).decode().strip()
+                    # Checking for a signal back (timeout prevents GUI freeze if RPi hangs)
+                    self.s.settimeout(30.0)
+                    try:
+                        self.done_sig = self.s.recv(1024).decode().strip()
+                    except socket.timeout:
+                        self.display_error_message(
+                            "Single rotation (forward) timed out: No response from RPi within 30 s.",
+                            "ERROR")
+                        self.ui.status_label.setText('RPi timeout')
+                        return
+                    finally:
+                        self.s.settimeout(None)  # restore blocking mode
                     
                     if self.done_sig == 'DONE':
                         #Updating the shots taken only after confirmation
@@ -1400,8 +1419,18 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                     self.s.sendall(self.start_command.encode())
                     self.FireIns()
                     
-                    # Checking for a signal back 
-                    self.done_sig = self.s.recv(1024).decode().strip()
+                    # Checking for a signal back (timeout prevents GUI freeze if RPi hangs)
+                    self.s.settimeout(30.0)
+                    try:
+                        self.done_sig = self.s.recv(1024).decode().strip()
+                    except socket.timeout:
+                        self.display_error_message(
+                            "Single rotation (backward) timed out: No response from RPi within 30 s.",
+                            "ERROR")
+                        self.ui.status_label.setText('RPi timeout')
+                        return
+                    finally:
+                        self.s.settimeout(None)  # restore blocking mode
                     
                     if self.done_sig == 'DONE':
                         #Updating the shots taken only after confirmation
