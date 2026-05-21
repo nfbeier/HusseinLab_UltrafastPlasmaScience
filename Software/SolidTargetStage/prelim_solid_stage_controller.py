@@ -129,6 +129,10 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         # Calculating the RPM button
         self.ui.rpm_bt.clicked.connect(self.CalculateRPMButton)
         
+        # Complete rotation button (N Shot mode only)
+        self.ui.complete_rot_bt.setEnabled(False)  # disabled until N Shot mode is selected
+        self.ui.complete_rot_bt.clicked.connect(self.CompleteRotBtn)
+        
         
         
         ######## DELAY GENERATOR FUNCTIONS ##########
@@ -317,9 +321,12 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         if self.shot_mode == 'Single Rotation':
             self.ui.single_rot_fw_ck.setEnabled(True)
             self.ui.single_rot_bw_ck.setEnabled(True)
+            self.ui.complete_rot_bt.setEnabled(False)
         else:
             self.ui.single_rot_fw_ck.setEnabled(False)
             self.ui.single_rot_bw_ck.setEnabled(False)
+            # Enable complete rotation button only in N Shot mode
+            self.ui.complete_rot_bt.setEnabled(self.shot_mode == 'N Shot')
             
     
     def updateEffSep(self):   
@@ -384,6 +391,8 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         rep_rate = float(self.ui.rep_rate_select.currentText()) 
         if (self.diam_target != ''): 
             self.radius = float(self.diam_target) * 0.5
+            # RPM formula:  sep (m) / radius (m)  ×  rep_rate (kHz × 1000 → Hz)  ×  60/(2π)
+            # Note: ×1000 converts rep_rate from kHz to Hz; ×1e-3 converts radius from mm to m
             self.rpm = (self.sep/(self.radius*1e-3))*(1/(2*np.pi))*60*1000*rep_rate
             
             # Calculating how many shots one can take in one rotation 
@@ -406,10 +415,48 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                 self.rpm = ''
             else:
                 self.rpm = str(self.rpm)
-                self.clear_error_message()
+                time_per_rot = 60.0 / float(self.rpm)
+                info_msg = (
+                    f"RPM: {float(self.rpm):.2f} | "
+                    f"Time per rotation: {time_per_rot:.3f} s | "
+                    f"Shots per rotation: {self.shot_per_rot}"
+                )
+                self.display_error_message(info_msg, "INFO")
+                self.ui.status_label.setText(f"RPM: {float(self.rpm):.2f}  |  T_rot: {time_per_rot:.3f} s")
 
 
         
+    def CompleteRotBtn(self):
+        """
+        Set the shot number so that a full rotation is completed from the
+        current position.  Requires that RPM (and therefore shot_per_rot) has
+        already been calculated.
+        """
+        if self.rpm == '':
+            self.display_error_message(
+                "Cannot calculate remaining shots: RPM not yet calculated. "
+                "Click 'Calculate RPM' first.",
+                "WARNING"
+            )
+            return
+        
+        shots_remaining = self.shot_per_rot - self.num_shot_taken
+        if shots_remaining <= 0:
+            self.display_error_message(
+                "A full rotation has already been completed. "
+                "Reset shot count before continuing.",
+                "WARNING"
+            )
+            return
+        
+        # Update the shot number input field – this also triggers update_shot_no
+        self.ui.shot_no_ip.setText(str(shots_remaining))
+        self.display_error_message(
+            f"Shot number set to {shots_remaining} to complete the current rotation "
+            f"({self.num_shot_taken}/{self.shot_per_rot} shots already taken).",
+            "INFO"
+        )
+
     def updateShotNo(self):
         if (self.step_num+ self.step_taken) <= self.step_per_rev:
             self.step_taken = self.step_taken + self.step_num
@@ -1186,19 +1233,10 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
     def setDelaysDG(self):
         self.shot_mode = self.ui.shot_mode_select.currentText()
         
-        #Setting the offset and amplitude vaslues 
+        # As a reminder:
         # Rotation stage - channel AB
-        #Sets the offset value and amplitude value
-        offset_val = 0
-        self.dg_values['AB'][0] = offset_val
-        amp_val = 3 
-        self.dg_values['AB'][1] = amp_val
-        self.ins_dg.get_voltage('AB', offset_val, amp_val)
-        self.ins_dg.set_voltage()
-        #Then displays the change on the delay generator    
-        self.ins_dg.display_amplitdue('AB')
-        
         # Laser IP - channel CD
+<<<<<<< HEAD
         #Sets the offset value and amplitude value
         offset_val = 0
         self.dg_values['CD'][0] = offset_val
@@ -1209,20 +1247,13 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         #Then displays the change on the delay generator    
         self.ins_dg.display_amplitdue('CD')
         
+=======
+>>>>>>> 014879d9a35acc37d4b3a58d2d836f33980228b1
         # Camera trigger - channel EF
-        #Sets the offset value and amplitude value
-        offset_val = 0
-        self.dg_values['EF'][0] = offset_val
-        amp_val = 2.8 
-        self.dg_values['EF'][1] = amp_val
-        self.ins_dg.get_voltage('EF', offset_val, amp_val)
-        self.ins_dg.set_voltage()
-        #Then displays the change on the delay generator    
-        self.ins_dg.display_amplitdue('EF')
         
         if self.shot_mode == 'Single Rotation':
             #Calculates the delay for the delay generator
-            self.dg_delay = ((self.step_per_rev)/self.freq)
+            self.dg_delay = (60/self.rpm)
             self.dg_delay_rot = round((self.dg_delay + self.ref_delay),6)
             self.dg_delay_laser = round((self.dg_delay),6)
             

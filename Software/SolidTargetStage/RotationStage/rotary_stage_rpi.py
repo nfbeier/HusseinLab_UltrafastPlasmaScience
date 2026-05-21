@@ -9,7 +9,7 @@ Created on Wed Jul  9 09:40:02 2025
 from guizero import App, Box, Text, TextBox, Combo, PushButton
 import numpy as np
 import RPi.GPIO as io
-import sys, tty, termios, time
+import sys, tty, termios, time, signal
 from time import sleep
 import socket
 
@@ -63,6 +63,31 @@ shot_mode = ''
 step_per_rev = 1600
 extra_step = 0
 
+# Flag set to True when a clean DISCONNECT is requested
+shutdown_requested = False
+
+
+def gpio_cleanup():
+    """Ensure motor is disabled and GPIO is released."""
+    try:
+        io.output(ENA, True)   # disable motor driver
+    except Exception:
+        pass
+    io.cleanup()
+    print("GPIO cleaned up.")
+
+
+def signal_handler(sig, frame):
+    """Handle SIGINT (Ctrl-C) and SIGTERM cleanly."""
+    print(f"Signal {sig} received – cleaning up GPIO and exiting.")
+    gpio_cleanup()
+    sys.exit(0)
+
+# Register signal handlers so Ctrl-C / kill always cleans up
+signal.signal(signal.SIGINT,  signal_handler)
+signal.signal(signal.SIGTERM, signal_handler)
+
+
 def start_measurement():
     # Timeout for waiting for the trigger signal (in seconds)
     TRIGGER_TIMEOUT = 5.0
@@ -72,7 +97,9 @@ def start_measurement():
         triggered = False
         
         if shot_mode == "Single Rotation":
-            steps_2_take = int(extra_steps_2_take) + (step_per_rev * 2)
+            # extra_steps_2_take: steps during the ref_delay pre-window (laser gate not yet open)
+            # step_per_rev:        exactly one full rotation while the DG645 laser gate is open
+            steps_2_take = int(extra_steps_2_take) + step_per_rev
             # Turning on the system
             io.output(ENA, False)
             
@@ -128,6 +155,7 @@ def start_measurement():
                 
 
 def handle_connection(conn):
+    global shutdown_requested
     with conn:
         print("Client connected.")
         while True:
@@ -156,8 +184,11 @@ def handle_connection(conn):
                 elif message == "START":
                     start_measurement()
                 elif message == "DISCONNECT":
-                    #io.cleanup()
-                    sys.exit()
+                    # Close this client session and loop back to accept a new
+                    # connection. Do NOT set shutdown_requested — the server
+                    # stays running so the PC can reconnect without restarting
+                    # the RPi script. Use SIGTERM/Ctrl-C to fully stop the server.
+                    print("Client disconnected cleanly. Waiting for next connection.")
                     break
                 
                 else:
@@ -186,19 +217,24 @@ def handle_connection(conn):
           
     
 def start_server():
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        s.bind((HOST, PORT))
-        s.listen()
-        print(f"Server listening on {HOST}:{PORT}")
-        while True:
-            global conn
-            conn, addr = s.accept()
-            print(f"Connected by {addr}")
-            handle_connection(conn)
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            # Allow immediate reuse of the port after a close (avoids
+            # "Address already in use" when restarting quickly)
+            s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            s.bind((HOST, PORT))
+            s.listen()
+            print(f"Server listening on {HOST}:{PORT}")
+            while not shutdown_requested:
+                global conn
+                conn, addr = s.accept()
+                print(f"Connected by {addr}")
+                handle_connection(conn)
+                if shutdown_requested:
+                    break
+    finally:
+        # Always runs: clean shutdown whether DISCONNECT, Ctrl-C, or crash
+        gpio_cleanup()
 
 if __name__ == "__main__":
     start_server()
-
-        
-
-io.cleanup()         
