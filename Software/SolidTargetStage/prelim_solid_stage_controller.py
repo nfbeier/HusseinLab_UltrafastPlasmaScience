@@ -499,8 +499,8 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
             "EF" : [inputs["EF_offset"], inputs["EF_Amp"]],
             "GH" : [inputs["GH_offset"], inputs["GH_Amp"]]
             }
-        # Read trigger source if it exists in the JSON file
-        self.saved_trig_src = inputs.get("trigger_source", "Internal")
+        # Read trigger source — fall back to correct mode if missing OR null
+        self.saved_trig_src = inputs.get("trigger_source", "Single shot external rising edges") or "Single shot external rising edges"
         
     def disp_ch(self, widget):    
         if widget == "delay":
@@ -1568,9 +1568,10 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                 inputs[i+"_offset"] = self.dg_values[i][0]
                 inputs[i+"_Amp"] = self.dg_values[i][1]
             
-            # Save the current trigger source
+            # Save the current trigger source (guard against None if query fails)
             current_trig_src = self.ins_dg.query_trg_src()
-            inputs["trigger_source"] = current_trig_src
+            if current_trig_src is not None:
+                inputs["trigger_source"] = current_trig_src
                 
             write_file.seek(0)
             json.dump(inputs, write_file)
