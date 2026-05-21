@@ -1236,24 +1236,13 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         # As a reminder:
         # Rotation stage - channel AB
         # Laser IP - channel CD
-<<<<<<< HEAD
         #Sets the offset value and amplitude value
-        offset_val = 0
-        self.dg_values['CD'][0] = offset_val
-        amp_val = 2.0
-        self.dg_values['CD'][1] = amp_val
-        self.ins_dg.get_voltage('CD', offset_val, amp_val)
-        self.ins_dg.set_voltage()
-        #Then displays the change on the delay generator    
-        self.ins_dg.display_amplitdue('CD')
-        
-=======
->>>>>>> 014879d9a35acc37d4b3a58d2d836f33980228b1
+
         # Camera trigger - channel EF
         
         if self.shot_mode == 'Single Rotation':
             #Calculates the delay for the delay generator
-            self.dg_delay = (60/self.rpm)
+            self.dg_delay = (float(60)/float(self.rpm))
             self.dg_delay_rot = round((self.dg_delay + self.ref_delay),6)
             self.dg_delay_laser = round((self.dg_delay),6)
             
