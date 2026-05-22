@@ -403,7 +403,7 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
             
             # Calculating the frequency for delay calculations
             self.freq = self.rpm * self.step_per_rev * (1/60)
-            self.delay_value_rot = (1/self.freq) * 0.5
+            self.delay_value_rot = (1/self.freq) * 0.25
             
             # Seeing if the rpm is too high
             # based off the maximum recommended working speed not 
