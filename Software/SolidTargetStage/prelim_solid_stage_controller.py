@@ -73,7 +73,7 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         self.dg_delay = 0
         self.ui.single_rot_fw_ck.setEnabled(True)
         self.ui.single_rot_bw_ck.setEnabled(True)
-        self.step_per_rev = 1600
+        self.step_per_rev = 1600  # 200 full steps/rev × 8 microsteps = 1600 pulses/rev
         self.step_taken = 0
         
         
@@ -403,7 +403,9 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
             
             # Calculating the frequency for delay calculations
             self.freq = self.rpm * self.step_per_rev * (1/60)
-            self.delay_value_rot = (1/self.freq) * 0.5
+            # 3200 pulses sent per rotation (2 × step_per_rev) but freq calculated for
+            # 1600 steps/rev, so halve the delay to keep rotation time = 60/RPM seconds
+            self.delay_value_rot = (1/self.freq) * 0.25
             
             # Seeing if the rpm is too high
             # based off the maximum recommended working speed not 

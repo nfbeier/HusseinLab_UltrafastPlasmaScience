@@ -60,7 +60,7 @@ delay = 0
 shot_num = 0
 freq = 0
 shot_mode = ''
-step_per_rev = 1600
+step_per_rev = 1600  # 200 full steps/rev × 8 microsteps = 1600 pulses/rev (per driver spec)
 extra_step = 0
 
 # Flag set to True when a clean DISCONNECT is requested
@@ -119,9 +119,9 @@ def start_measurement():
         triggered = False
         
         if shot_mode == "Single Rotation":
-            # extra_steps_2_take: steps during the ref_delay pre-window (laser gate not yet open)
-            # step_per_rev:        exactly one full rotation while the DG645 laser gate is open
-            steps_2_take = int(extra_steps_2_take) + step_per_rev
+            # step_per_rev * 2 empirically required for one full physical rotation
+            # (driver: 1600 pulses/rev, but 3200 pulses needed to complete the full revolution)
+            steps_2_take = int(extra_steps_2_take) + (step_per_rev * 2)
             # Turning on the system
             io.output(ENA, False)
             
@@ -130,12 +130,18 @@ def start_measurement():
             while (time.time() - start_time) < TRIGGER_TIMEOUT:
                 sleep(1e-6)
                 if io.input(TRIG):
+                    rot_start = time.perf_counter()
                     for x in range(steps_2_take):
                         io.output(STEP, io.HIGH)
                         precise_delay(delay)
                         io.output(STEP, io.LOW)
                         precise_delay(delay)
+                    rot_end = time.perf_counter()
                     triggered = True
+                    elapsed = rot_end - rot_start
+                    print(f"[Single Rotation] Duration: {elapsed:.4f} s  "
+                          f"| Steps: {steps_2_take}  "
+                          f"| Step rate: {steps_2_take/elapsed:.1f} steps/s")
                     break
                     
             # Disabling the system again once done
@@ -158,12 +164,18 @@ def start_measurement():
             while (time.time() - start_time) < TRIGGER_TIMEOUT:
                 sleep(1e-6)
                 if io.input(TRIG):
+                    rot_start = time.perf_counter()
                     for x in range(steps_2_take):
                         io.output(STEP, io.HIGH)
                         precise_delay(delay)
                         io.output(STEP, io.LOW)
                         precise_delay(delay)
+                    rot_end = time.perf_counter()
                     triggered = True
+                    elapsed = rot_end - rot_start
+                    print(f"[N Shot] Duration: {elapsed:.4f} s  "
+                          f"| Steps: {steps_2_take}  "
+                          f"| Step rate: {steps_2_take/elapsed:.1f} steps/s")
                     break
             
             # Disabling the system again once done
