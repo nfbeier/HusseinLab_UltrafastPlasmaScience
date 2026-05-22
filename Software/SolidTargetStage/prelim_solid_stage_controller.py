@@ -441,45 +441,59 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                 "WARNING"
             )
             return
-        
-        shots_remaining = self.shot_per_rot - self.num_shot_taken
+
+        # Derive remaining shots from steps remaining (more reliable than the
+        # shot counter which accumulates rounding errors over multiple batches)
+        steps_remaining  = self.step_per_rev - self.step_taken
+        shots_remaining  = int((steps_remaining / self.step_per_rev) * self.shot_per_rot)
+
         if shots_remaining <= 0:
+            # No shots possible from remaining steps — treat as rotation complete
+            self.step_taken     = 0
+            self.num_shot_taken = 0
+            self.ui.progressBar.setValue(0)
+            self.ui.steps_taken_disp.setText("0")
+            self.ui.shots_taken_disp.setText("0")
+            self.ui.status_label.setText("Full Rotation Complete, Move the Stage")
             self.display_error_message(
-                "A full rotation has already been completed. "
-                "Reset shot count before continuing.",
-                "WARNING"
+                "Rotation complete: no shots remain for this position. "
+                "Move the stage and start a new rotation.",
+                "INFO"
             )
             return
-        
-        # Update the shot number input field – this also triggers update_shot_no
+
+        # Fill the shot number field so the user can immediately press Fire
         self.ui.shot_no_ip.setText(str(shots_remaining))
         self.display_error_message(
             f"Shot number set to {shots_remaining} to complete the current rotation "
-            f"({self.num_shot_taken}/{self.shot_per_rot} shots already taken).",
+            f"({self.step_taken}/{self.step_per_rev} steps already taken).",
             "INFO"
         )
 
     def updateShotNo(self):
-        if (self.step_num+ self.step_taken) <= self.step_per_rev:
+        if (self.step_num + self.step_taken) <= self.step_per_rev:
             self.step_taken = self.step_taken + self.step_num
-            self.num_shot_taken = self.num_shot_taken+int(self.shot_per_step*self.step_num)
+            self.num_shot_taken = self.num_shot_taken + int(self.shot_per_step * self.step_num)
             self.shot_left = self.shot_per_rot - self.num_shot_taken
-            self.step_taken = int(self.step_taken)
+            # Cap step_taken at step_per_rev to avoid floating-point overshoot
+            self.step_taken = min(int(self.step_taken), self.step_per_rev)
             #Updating the UI
             self.ui.shots_taken_disp.setText(str(self.num_shot_taken))
             self.ui.progressBar.setValue(self.step_taken)
             self.ui.steps_taken_disp.setText(str(self.step_taken))
             
-            # Seeing if a rotation has been completed 
-            # Get the current value
-            current_value = float(self.ui.progressBar.value())
-            if current_value == float(self.step_per_rev):
-                #Telling the user the stage has completed a 
-                # full rotation and to step forward
+            # Rotation complete when step_taken reaches (or due to rounding, exceeds)
+            # step_per_rev. Use >= instead of == so accumulated rounding never gets
+            # the bar permanently stuck at 99%.
+            if self.step_taken >= self.step_per_rev:
                 self.ui.status_label.setText("Full Rotation Complete, Move the Stage")
-            
+                # Auto-reset counters so the next rotation starts cleanly
+                self.step_taken      = 0
+                self.num_shot_taken  = 0
+                self.ui.progressBar.setValue(0)
+                self.ui.steps_taken_disp.setText("0")
+                self.ui.shots_taken_disp.setText("0")
 
-        
      
      ######### DELAY GEN FUNCTIONS ######### 
      
@@ -1528,11 +1542,28 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                 self.updateShotNo()
 
             else:
-                self.step_avail2take = self.step_per_rev - (self.step_taken)
-                self.shot_avail2take = int((self.step_avail2take/self.step_per_rev)*self.shot_per_rot)
-                error_msg = f"N-shot mode error: Requested {self.shot_num} shots ({self.step_num} steps) exceeds available capacity. Shots available: {self.shot_avail2take}, Steps available: {self.step_avail2take}, Steps taken: {self.step_taken}/{self.step_per_rev}"
-                self.display_error_message(error_msg, "ERROR")
-                self.ui.status_label.setText(f"Only {self.shot_avail2take} shots left")
+                # Rotation cylinder is full — reset so the next rotation can start
+                self.step_avail2take  = self.step_per_rev - self.step_taken
+                self.shot_avail2take  = int((self.step_avail2take / self.step_per_rev) * self.shot_per_rot)
+                if self.shot_avail2take <= 0:
+                    # Rounding left < 1 shot worth of steps — treat as complete and reset
+                    self.step_taken     = 0
+                    self.num_shot_taken = 0
+                    self.ui.progressBar.setValue(0)
+                    self.ui.steps_taken_disp.setText("0")
+                    self.ui.shots_taken_disp.setText("0")
+                    self.ui.status_label.setText("Full Rotation Complete, Move the Stage")
+                    self.display_error_message(
+                        "Rotation complete: counters reset. Move the stage and start a new rotation.",
+                        "INFO")
+                else:
+                    error_msg = (f"N-shot mode error: Requested {self.shot_num} shots "
+                                 f"({self.step_num} steps) exceeds available capacity. "
+                                 f"Shots available: {self.shot_avail2take}, "
+                                 f"Steps available: {self.step_avail2take}, "
+                                 f"Steps taken: {self.step_taken}/{self.step_per_rev}")
+                    self.display_error_message(error_msg, "ERROR")
+                    self.ui.status_label.setText(f"Only {self.shot_avail2take} shots left")
                 
         else:
             # Handle case where RPM is not calculated

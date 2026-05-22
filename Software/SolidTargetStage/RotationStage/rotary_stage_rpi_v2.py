@@ -154,7 +154,8 @@ def start_measurement():
                 conn.sendall(b"FAIL")
 
         elif (shot_mode == "N Shot") and (shot_num != 0):
-            steps_2_take = int(extra_steps_2_take) + int(shot_num)
+            # Motor requires 2× computed pulses per step (same as Single Rotation)
+            steps_2_take = (int(extra_steps_2_take) * 2) + (int(shot_num) * 2)
             
             # Turning on the system
             io.output(ENA, False)
