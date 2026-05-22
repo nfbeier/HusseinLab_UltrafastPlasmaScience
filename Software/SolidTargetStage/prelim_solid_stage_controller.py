@@ -340,7 +340,7 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         if shot_num_text != '':
             self.shot_num = int(shot_num_text)
             self.updateStep4Shot()
-            
+
     def updateStep4Shot(self):
         # Parameters needed to calculate the step # given
         # the shot #
@@ -349,23 +349,21 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         self.sep = self.shot_sep
         self.diam_target = self.ui.target_diam_ip.text()
         
-        if self.shot_num == 1:
-            self.step_num = 1
-            self.ui.step_4_shot_disp.setText(str(self.step_num))
-        elif self.diam_target != '': 
+        if self.diam_target != '': 
             self.radius = float(self.diam_target) * 0.5
             
             # Calculating how many shots one can take in one rotation 
             self.shot_per_rot = int((2*np.pi*self.radius*1e-3)/(self.sep))
             
             # Calculating the steps needed to take for given shot #
+            # Note: shot_num=1 previously used step_num=1 (wrong — almost no movement).
+            # The formula below gives the correct step advance for any N including N=1.
             self.step_num = ((self.shot_num / self.shot_per_rot) * self.step_per_rev)
             
             # Displaying the results 
             self.step_num_text = f"{self.step_num:.2f}"
             self.ui.step_4_shot_disp.setText(self.step_num_text)
-                   
-        
+
     def update_rot_stage_delay(self):
         self.ref_delay_dg = self.ui.rel_delay_ip.text()
         if self.ref_delay_dg != '':
@@ -1487,19 +1485,23 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         elif (self.shot_mode == 'N Shot') and (self.rpm != ''):
             # Recalculate RPM in case rep rate or other parameters changed
             self.CalculateRPM()
-            
+            # Guard: abort if recalculation failed (e.g. RPM > 500 or empty field)
+            if self.rpm == '':
+                return
+
             # Update step calculations for the current shot number
             self.updateStep4Shot()
-            
-            # Set up the delay generator with current values
-            self.setDelaysDG()
-            
+
             # Turning it into an integer 
             self.step_num = int(np.ceil(self.step_num))
             # Setting up the command
-            self.shot_num_cmd = 'SHOTNO+'+str(self.step_num)
+            self.shot_num_cmd = 'SHOTNO+' + str(self.step_num)
             if (self.step_num + self.step_taken) <= self.step_per_rev:
                 try:
+                    # Set up the delay generator with current values (inside try so
+                    # DG645 errors don't silently prevent updateShotNo from running)
+                    self.setDelaysDG()
+
                     self.s.sendall(self.shot_mode.encode())
                     sleep(0.2)
                     self.s.sendall(self.rot_delay_cmd.encode())
@@ -1512,9 +1514,19 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                     self.s.sendall(self.start_command.encode())
                     self.FireIns()
                     
-                    # Checking for a signal back 
-                    self.done_sig = self.s.recv(1024).decode().strip()
-                    
+                    # Checking for a signal back (timeout prevents GUI freeze if RPi hangs)
+                    self.s.settimeout(30.0)
+                    try:
+                        self.done_sig = self.s.recv(1024).decode().strip()
+                    except socket.timeout:
+                        self.display_error_message(
+                            "N-shot mode timed out: No response from RPi within 30 s.",
+                            "ERROR")
+                        self.ui.status_label.setText('RPi timeout')
+                        return
+                    finally:
+                        self.s.settimeout(None)  # restore blocking mode
+
                     if self.done_sig == 'DONE':
                         info_msg = f"N-shot mode completed successfully. {self.shot_num} shots taken ({self.step_num} steps). Total shots taken: {self.num_shot_taken + int(self.shot_per_step*self.step_num)}/{self.shot_per_rot}"
                         self.display_error_message(info_msg, "INFO")
