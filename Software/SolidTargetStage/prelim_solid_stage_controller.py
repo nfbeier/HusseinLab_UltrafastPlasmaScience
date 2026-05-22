@@ -1273,18 +1273,19 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
             #set the new channel link in case there was a change 
             self.ins_dg.change_delay_link('C', 'A')
               
-            self.dg_values['C'][1] = float(self.ref_delay_dg)
+            self.dg_values['C'][1] = ref_delay_ms
             self.dg_values['C'][2] = 'ms'
-            self.ins_dg.get_delay('C', 'A', (float(self.ref_delay_dg)), 'ms')
+            self.ins_dg.get_delay('C', 'A', ref_delay_ms, 'ms')
             self.ins_dg.set_delay()
             
             # Camera trigger - channel E linked to A
             #set the new channel link in case there was a change 
             self.ins_dg.change_delay_link('E', 'A')
               
-            self.dg_values['E'][1] = float(self.ref_delay_dg)
+            self.dg_values['E'][1] = ref_delay_ms
             self.dg_values['E'][2] = 'ms'
-            self.ins_dg.get_delay('E', 'A', (-1*float(self.ref_delay_dg)), 'ms')
+            # NOTE: delay must be positive — DG645 rejects negative delays (causes ERR light)
+            self.ins_dg.get_delay('E', 'A', ref_delay_ms, 'ms')
             self.ins_dg.set_delay()
             
         else:
@@ -1545,51 +1546,68 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                 self.ui.status_label.setText('Invalid shot mode')
         
     def DisconnectBtn(self):
-        #Shutting down the XPS stages 
-        if self.xps:
-            if self.xpsStageStatus[0][:11].upper() == "Ready state".upper():
-                self.xps.disableGroup(self.xpsAxes[0])
-            if self.xpsStageStatus[1][:11].upper() == "Ready state".upper():
-                self.xps.disableGroup(self.xpsAxes[1])
-            self.updateGUIStatus()
-        
-        #Shutdown for the Rpi
-        discoonect_cmd = 'DISCONNECT'
-        self.s.sendall(discoonect_cmd.encode())
-        
-        #Shutdown Delay generator
-        # First writing the json file to save current settings
-        with open(os.path.join(script_dir, "delay_gen_gui_inputs.json"), "r+") as write_file:
-            inputs = json.load(write_file)
-            
-            for i in ["A", "B", "C", "D", "E", "F", "G", "H"]:
-                inputs[i+"_ch"] = self.dg_values[i][0]
-                inputs[i+"_delay"] = self.dg_values[i][1]
-                inputs[i+"_delay_unit"] = self.dg_values[i][2]
-            for i in ["AB", "CD", "EF", "GH"]:
-                inputs[i+"_offset"] = self.dg_values[i][0]
-                inputs[i+"_Amp"] = self.dg_values[i][1]
-            
-            # Save the current trigger source (guard against None if query fails)
-            current_trig_src = self.ins_dg.query_trg_src()
-            if current_trig_src is not None:
-                inputs["trigger_source"] = current_trig_src
-                
-            write_file.seek(0)
-            json.dump(inputs, write_file)
-            write_file.truncate()
-            
-        #Disconnecting the device now
-        self.ins_dg.disconnect_dg()
-        
-        # Clean up camera resources
-        if self.video_running:
-            self.stop_video()
-        if self.cam_connected:
-            self.cam.disconnect()
-        self.cam.release_system()
-        
-        #Disconnecting the app now 
+        # --- XPS stages ---
+        try:
+            if self.xps:
+                if self.xpsStageStatus[0][:11].upper() == "Ready state".upper():
+                    self.xps.disableGroup(self.xpsAxes[0])
+                if self.xpsStageStatus[1][:11].upper() == "Ready state".upper():
+                    self.xps.disableGroup(self.xpsAxes[1])
+                self.updateGUIStatus()
+        except Exception as e:
+            print(f"XPS disconnect warning: {e}")
+
+        # --- RPi socket ---
+        try:
+            self.s.sendall('DISCONNECT'.encode())
+        except Exception as e:
+            print(f"RPi disconnect warning (socket may already be closed): {e}")
+
+        # --- Delay generator: save settings then disconnect ---
+        try:
+            with open(os.path.join(script_dir, "delay_gen_gui_inputs.json"), "r+") as write_file:
+                inputs = json.load(write_file)
+                for i in ["A", "B", "C", "D", "E", "F", "G", "H"]:
+                    inputs[i+"_ch"]         = self.dg_values[i][0]
+                    inputs[i+"_delay"]      = self.dg_values[i][1]
+                    inputs[i+"_delay_unit"] = self.dg_values[i][2]
+                for i in ["AB", "CD", "EF", "GH"]:
+                    inputs[i+"_offset"] = self.dg_values[i][0]
+                    inputs[i+"_Amp"]    = self.dg_values[i][1]
+                # Save trigger source (guard against None if query fails)
+                current_trig_src = self.ins_dg.query_trg_src()
+                if current_trig_src is not None:
+                    inputs["trigger_source"] = current_trig_src
+                write_file.seek(0)
+                json.dump(inputs, write_file)
+                write_file.truncate()
+        except Exception as e:
+            print(f"DG645 settings save warning: {e}")
+
+        try:
+            self.ins_dg.disconnect_dg()
+        except Exception as e:
+            print(f"DG645 disconnect warning: {e}")
+
+        # --- Camera ---
+        try:
+            if self.video_running:
+                self.stop_video()
+        except Exception as e:
+            print(f"Camera stop-video warning: {e}")
+
+        try:
+            if self.cam_connected:
+                self.cam.disconnect()
+        except Exception as e:
+            print(f"Camera disconnect warning: {e}")
+
+        try:
+            self.cam.release_system()
+        except Exception as e:
+            print(f"Camera release-system warning: {e}")
+
+        # Always quit the application last
         QtWidgets.QApplication.quit()
         
            
