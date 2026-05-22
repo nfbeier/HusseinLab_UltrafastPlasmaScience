@@ -446,17 +446,10 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         shots_remaining  = int((steps_remaining / self.step_per_rev) * self.shot_per_rot)
 
         if shots_remaining <= 0:
-            # No shots possible from remaining steps — treat as rotation complete
-            self.step_taken     = 0
-            self.num_shot_taken = 0
-            self.ui.progressBar.setValue(0)
-            self.ui.steps_taken_disp.setText("0")
-            self.ui.shots_taken_disp.setText("0")
-            self.ui.status_label.setText("Full Rotation Complete, Move the Stage")
             self.display_error_message(
-                "Rotation complete: no shots remain for this position. "
-                "Move the stage and start a new rotation.",
-                "INFO"
+                "A full rotation has already been completed. "
+                "Move the stage to a fresh target position to start a new rotation.",
+                "WARNING"
             )
             return
 
@@ -471,7 +464,9 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
     def updateShotNo(self):
         if (self.step_num + self.step_taken) <= self.step_per_rev:
             self.step_taken = self.step_taken + self.step_num
-            self.num_shot_taken = self.num_shot_taken + int(self.shot_per_step * self.step_num)
+            # Directly add the requested shot count. Re-deriving it from step_num 
+            # (int(shot_per_step * step_num)) caused rounding errors where N=1 gave 0 shots.
+            self.num_shot_taken = self.num_shot_taken + self.shot_num
             self.shot_left = self.shot_per_rot - self.num_shot_taken
             # Cap step_taken at step_per_rev to avoid floating-point overshoot
             self.step_taken = min(int(self.step_taken), self.step_per_rev)
@@ -485,12 +480,10 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
             # the bar permanently stuck at 99%.
             if self.step_taken >= self.step_per_rev:
                 self.ui.status_label.setText("Full Rotation Complete, Move the Stage")
-                # Auto-reset counters so the next rotation starts cleanly
-                self.step_taken      = 0
-                self.num_shot_taken  = 0
+                # Auto-reset rotation progress (but NOT the cumulative shot counter)
+                self.step_taken = 0
                 self.ui.progressBar.setValue(0)
                 self.ui.steps_taken_disp.setText("0")
-                self.ui.shots_taken_disp.setText("0")
 
      
      ######### DELAY GEN FUNCTIONS ######### 
@@ -1558,15 +1551,13 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                 self.step_avail2take  = self.step_per_rev - self.step_taken
                 self.shot_avail2take  = int((self.step_avail2take / self.step_per_rev) * self.shot_per_rot)
                 if self.shot_avail2take <= 0:
-                    # Rounding left < 1 shot worth of steps — treat as complete and reset
-                    self.step_taken     = 0
-                    self.num_shot_taken = 0
+                    # Rounding left < 1 shot worth of steps — treat as complete and reset progress
+                    self.step_taken = 0
                     self.ui.progressBar.setValue(0)
                     self.ui.steps_taken_disp.setText("0")
-                    self.ui.shots_taken_disp.setText("0")
                     self.ui.status_label.setText("Full Rotation Complete, Move the Stage")
                     self.display_error_message(
-                        "Rotation complete: counters reset. Move the stage and start a new rotation.",
+                        "Rotation complete: progress reset. Move the stage to a fresh position and start a new rotation.",
                         "INFO")
                 else:
                     error_msg = (f"N-shot mode error: Requested {self.shot_num} shots "
