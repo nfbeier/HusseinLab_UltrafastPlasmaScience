@@ -85,7 +85,7 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         ### DELAY GENERATOR SETUP #######
         
         #Connecting the delay generator instrument
-        self.ins_dg = DelayGen("COM5", 9600) # dg645
+        self.ins_dg = DelayGen("COM8", 9600) # dg645
         
         
         ##### XPS STAGE SETUP ######
@@ -1250,7 +1250,7 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         if self.shot_mode == 'Single Rotation':
             #Calculates the delay for the delay generator
             self.dg_delay = (float(60)/float(self.rpm))
-            self.dg_delay_rot = round((self.dg_delay + self.ref_delay),6)
+            self.dg_delay_rot = round((self.dg_delay + self.ref_delay +0.03),6)
             self.dg_delay_laser = round((self.dg_delay),6)
             
             #set the new channel link in case there was a change 
