@@ -1659,7 +1659,7 @@ p, li { white-space: pre-wrap; }
         <x>1230</x>
         <y>20</y>
         <width>621</width>
-        <height>851</height>
+        <height>931</height>
        </rect>
       </property>
       <property name="currentIndex">
@@ -1673,9 +1673,9 @@ p, li { white-space: pre-wrap; }
         <property name="geometry">
          <rect>
           <x>20</x>
-          <y>290</y>
+          <y>340</y>
           <width>571</width>
-          <height>230</height>
+          <height>280</height>
          </rect>
         </property>
        </widget>
@@ -1683,7 +1683,7 @@ p, li { white-space: pre-wrap; }
         <property name="geometry">
          <rect>
           <x>20</x>
-          <y>270</y>
+          <y>320</y>
           <width>571</width>
           <height>21</height>
          </rect>
@@ -1731,7 +1731,7 @@ p, li { white-space: pre-wrap; }
           <x>20</x>
           <y>30</y>
           <width>571</width>
-          <height>230</height>
+          <height>280</height>
          </rect>
         </property>
        </widget>
@@ -1739,7 +1739,7 @@ p, li { white-space: pre-wrap; }
         <property name="geometry">
          <rect>
           <x>20</x>
-          <y>540</y>
+          <y>630</y>
           <width>581</width>
           <height>261</height>
          </rect>
@@ -2118,6 +2118,105 @@ p, li { white-space: pre-wrap; }
        </property>
        <property name="wordWrap">
         <bool>true</bool>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QGroupBox" name="groupBox_18">
+      <property name="geometry">
+       <rect>
+        <x>690</x>
+        <y>630</y>
+        <width>501</width>
+        <height>161</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="title">
+       <string>File Save Controls</string>
+      </property>
+      <widget class="QPushButton" name="select_save_dir">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>30</y>
+         <width>471</width>
+         <height>51</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Select directory to save files</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_54">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>90</y>
+         <width>121</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Extra Information for Filename</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="camera_file_extra_info_ip">
+       <property name="geometry">
+        <rect>
+         <x>150</x>
+         <y>90</y>
+         <width>121</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="autosave_FLIR_ck">
+       <property name="geometry">
+        <rect>
+         <x>290</x>
+         <y>90</y>
+         <width>181</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>11</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Autosave Camera Capture</string>
        </property>
       </widget>
      </widget>
@@ -2603,7 +2702,7 @@ p, li { white-space: pre-wrap; }
        <rect>
         <x>10</x>
         <y>300</y>
-        <width>881</width>
+        <width>1021</width>
         <height>521</height>
        </rect>
       </property>
@@ -3207,9 +3306,9 @@ p, li { white-space: pre-wrap; }
       <widget class="QGroupBox" name="groupBox_3">
        <property name="geometry">
         <rect>
-         <x>230</x>
+         <x>150</x>
          <y>400</y>
-         <width>371</width>
+         <width>591</width>
          <height>81</height>
         </rect>
        </property>
@@ -3228,7 +3327,7 @@ p, li { white-space: pre-wrap; }
          <rect>
           <x>10</x>
           <y>30</y>
-          <width>151</width>
+          <width>161</width>
           <height>41</height>
          </rect>
         </property>
@@ -3249,9 +3348,9 @@ p, li { white-space: pre-wrap; }
        <widget class="QLabel" name="status_label_3">
         <property name="geometry">
          <rect>
-          <x>150</x>
+          <x>200</x>
           <y>30</y>
-          <width>91</width>
+          <width>191</width>
           <height>41</height>
          </rect>
         </property>
@@ -3272,7 +3371,7 @@ p, li { white-space: pre-wrap; }
        <widget class="Line" name="line_2">
         <property name="geometry">
          <rect>
-          <x>130</x>
+          <x>170</x>
           <y>30</y>
           <width>20</width>
           <height>41</height>
@@ -3285,7 +3384,7 @@ p, li { white-space: pre-wrap; }
        <widget class="Line" name="line_7">
         <property name="geometry">
          <rect>
-          <x>230</x>
+          <x>380</x>
           <y>30</y>
           <width>20</width>
           <height>41</height>
@@ -3298,9 +3397,9 @@ p, li { white-space: pre-wrap; }
        <widget class="QLabel" name="status_label_4">
         <property name="geometry">
          <rect>
-          <x>260</x>
+          <x>410</x>
           <y>30</y>
-          <width>91</width>
+          <width>171</width>
           <height>41</height>
          </rect>
         </property>
@@ -3324,7 +3423,7 @@ p, li { white-space: pre-wrap; }
         <rect>
          <x>450</x>
          <y>180</y>
-         <width>411</width>
+         <width>521</width>
          <height>211</height>
         </rect>
        </property>
@@ -3340,8 +3439,8 @@ p, li { white-space: pre-wrap; }
        <widget class="QLabel" name="label_36">
         <property name="geometry">
          <rect>
-          <x>10</x>
-          <y>110</y>
+          <x>20</x>
+          <y>120</y>
           <width>60</width>
           <height>16</height>
          </rect>
@@ -3361,7 +3460,7 @@ p, li { white-space: pre-wrap; }
          <rect>
           <x>10</x>
           <y>130</y>
-          <width>241</width>
+          <width>281</width>
           <height>51</height>
          </rect>
         </property>
@@ -3397,9 +3496,9 @@ p, li { white-space: pre-wrap; }
        <widget class="QPushButton" name="set_trig_src_bt">
         <property name="geometry">
          <rect>
-          <x>270</x>
+          <x>320</x>
           <y>140</y>
-          <width>121</width>
+          <width>171</width>
           <height>31</height>
          </rect>
         </property>
@@ -3417,9 +3516,9 @@ p, li { white-space: pre-wrap; }
        <widget class="QLineEdit" name="trig_src_disp">
         <property name="geometry">
          <rect>
-          <x>140</x>
+          <x>170</x>
           <y>50</y>
-          <width>211</width>
+          <width>331</width>
           <height>31</height>
          </rect>
         </property>

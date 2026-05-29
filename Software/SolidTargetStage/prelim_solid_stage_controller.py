@@ -243,6 +243,10 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         self.last_saved_image = None
         self.image_counter = 0
         
+        # Default directory for saving camera images (user must explicitly pick one before saving)
+        self.cam_save_dir = os.path.join(script_dir, "FLIR Camera Images")
+        self.cam_save_dir_selected = False  # True only after the user selects a directory
+        
         # Hide ROI and menu buttons on the promoted ImageView widgets
         self.ui.LiveFeedLabel.ui.roiBtn.hide()
         self.ui.LiveFeedLabel.ui.menuBtn.hide()
@@ -260,6 +264,8 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         self.ui.StopVideoButton.clicked.connect(self.stop_video)
         self.ui.DisconnectButton.clicked.connect(self.disconnect_camera)
         self.ui.ModeComboBox.currentIndexChanged.connect(self.change_camera_mode)
+        self.ui.select_save_dir.clicked.connect(self.select_save_directory)
+        self.ui.autosave_FLIR_ck.stateChanged.connect(self._on_autosave_toggled)
         
         # Camera settings inputs
         self.ui.exposure_time_ip.editingFinished.connect(self.apply_exposure_time)
@@ -658,6 +664,7 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                 self.image_counter += 1
                 self.display_camera_image(image, self.ui.CapturedImage)
                 self.cam_log(f"Captured triggered image #{self.image_counter}")
+                self._autosave_if_enabled()
             else:
                 self.cam_log("Failed to capture triggered image.", is_error=True)
         else:
@@ -1208,18 +1215,72 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         except Exception as e:
             self.cam_log(f"Error setting gain: {e}", is_error=True)
     
+    def select_save_directory(self):
+        """Open a dialog for the user to choose the directory where camera images will be saved."""
+        chosen_dir = QtWidgets.QFileDialog.getExistingDirectory(
+            self,
+            "Select Image Save Directory",
+            self.cam_save_dir,
+            QtWidgets.QFileDialog.ShowDirsOnly | QtWidgets.QFileDialog.DontResolveSymlinks
+        )
+        if chosen_dir:  # user didn't cancel
+            self.cam_save_dir = chosen_dir
+            self.cam_save_dir_selected = True
+            # Update button text to show the selected path for user feedback
+            self.ui.select_save_dir.setText(f"Save dir: {chosen_dir}")
+            self.cam_log(f"Image save directory set to: {chosen_dir}")
+    
+    def _on_autosave_toggled(self, state):
+        """Warn the user if they enable autosave before selecting a save directory."""
+        if state and not self.cam_save_dir_selected:
+            self.display_error_message(
+                "Autosave enabled but no save directory has been selected. "
+                "Click 'Select directory to save files' to choose a folder outside the repository.",
+                "WARNING"
+            )
+    
+    def _make_image_filename(self):
+        """Return a filename incorporating the current laser shot number, image counter,
+        and any optional extra info supplied by the user in camera_file_extra_info_ip.
+        Dots in the extra-info string are replaced with hyphens for filesystem safety.
+        """
+        shot_num = self.num_shot_taken
+        extra = self.ui.camera_file_extra_info_ip.text().strip().replace(".", "-")
+        if extra:
+            return f"shot_{shot_num}_FLIR_{self.image_counter}_{extra}.bmp"
+        return f"shot_{shot_num}_FLIR_{self.image_counter}.bmp"
+    
+    def _autosave_if_enabled(self):
+        """Save the last captured image automatically when the autosave checkbox is checked."""
+        if not self.ui.autosave_FLIR_ck.isChecked():
+            return
+        if not self.cam_save_dir_selected:
+            self.display_error_message(
+                "Autosave skipped: no save directory selected. "
+                "Click 'Select directory to save files' and choose a folder outside the repository.",
+                "ERROR"
+            )
+            return
+        os.makedirs(self.cam_save_dir, exist_ok=True)
+        filename = self._make_image_filename()
+        filepath = os.path.join(self.cam_save_dir, filename)
+        self.save_camera_image(self.last_saved_image, filepath)
+    
     def save_captured_image_btn(self):
         """Save the last captured image with a filename based on image counter and EF delay."""
         if self.last_saved_image is None:
             self.cam_log("No captured image to save.")
             return
-        save_dir = os.path.join(script_dir, "FLIR Camera Images")
-        os.makedirs(save_dir, exist_ok=True)
-        delay_val = str(self.dg_values["E"][1])
-        delay_unit = str(self.dg_values["E"][2])
-        delay_str = delay_val.replace(".", "-")
-        filename = f"test_{self.image_counter}_chE_{delay_str}_{delay_unit}.bmp"
-        filepath = os.path.join(save_dir, filename)
+        if not self.cam_save_dir_selected:
+            self.display_error_message(
+                "No save directory selected. Click 'Select directory to save files' "
+                "and choose a folder outside the repository before saving images.",
+                "ERROR"
+            )
+            return
+        os.makedirs(self.cam_save_dir, exist_ok=True)
+        filename = self._make_image_filename()
+        filepath = os.path.join(self.cam_save_dir, filename)
         self.save_camera_image(self.last_saved_image, filepath)
     
     def display_camera_image(self, image_array, image_view):
