@@ -324,15 +324,14 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
 
     def select_shot_mode(self):    
         self.shot_mode = self.ui.shot_mode_select.currentText()
-        if self.shot_mode == 'Single Rotation':
+        if self.shot_mode in ('Single Rotation', 'N Shot'):
             self.ui.single_rot_fw_ck.setEnabled(True)
             self.ui.single_rot_bw_ck.setEnabled(True)
-            self.ui.complete_rot_bt.setEnabled(False)
+            self.ui.complete_rot_bt.setEnabled(self.shot_mode == 'N Shot')
         else:
             self.ui.single_rot_fw_ck.setEnabled(False)
             self.ui.single_rot_bw_ck.setEnabled(False)
-            # Enable complete rotation button only in N Shot mode
-            self.ui.complete_rot_bt.setEnabled(self.shot_mode == 'N Shot')
+            self.ui.complete_rot_bt.setEnabled(False)
             
     
     def updateEffSep(self):   
@@ -485,11 +484,43 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
             # step_per_rev. Use >= instead of == so accumulated rounding never gets
             # the bar permanently stuck at 99%.
             if self.step_taken >= self.step_per_rev:
-                self.ui.status_label.setText("Full Rotation Complete, Move the Stage")
                 # Auto-reset rotation progress (but NOT the cumulative shot counter)
                 self.step_taken = 0
                 self.ui.progressBar.setValue(0)
                 self.ui.steps_taken_disp.setText("0")
+                if self.shot_mode == 'N Shot':
+                    # Mirror the same step distance that Single Rotation mode uses:
+                    # shot separation (µm) converted to mm → written into x_step_ip
+                    self.cylinder_sep_mm = float(self.ui.shot_sep_ip.text()) * 1e-3
+                    self.ui.x_step_ip.setText(str(self.cylinder_sep_mm))
+                    # Automatically shift the XPS stage based on the direction checkbox
+                    if self.ui.single_rot_fw_ck.isChecked():
+                        self.xpsMotionBtn("ForwardX")
+                        self.ui.status_label.setText(
+                            "Full Rotation Complete — stage shifted forward, ready for next fire"
+                        )
+                        self.display_error_message(
+                            f"Full rotation complete. Stage automatically shifted forward by {self.cylinder_sep_mm:.4f} mm.", "INFO"
+                        )
+                    elif self.ui.single_rot_bw_ck.isChecked():
+                        self.xpsMotionBtn("BackwardX")
+                        self.ui.status_label.setText(
+                            "Full Rotation Complete — stage shifted backward, ready for next fire"
+                        )
+                        self.display_error_message(
+                            f"Full rotation complete. Stage automatically shifted backward by {self.cylinder_sep_mm:.4f} mm.", "INFO"
+                        )
+                    else:
+                        self.ui.status_label.setText(
+                            "Full Rotation Complete — no shift direction selected, move stage manually"
+                        )
+                        self.display_error_message(
+                            "Full rotation complete but no shift direction selected. "
+                            "Tick 'Forward' or 'Backward' shift checkbox to enable auto-advance.",
+                            "WARNING"
+                        )
+                else:
+                    self.ui.status_label.setText("Full Rotation Complete, Move the Stage")
 
      
      ######### DELAY GEN FUNCTIONS ######### 
