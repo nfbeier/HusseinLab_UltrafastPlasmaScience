@@ -75,7 +75,6 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         self.ui.single_rot_bw_ck.setEnabled(True)
         self.step_per_rev = 1600  # 200 full steps/rev × 8 microsteps = 1600 pulses/rev
         self.step_taken = 0
-        self.rotation_complete = False  # True when N Shot rotation is full; waits for user direction
         
         
         #Connecting to Rpi
@@ -490,20 +489,45 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                 self.ui.progressBar.setValue(0)
                 self.ui.steps_taken_disp.setText("0")
                 if self.shot_mode == 'N Shot':
-                    # Set the cylinder step size for when the user triggers the advance
+                    # Mirror the same step distance that Single Rotation mode uses:
+                    # shot separation (µm) converted to mm → written into x_step_ip
                     self.cylinder_sep_mm = float(self.ui.shot_sep_ip.text()) * 1e-3
                     self.ui.x_step_ip.setText(str(self.cylinder_sep_mm))
-                    # Signal that a full rotation just finished — do NOT auto-advance.
-                    # The user must select Forward or Backward checkbox and press Fire.
-                    self.rotation_complete = True
-                    self.ui.status_label.setText(
-                        "Full Rotation Complete — select Forward or Backward and press Fire to advance stage"
-                    )
-                    self.display_error_message(
-                        "Full rotation complete. Select a direction using the Forward or Backward "
-                        "checkbox, then press Fire to advance the stage.",
-                        "INFO"
-                    )
+                    # Automatically shift the XPS stage based on the direction checkbox
+                    if self.ui.single_rot_fw_ck.isChecked() and self.ui.single_rot_bw_ck.isChecked():
+                        self.ui.status_label.setText(
+                            "Full Rotation Complete — both directions selected, move stage manually"
+                        )
+                        self.display_error_message(
+                            "Full rotation complete but both Forward and Backward checkboxes are selected. "
+                            "Deselect one direction and move the stage manually.",
+                            "WARNING"
+                        )
+                    elif self.ui.single_rot_fw_ck.isChecked():
+                        self.xpsMotionBtn("ForwardX")
+                        self.ui.status_label.setText(
+                            "Full Rotation Complete — stage shifted forward, ready for next fire"
+                        )
+                        self.display_error_message(
+                            f"Full rotation complete. Stage automatically shifted forward by {self.cylinder_sep_mm:.4f} mm.", "INFO"
+                        )
+                    elif self.ui.single_rot_bw_ck.isChecked():
+                        self.xpsMotionBtn("BackwardX")
+                        self.ui.status_label.setText(
+                            "Full Rotation Complete — stage shifted backward, ready for next fire"
+                        )
+                        self.display_error_message(
+                            f"Full rotation complete. Stage automatically shifted backward by {self.cylinder_sep_mm:.4f} mm.", "INFO"
+                        )
+                    else:
+                        self.ui.status_label.setText(
+                            "Full Rotation Complete — no shift direction selected, move stage manually"
+                        )
+                        self.display_error_message(
+                            "Full rotation complete but no shift direction selected. "
+                            "Tick 'Forward' or 'Backward' shift checkbox to enable auto-advance.",
+                            "WARNING"
+                        )
                 else:
                     self.ui.status_label.setText("Full Rotation Complete, Move the Stage")
 
@@ -1560,50 +1584,6 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                  
 
         elif (self.shot_mode == 'N Shot') and (self.rpm != ''):
-            # ── Post-rotation stage advance ──────────────────────────────────────
-            # If a full rotation just finished the user must pick a direction with
-            # the Forward / Backward checkbox and press Fire to move the stage.
-            if self.rotation_complete:
-                if self.ui.single_rot_fw_ck.isChecked() and self.ui.single_rot_bw_ck.isChecked():
-                    self.display_error_message(
-                        "Stage advance error: Both Forward and Backward checkboxes are selected. "
-                        "Please select only one direction.",
-                        "WARNING"
-                    )
-                    self.ui.status_label.setText('Select only one direction')
-                    return
-                elif self.ui.single_rot_fw_ck.isChecked():
-                    self.xpsMotionBtn("ForwardX")
-                    self.rotation_complete = False
-                    self.ui.status_label.setText(
-                        "Stage shifted forward — ready for next rotation"
-                    )
-                    self.display_error_message(
-                        f"Stage advanced forward by {self.cylinder_sep_mm:.4f} mm. "
-                        "Ready to start the next rotation.",
-                        "INFO"
-                    )
-                elif self.ui.single_rot_bw_ck.isChecked():
-                    self.xpsMotionBtn("BackwardX")
-                    self.rotation_complete = False
-                    self.ui.status_label.setText(
-                        "Stage shifted backward — ready for next rotation"
-                    )
-                    self.display_error_message(
-                        f"Stage advanced backward by {self.cylinder_sep_mm:.4f} mm. "
-                        "Ready to start the next rotation.",
-                        "INFO"
-                    )
-                else:
-                    self.display_error_message(
-                        "Full rotation complete: select Forward or Backward checkbox, "
-                        "then press Fire to advance the stage.",
-                        "WARNING"
-                    )
-                    self.ui.status_label.setText(
-                        "Select Forward or Backward checkbox to advance stage"
-                    )
-                return
             # ── Normal N Shot firing ─────────────────────────────────────────────
             # Recalculate RPM in case rep rate or other parameters changed
             self.CalculateRPM()
