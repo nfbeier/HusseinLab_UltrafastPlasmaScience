@@ -1435,6 +1435,49 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
             self.ins_dg.set_delay()
             
     
+    def _next_step_within_limits(self, direction):
+        """
+        Check whether the XPS X-axis step that will follow this rotation falls
+        within the configured travel limits.
+
+        Args:
+            direction (str): "ForwardX" or "BackwardX"
+
+        Returns:
+            bool: True if the move is safe, False if it would exceed a limit
+                  (an ERROR message is displayed in the False case).
+        """
+        if self.xps is None:
+            # XPS not connected \u2014 let the motion attempt handle its own error
+            return True
+
+        try:
+            pos_current = float(self.xps.getStagePosition(self.xpsAxes[0]))
+            step        = float(self.ui.x_step_ip.text())
+            limit_max   = float(self.ui.x_max_trav_ip.text())
+            limit_min   = float(self.ui.x_min_trav_ip.text())
+        except (ValueError, TypeError):
+            # Can't parse the fields \u2014 let the motion attempt handle its own error
+            return True
+
+        if direction == "ForwardX":
+            new_pos = pos_current + step
+        else:  # "BackwardX"
+            new_pos = pos_current - step
+
+        if new_pos < limit_min or new_pos > limit_max:
+            error_msg = (
+                f"Rotation blocked: post-rotation stage move would place X at "
+                f"{new_pos:.4f} mm, which is outside the travel limits "
+                f"[{limit_min:.2f}, {limit_max:.2f}] mm. "
+                f"Current position: {pos_current:.4f} mm, Step: {step:.4f} mm."
+            )
+            self.display_error_message(error_msg, "ERROR")
+            self.ui.status_label.setText("Stage limit reached \u2014 rotation blocked")
+            return False
+
+        return True
+
     def StartRot(self):
         
         # Setting up for values the rotation stage needs
@@ -1469,6 +1512,9 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                 )
                 self.ui.status_label.setText('Select only one direction')
             elif self.ui.single_rot_fw_ck.isChecked():
+                # Pre-flight: check that the forward step stays within travel limits
+                if not self._next_step_within_limits("ForwardX"):
+                    return
                 try:
                     #Setting up the needed values for the rotation stage
                     self.s.sendall(self.shot_mode.encode())
@@ -1524,6 +1570,9 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
                     self.display_error_message(error_msg, "ERROR")
                     self.ui.status_label.setText('Rotation error')
             elif self.ui.single_rot_bw_ck.isChecked():
+                # Pre-flight: check that the backward step stays within travel limits
+                if not self._next_step_within_limits("BackwardX"):
+                    return
                 try:
                     self.s.sendall(self.shot_mode.encode())
                     sleep(0.2)
@@ -1590,6 +1639,22 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
             # Guard: abort if recalculation failed (e.g. RPM > 500 or empty field)
             if self.rpm == '':
                 return
+
+            # Pre-flight: verify the post-rotation stage step is within travel limits
+            if self.ui.single_rot_fw_ck.isChecked() and self.ui.single_rot_bw_ck.isChecked():
+                self.display_error_message(
+                    "N Shot error: Both Forward and Backward checkboxes are selected. "
+                    "Please select only one direction before firing.",
+                    "WARNING"
+                )
+                self.ui.status_label.setText('Select only one direction')
+                return
+            elif self.ui.single_rot_fw_ck.isChecked():
+                if not self._next_step_within_limits("ForwardX"):
+                    return
+            elif self.ui.single_rot_bw_ck.isChecked():
+                if not self._next_step_within_limits("BackwardX"):
+                    return
 
             # Update step calculations for the current shot number
             self.updateStep4Shot()
