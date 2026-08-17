@@ -86,7 +86,7 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         
         #Connecting the delay generator instrument
         self.ins_dg = DelayGen("COM7", 9600) # dg645
-        
+        print(self.ins_dg)
         
         ##### XPS STAGE SETUP ######
         self.xps = None
@@ -138,7 +138,7 @@ class solid_target_stage_app_stage_app(QtWidgets.QMainWindow):
         ######## DELAY GENERATOR FUNCTIONS ##########
         # Reads in previous input for different channel levels 
         self.read_json()
-        
+        print(self.saved_trig_src)
         # Set the saved trigger source on the device
         self.ins_dg.get_trg_src(self.saved_trig_src)
         self.ins_dg.set_trg_src()
